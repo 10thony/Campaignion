@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useQuery } from 'convex/react'
 import { SignedIn, SignedOut } from '@clerk/clerk-react'
 import { ItemCard } from '@/components/ItemCard'
+import { ItemModal } from '@/components/modals/ItemModal'
+import { SampleDataPanel } from '@/components/SampleDataPanel'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -22,6 +24,9 @@ export function ItemsPage() {
   const [selectedType, setSelectedType] = useState<ItemType | ''>('')
   const [selectedRarity, setSelectedRarity] = useState<ItemRarity | ''>('')
   const [activeTab, setActiveTab] = useState<'my' | 'all'>('my')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create")
+  const [selectedItem, setSelectedItem] = useState<any>(null)
 
   const filterItems = (itemList: any[]) => {
     return itemList?.filter(item => {
@@ -38,13 +43,32 @@ export function ItemsPage() {
   const filteredAllItems = filterItems(items || [])
 
   const handleViewItem = (itemId: string) => {
-    console.log('View item:', itemId)
-    // TODO: Navigate to item detail page or open modal
+    const item = [...(myItems || []), ...(items || [])].find(i => i._id === itemId)
+    if (item) {
+      setSelectedItem(item)
+      setModalMode("view")
+      setModalOpen(true)
+    }
   }
 
   const handleEditItem = (itemId: string) => {
-    console.log('Edit item:', itemId)
-    // TODO: Open edit modal or navigate to edit page
+    const item = myItems?.find(i => i._id === itemId)
+    if (item) {
+      setSelectedItem(item)
+      setModalMode("edit")
+      setModalOpen(true)
+    }
+  }
+
+  const handleCreateItem = () => {
+    setSelectedItem(null)
+    setModalMode("create")
+    setModalOpen(true)
+  }
+
+  const handleModalSuccess = () => {
+    // Modal will close itself, this is called after successful creation/edit
+    // The queries will automatically refetch due to Convex reactivity
   }
 
   const itemTypes: Array<{ value: ItemType | '', label: string, icon: any }> = [
@@ -100,7 +124,7 @@ export function ItemsPage() {
                 : 'No items found.'}
             </p>
             {!searchTerm && !selectedType && !selectedRarity && activeTab === 'my' && (
-              <Button>
+              <Button onClick={handleCreateItem}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Item
               </Button>
@@ -139,7 +163,7 @@ export function ItemsPage() {
         </div>
         
         <SignedIn>
-          <Button>
+          <Button onClick={handleCreateItem}>
             <Plus className="h-4 w-4 mr-2" />
             Create Item
           </Button>
@@ -160,6 +184,15 @@ export function ItemsPage() {
       </SignedOut>
 
       <SignedIn>
+        {/* Sample Data Panel */}
+        <SampleDataPanel 
+          entityType="items" 
+          onDataLoaded={() => {
+            // Refresh the page data
+            window.location.reload()
+          }} 
+        />
+
         {/* Tab Navigation */}
         <div className="flex flex-col lg:flex-row gap-4 mb-6">
           <div className="flex gap-1 bg-muted p-1 rounded-lg">
@@ -296,6 +329,14 @@ export function ItemsPage() {
           {renderItemGrid(currentItems, activeTab === 'my')}
         </div>
       </SignedIn>
+
+      <ItemModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        mode={modalMode}
+        item={selectedItem}
+        onSuccess={handleModalSuccess}
+      />
     </div>
   )
 } 

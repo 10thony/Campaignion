@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useQuery, useMutation } from 'convex/react'
 import { SignedIn, SignedOut } from '@clerk/clerk-react'
 import { QuestCard } from '@/components/QuestCard'
+import { QuestModal } from '@/components/modals/QuestModal'
+import { SampleDataPanel } from '@/components/SampleDataPanel'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -17,6 +19,9 @@ export function QuestsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedStatus, setSelectedStatus] = useState<QuestStatus | ''>('')
   const [activeTab, setActiveTab] = useState<'my' | 'all'>('my')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create")
+  const [selectedQuest, setSelectedQuest] = useState<any>(null)
 
   const updateQuestStatus = useMutation(api.quests.updateQuestStatus)
 
@@ -41,13 +46,32 @@ export function QuestsPage() {
   const filteredAllQuests = filterQuests(quests || [])
 
   const handleViewQuest = (questId: string) => {
-    console.log('View quest:', questId)
-    // TODO: Navigate to quest detail page
+    const quest = [...(myQuests || []), ...(quests || [])].find(q => q._id === questId)
+    if (quest) {
+      setSelectedQuest(quest)
+      setModalMode("view")
+      setModalOpen(true)
+    }
   }
 
   const handleEditQuest = (questId: string) => {
-    console.log('Edit quest:', questId)
-    // TODO: Open edit modal or navigate to edit page
+    const quest = myQuests?.find(q => q._id === questId)
+    if (quest) {
+      setSelectedQuest(quest)
+      setModalMode("edit")
+      setModalOpen(true)
+    }
+  }
+
+  const handleCreateQuest = () => {
+    setSelectedQuest(null)
+    setModalMode("create")
+    setModalOpen(true)
+  }
+
+  const handleModalSuccess = () => {
+    // Modal will close itself, this is called after successful creation/edit
+    // The queries will automatically refetch due to Convex reactivity
   }
 
   const statusOptions: Array<{ value: QuestStatus | '', label: string, icon: any }> = [
@@ -89,7 +113,7 @@ export function QuestsPage() {
                 : 'No quests found.'}
             </p>
             {!searchTerm && !selectedStatus && activeTab === 'my' && (
-              <Button>
+              <Button onClick={handleCreateQuest}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Quest
               </Button>
@@ -131,7 +155,7 @@ export function QuestsPage() {
         </div>
         
         <SignedIn>
-          <Button>
+          <Button onClick={handleCreateQuest}>
             <Plus className="h-4 w-4 mr-2" />
             Create Quest
           </Button>
@@ -152,6 +176,15 @@ export function QuestsPage() {
       </SignedOut>
 
       <SignedIn>
+        {/* Sample Data Panel */}
+        <SampleDataPanel 
+          entityType="quests" 
+          onDataLoaded={() => {
+            // Refresh the page data
+            window.location.reload()
+          }} 
+        />
+
         {/* Tab Navigation and Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex gap-1 bg-muted p-1 rounded-lg">
@@ -257,6 +290,14 @@ export function QuestsPage() {
           {renderQuestGrid(currentQuests, activeTab === 'my')}
         </div>
       </SignedIn>
+
+      <QuestModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        mode={modalMode}
+        quest={selectedQuest}
+        onSuccess={handleModalSuccess}
+      />
     </div>
   )
 } 

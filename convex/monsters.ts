@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { getCurrentUser } from "./clerkService";
 
 // Helper function to calculate ability modifiers
 function calculateAbilityModifiers(abilityScores: any) {
@@ -107,19 +108,7 @@ export const createMonster = mutation({
     lairActionCount: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await getCurrentUser(ctx);
 
     // Calculate ability modifiers server-side
     const abilityModifiers = calculateAbilityModifiers(args.abilityScores);
@@ -163,23 +152,11 @@ export const updateMonster = mutation({
     lairActionCount: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
+    const user = await getCurrentUser(ctx);
 
     const monster = await ctx.db.get(args.monsterId);
     if (!monster) {
       throw new Error("Monster not found");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
     }
 
     // Check permissions: own monster, admin, or campaign DM
@@ -210,23 +187,11 @@ export const updateMonster = mutation({
 export const deleteMonster = mutation({
   args: { monsterId: v.id("monsters") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
+    const user = await getCurrentUser(ctx);
 
     const monster = await ctx.db.get(args.monsterId);
     if (!monster) {
       throw new Error("Monster not found");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
     }
 
     // Check permissions

@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { getCurrentUser } from "./clerkService";
 
 // Helper function to calculate ability modifiers
 function calculateAbilityModifiers(abilityScores: any) {
@@ -54,24 +55,17 @@ export const getNPCById = query({
 export const getMyCharacters = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
+    try {
+      const user = await getCurrentUser(ctx);
+      
+      return await ctx.db
+        .query("playerCharacters")
+        .filter((q) => q.eq(q.field("userId"), user._id))
+        .collect();
+    } catch (error) {
+      // Return empty array if not authenticated
       return [];
     }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      return [];
-    }
-
-    return await ctx.db
-      .query("playerCharacters")
-      .filter((q) => q.eq(q.field("userId"), user._id))
-      .collect();
   },
 });
 
@@ -99,19 +93,7 @@ export const createPlayerCharacter = mutation({
     proficiencies: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await getCurrentUser(ctx);
 
     // Calculate derived stats server-side
     const abilityModifiers = calculateAbilityModifiers(args.abilityScores);
@@ -163,19 +145,7 @@ export const createNPC = mutation({
     proficiencies: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await getCurrentUser(ctx);
 
     // Calculate derived stats server-side
     const abilityModifiers = calculateAbilityModifiers(args.abilityScores);
@@ -221,23 +191,11 @@ export const updateCharacter = mutation({
     experiencePoints: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
+    const user = await getCurrentUser(ctx);
 
     const character = await ctx.db.get(args.characterId);
     if (!character) {
       throw new Error("Character not found");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
     }
 
     // Check permissions: own character, admin, or campaign DM
@@ -276,23 +234,11 @@ export const updateCharacter = mutation({
 export const deletePlayerCharacter = mutation({
   args: { characterId: v.id("playerCharacters") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
+    const user = await getCurrentUser(ctx);
 
     const character = await ctx.db.get(args.characterId);
     if (!character) {
       throw new Error("Character not found");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
     }
 
     // Check permissions
@@ -307,23 +253,11 @@ export const deletePlayerCharacter = mutation({
 export const deleteNPC = mutation({
   args: { npcId: v.id("npcs") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
+    const user = await getCurrentUser(ctx);
 
     const npc = await ctx.db.get(args.npcId);
     if (!npc) {
       throw new Error("NPC not found");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
     }
 
     // Check permissions

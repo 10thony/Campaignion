@@ -1,0 +1,94 @@
+{
+  "version": "1.0.0",
+  "description": "Sample quests and adventures",
+  "quests": [
+    {
+      "name": "Rescue the Blacksmith",
+      "description": "The local blacksmith, Gronn Ironforge, has been kidnapped by goblins from the nearby caves. The town needs his skills to repair weapons and armor.",
+      "status": "idle",
+      "completionXP": 300,
+      "rewards": {
+        "xp": 300,
+        "gold": 50,
+        "itemIds": []
+      }
+    },
+    {
+      "name": "Clear the Goblin Caves",
+      "description": "A group of goblins has taken up residence in the caves north of town. They've been raiding merchant caravans and terrorizing travelers.",
+      "status": "idle",
+      "completionXP": 500,
+      "rewards": {
+        "xp": 500,
+        "gold": 100,
+        "itemIds": []
+      }
+    },
+    {
+      "name": "The Missing Merchant",
+      "description": "Trader Bendek Stonehill left town three days ago bound for Neverwinter and hasn't been seen since. His wife fears the worst.",
+      "status": "idle",
+      "completionXP": 400,
+      "rewards": {
+        "xp": 400,
+        "gold": 75,
+        "itemIds": []
+      }
+    },
+    {
+      "name": "Investigate the Haunted Manor",
+      "description": "Strange lights and eerie sounds have been reported from the old Blackwood Manor. Locals believe it's haunted and want someone to investigate.",
+      "status": "idle",
+      "completionXP": 750,
+      "rewards": {
+        "xp": 750,
+        "gold": 200,
+        "itemIds": []
+      }
+    },
+    {
+      "name": "Escort the Scholars",
+      "description": "A group of scholars from Candlekeep needs safe passage to the ancient ruins east of town. The road is dangerous and they require protection.",
+      "status": "idle",
+      "completionXP": 350,
+      "rewards": {
+        "xp": 350,
+        "gold": 80,
+        "itemIds": []
+      }
+    },
+    {
+      "name": "The Dragon's Hoard",
+      "description": "Ancient legends speak of a dragon's treasure hidden deep within Mount Grimfang. Only the bravest adventurers would dare seek such a prize.",
+      "status": "idle",
+      "completionXP": 2000,
+      "rewards": {
+        "xp": 2000,
+        "gold": 1000,
+        "itemIds": []
+      }
+    },
+    {
+      "name": "Bandit Leader Bounty",
+      "description": "The notorious bandit leader 'Red Jack' has a 500 gold bounty on his head. He's been spotted near the crossroads south of town.",
+      "status": "idle",
+      "completionXP": 600,
+      "rewards": {
+        "xp": 600,
+        "gold": 500,
+        "itemIds": []
+      }
+    },
+    {
+      "name": "The Corrupted Grove",
+      "description": "The sacred grove of the local druids has been corrupted by dark magic. The trees are withering and animals are fleeing the area.",
+      "status": "idle",
+      "completionXP": 800,
+      "rewards": {
+        "xp": 800,
+        "gold": 150,
+        "itemIds": []
+      }
+    }
+  ]
+} 

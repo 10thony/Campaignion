@@ -1,0 +1,129 @@
+{
+  "version": "1.0.0",
+  "description": "Sample magical items and equipment",
+  "items": [
+    {
+      "name": "Longsword",
+      "type": "Weapon",
+      "rarity": "Common",
+      "description": "A standard longsword with a sharp steel blade and leather-wrapped hilt.",
+      "weight": 3,
+      "cost": 15,
+      "damageRolls": [
+        {
+          "dice": { "count": 1, "type": "D8" },
+          "modifier": 0,
+          "damageType": "SLASHING"
+        }
+      ]
+    },
+    {
+      "name": "Potion of Healing",
+      "type": "Potion",
+      "rarity": "Common",
+      "description": "A red magical potion that restores vitality when consumed.",
+      "weight": 0.5,
+      "cost": 50,
+      "effects": "Restores 2d4+2 hit points when consumed"
+    },
+    {
+      "name": "Ring of Protection",
+      "type": "Ring",
+      "rarity": "Rare",
+      "description": "A finely crafted silver ring inscribed with protective runes.",
+      "weight": 0,
+      "cost": 3500,
+      "attunement": true,
+      "abilityModifiers": {
+        "constitution": 1
+      }
+    },
+    {
+      "name": "+1 Shield",
+      "type": "Shield",
+      "rarity": "Uncommon",
+      "description": "A sturdy wooden shield reinforced with iron bands and enchanted for protection.",
+      "weight": 6,
+      "cost": 1500,
+      "attunement": false
+    },
+    {
+      "name": "Bag of Holding",
+      "type": "Wondrous Item",
+      "rarity": "Uncommon",
+      "description": "This bag has an interior space considerably larger than its outside dimensions.",
+      "weight": 15,
+      "cost": 4000,
+      "effects": "Can hold up to 500 pounds, not exceeding a volume of 64 cubic feet"
+    },
+    {
+      "name": "Flame Tongue",
+      "type": "Weapon",
+      "rarity": "Rare",
+      "description": "A magical sword that can ignite with flames at the wielder's command.",
+      "weight": 3,
+      "cost": 5000,
+      "attunement": true,
+      "damageRolls": [
+        {
+          "dice": { "count": 1, "type": "D8" },
+          "modifier": 0,
+          "damageType": "SLASHING"
+        },
+        {
+          "dice": { "count": 2, "type": "D6" },
+          "modifier": 0,
+          "damageType": "FIRE"
+        }
+      ]
+    },
+    {
+      "name": "Cloak of Elvenkind",
+      "type": "Wondrous Item",
+      "rarity": "Uncommon",
+      "description": "This cloak grants its wearer a +2 bonus to Dexterity (Stealth) checks.",
+      "weight": 1,
+      "cost": 5000,
+      "attunement": true,
+      "effects": "+2 bonus to Stealth checks"
+    },
+    {
+      "name": "Scroll of Fireball",
+      "type": "Scroll",
+      "rarity": "Uncommon",
+      "description": "A magical scroll containing the fireball spell.",
+      "weight": 0,
+      "cost": 400,
+      "effects": "Casts fireball (3rd level) when read"
+    },
+    {
+      "name": "Plate Armor",
+      "type": "Armor",
+      "rarity": "Common",
+      "description": "Full plate armor made of interlocking metal plates.",
+      "weight": 65,
+      "cost": 1500,
+      "armorClass": 18
+    },
+    {
+      "name": "Staff of Power",
+      "type": "Staff",
+      "rarity": "Very Rare",
+      "description": "This staff can be wielded as a magic quarterstaff and contains multiple magical abilities.",
+      "weight": 4,
+      "cost": 95500,
+      "attunement": true,
+      "damageRolls": [
+        {
+          "dice": { "count": 1, "type": "D6" },
+          "modifier": 2,
+          "damageType": "BLUDGEONING"
+        }
+      ],
+      "abilityModifiers": {
+        "strength": 2,
+        "constitution": 2
+      }
+    }
+  ]
+} 

@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useQuery } from 'convex/react'
 import { SignedIn, SignedOut } from '@clerk/clerk-react'
 import { CharacterCard } from '@/components/CharacterCard'
+import { CharacterModal } from '@/components/modals/CharacterModal'
+import { SampleDataPanel } from '@/components/SampleDataPanel'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -15,6 +17,10 @@ export function CharactersPage() {
   const myCharacters = useQuery(api.characters.getMyCharacters)
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTab, setActiveTab] = useState<'my' | 'pcs' | 'npcs'>('my')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create")
+  const [selectedCharacter, setSelectedCharacter] = useState<any>(null)
+  const [characterType, setCharacterType] = useState<"PlayerCharacter" | "NonPlayerCharacter">("PlayerCharacter")
 
   const filterCharacters = (characters: any[]) => {
     return characters?.filter(character => 
@@ -29,13 +35,42 @@ export function CharactersPage() {
   const filteredNPCs = filterCharacters(npcs || [])
 
   const handleViewCharacter = (characterId: string) => {
-    console.log('View character:', characterId)
-    // TODO: Navigate to character sheet page
+    const character = [...(myCharacters || []), ...(playerCharacters || []), ...(npcs || [])].find(c => c._id === characterId)
+    if (character) {
+      setSelectedCharacter(character)
+      setCharacterType(character.characterType || "PlayerCharacter")
+      setModalMode("view")
+      setModalOpen(true)
+    }
   }
 
   const handleEditCharacter = (characterId: string) => {
-    console.log('Edit character:', characterId)
-    // TODO: Open edit modal or navigate to edit page
+    const character = myCharacters?.find(c => c._id === characterId)
+    if (character) {
+      setSelectedCharacter(character)
+      setCharacterType(character.characterType || "PlayerCharacter")
+      setModalMode("edit")
+      setModalOpen(true)
+    }
+  }
+
+  const handleCreateCharacter = () => {
+    setSelectedCharacter(null)
+    setCharacterType("PlayerCharacter")
+    setModalMode("create")
+    setModalOpen(true)
+  }
+
+  const handleCreateNPC = () => {
+    setSelectedCharacter(null)
+    setCharacterType("NonPlayerCharacter")
+    setModalMode("create")
+    setModalOpen(true)
+  }
+
+  const handleModalSuccess = () => {
+    // Modal will close itself, this is called after successful creation/edit
+    // The queries will automatically refetch due to Convex reactivity
   }
 
   const renderCharacterGrid = (characters: any[], canEdit = false) => {
@@ -59,7 +94,7 @@ export function CharactersPage() {
                 : 'No characters found.'}
             </p>
             {!searchTerm && activeTab === 'my' && (
-              <Button>
+              <Button onClick={handleCreateCharacter}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Character
               </Button>
@@ -96,11 +131,11 @@ export function CharactersPage() {
         
         <SignedIn>
           <div className="flex gap-2">
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleCreateNPC}>
               <Plus className="h-4 w-4 mr-2" />
               Create NPC
             </Button>
-            <Button>
+            <Button onClick={handleCreateCharacter}>
               <Plus className="h-4 w-4 mr-2" />
               Create Character
             </Button>
@@ -122,6 +157,15 @@ export function CharactersPage() {
       </SignedOut>
 
       <SignedIn>
+        {/* Sample Data Panel */}
+        <SampleDataPanel 
+          entityType="characters" 
+          onDataLoaded={() => {
+            // Refresh the page data
+            window.location.reload()
+          }} 
+        />
+
         {/* Tab Navigation */}
         <div className="flex items-center gap-4 mb-6">
           <div className="flex gap-1 bg-muted p-1 rounded-lg">
@@ -205,6 +249,15 @@ export function CharactersPage() {
           )}
         </div>
       </SignedIn>
+
+      <CharacterModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        mode={modalMode}
+        character={selectedCharacter}
+        characterType={characterType}
+        onSuccess={handleModalSuccess}
+      />
     </div>
   )
 } 

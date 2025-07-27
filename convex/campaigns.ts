@@ -1,21 +1,11 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { getCurrentUser, getCurrentUserId } from "./clerkService";
 
 // Helper function to check campaign permissions
 async function getCampaignAuth(ctx: any, campaignId: string) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) {
-    throw new Error("Not authenticated");
-  }
-
-  const user = await ctx.db
-    .query("users")
-    .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-    .first();
-
-  if (!user) {
-    throw new Error("User not found");
-  }
+  const user = await getCurrentUser(ctx);
+  const clerkId = await getCurrentUserId(ctx);
 
   const campaign = await ctx.db.get(campaignId);
   if (!campaign) {
@@ -23,8 +13,8 @@ async function getCampaignAuth(ctx: any, campaignId: string) {
   }
 
   const isAdmin = user.role === "admin";
-  const isDM = campaign.dmId === identity.subject;
-  const isPlayer = campaign.players?.includes(identity.subject) || false;
+  const isDM = campaign.dmId === clerkId;
+  const isPlayer = campaign.players ? campaign.players.includes(clerkId) : false;
 
   return {
     user,
@@ -54,20 +44,37 @@ export const getCampaignById = query({
 export const getMyCampaigns = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
+    try {
+      const clerkId = await getCurrentUserId(ctx);
+      
+      // Get campaigns where user is DM
+      const dmCampaigns = await ctx.db
+        .query("campaigns")
+        .filter((q) => q.eq(q.field("dmId"), clerkId))
+        .collect();
+      
+      // Get campaigns where user is a player
+      const playerCampaigns = await ctx.db
+        .query("campaigns")
+        .filter((q) => q.neq(q.field("players"), undefined))
+        .collect();
+      
+      // Filter player campaigns to only include those where the user is in the players array
+      const userPlayerCampaigns = playerCampaigns.filter(campaign => 
+        campaign.players && campaign.players.includes(clerkId)
+      );
+      
+      // Combine and deduplicate
+      const allCampaigns = [...dmCampaigns, ...userPlayerCampaigns];
+      const uniqueCampaigns = allCampaigns.filter((campaign, index, self) => 
+        index === self.findIndex(c => c._id === campaign._id)
+      );
+      
+      return uniqueCampaigns;
+    } catch (error) {
+      // Return empty array if not authenticated
       return [];
     }
-
-    return await ctx.db
-      .query("campaigns")
-      .filter((q) => 
-        q.or(
-          q.eq(q.field("dmId"), identity.subject),
-          q.eq(q.field("players"), identity.subject)
-        )
-      )
-      .collect();
   },
 });
 
@@ -79,24 +86,13 @@ export const createCampaign = mutation({
     isPublic: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await getCurrentUser(ctx);
+    const clerkId = await getCurrentUserId(ctx);
 
     const campaignId = await ctx.db.insert("campaigns", {
       ...args,
       creatorId: user._id,
-      dmId: identity.subject,
+      dmId: clerkId,
       startDate: Date.now(),
       createdAt: Date.now(),
     });
@@ -178,7 +174,7 @@ export const removePlayerFromCampaign = mutation({
     }
 
     const currentPlayers = auth.campaign.players || [];
-    const updatedPlayers = currentPlayers.filter(id => id !== args.playerClerkId);
+    const updatedPlayers = currentPlayers.filter((id: string) => id !== args.playerClerkId);
 
     await ctx.db.patch(args.campaignId, {
       players: updatedPlayers,

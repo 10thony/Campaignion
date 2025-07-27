@@ -1,0 +1,200 @@
+{
+  "version": "1.0.0",
+  "description": "Sample monsters from D&D Monster Manual",
+  "monsters": [
+    {
+      "name": "Goblin",
+      "size": "Small",
+      "type": "humanoid",
+      "challengeRating": "1/4",
+      "hitPoints": 7,
+      "armorClass": 15,
+      "speed": {
+        "walk": "30 ft."
+      },
+      "abilityModifiers": {
+        "strength": -1,
+        "dexterity": 2,
+        "constitution": 0,
+        "intelligence": 0,
+        "wisdom": 0,
+        "charisma": -1
+      }
+    },
+    {
+      "name": "Orc",
+      "size": "Medium",
+      "type": "humanoid",
+      "challengeRating": "1/2",
+      "hitPoints": 15,
+      "armorClass": 13,
+      "speed": {
+        "walk": "30 ft."
+      },
+      "abilityModifiers": {
+        "strength": 3,
+        "dexterity": 1,
+        "constitution": 3,
+        "intelligence": -2,
+        "wisdom": 1,
+        "charisma": 0
+      }
+    },
+    {
+      "name": "Owlbear",
+      "size": "Large",
+      "type": "monstrosity",
+      "challengeRating": "3",
+      "hitPoints": 59,
+      "armorClass": 13,
+      "speed": {
+        "walk": "40 ft."
+      },
+      "abilityModifiers": {
+        "strength": 4,
+        "dexterity": 1,
+        "constitution": 3,
+        "intelligence": -4,
+        "wisdom": 1,
+        "charisma": -2
+      }
+    },
+    {
+      "name": "Troll",
+      "size": "Large",
+      "type": "giant",
+      "challengeRating": "5",
+      "hitPoints": 84,
+      "armorClass": 15,
+      "speed": {
+        "walk": "30 ft."
+      },
+      "abilityModifiers": {
+        "strength": 4,
+        "dexterity": 1,
+        "constitution": 4,
+        "intelligence": -2,
+        "wisdom": 0,
+        "charisma": -2
+      },
+      "legendaryActions": [
+        {
+          "name": "Regeneration",
+          "description": "The troll regains 10 hit points at the start of its turn."
+        }
+      ]
+    },
+    {
+      "name": "Young Red Dragon",
+      "size": "Large",
+      "type": "dragon",
+      "challengeRating": "10",
+      "hitPoints": 178,
+      "armorClass": 18,
+      "speed": {
+        "walk": "40 ft.",
+        "fly": "80 ft."
+      },
+      "abilityModifiers": {
+        "strength": 5,
+        "dexterity": 0,
+        "constitution": 4,
+        "intelligence": 1,
+        "wisdom": 1,
+        "charisma": 3
+      },
+      "legendaryActions": [
+        {
+          "name": "Detect",
+          "description": "The dragon makes a Wisdom (Perception) check."
+        },
+        {
+          "name": "Tail Attack",
+          "description": "The dragon makes a tail attack."
+        },
+        {
+          "name": "Wing Attack",
+          "description": "The dragon beats its wings."
+        }
+      ]
+    },
+    {
+      "name": "Ancient Red Dragon",
+      "size": "Gargantuan",
+      "type": "dragon",
+      "challengeRating": "24",
+      "hitPoints": 546,
+      "armorClass": 22,
+      "speed": {
+        "walk": "40 ft.",
+        "fly": "80 ft."
+      },
+      "abilityModifiers": {
+        "strength": 10,
+        "dexterity": 0,
+        "constitution": 8,
+        "intelligence": 3,
+        "wisdom": 1,
+        "charisma": 4
+      },
+      "legendaryActions": [
+        {
+          "name": "Detect",
+          "description": "The dragon makes a Wisdom (Perception) check."
+        },
+        {
+          "name": "Tail Attack",
+          "description": "The dragon makes a tail attack."
+        },
+        {
+          "name": "Wing Attack",
+          "description": "The dragon beats its wings."
+        }
+      ]
+    },
+    {
+      "name": "Skeleton",
+      "size": "Medium",
+      "type": "undead",
+      "challengeRating": "1/4",
+      "hitPoints": 13,
+      "armorClass": 13,
+      "speed": {
+        "walk": "30 ft."
+      },
+      "abilityModifiers": {
+        "strength": 0,
+        "dexterity": 2,
+        "constitution": 3,
+        "intelligence": -4,
+        "wisdom": 0,
+        "charisma": -3
+      }
+    },
+    {
+      "name": "Beholder",
+      "size": "Large",
+      "type": "aberration",
+      "challengeRating": "13",
+      "hitPoints": 180,
+      "armorClass": 18,
+      "speed": {
+        "fly": "20 ft."
+      },
+      "abilityModifiers": {
+        "strength": 0,
+        "dexterity": 2,
+        "constitution": 4,
+        "intelligence": 3,
+        "wisdom": 2,
+        "charisma": 3
+      },
+      "legendaryActions": [
+        {
+          "name": "Eye Ray",
+          "description": "The beholder shoots one of its eye rays at a random target."
+        }
+      ]
+    }
+  ]
+} 

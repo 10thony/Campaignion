@@ -1,0 +1,389 @@
+{
+  "version": "1.0.0",
+  "description": "Sample actions for characters and monsters",
+  "generalActions": [
+    {
+      "name": "Attack",
+      "description": "Make a melee or ranged weapon attack",
+      "actionCost": "Action",
+      "type": "MELEE_ATTACK",
+      "requiresConcentration": false,
+      "sourceBook": "Player's Handbook",
+      "attackBonusAbilityScore": "strength",
+      "isProficient": true,
+      "damageRolls": [
+        {
+          "dice": { "count": 1, "type": "D8" },
+          "modifier": 0,
+          "damageType": "SLASHING"
+        }
+      ]
+    },
+    {
+      "name": "Dash",
+      "description": "Gain extra movement for the current turn",
+      "actionCost": "Action",
+      "type": "COMMONLY_AVAILABLE_UTILITY",
+      "requiresConcentration": false,
+      "sourceBook": "Player's Handbook"
+    },
+    {
+      "name": "Disengage",
+      "description": "Your movement doesn't provoke opportunity attacks for the rest of the turn",
+      "actionCost": "Action",
+      "type": "COMMONLY_AVAILABLE_UTILITY",
+      "requiresConcentration": false,
+      "sourceBook": "Player's Handbook"
+    },
+    {
+      "name": "Dodge",
+      "description": "Until the start of your next turn, any attack roll made against you has disadvantage",
+      "actionCost": "Action",
+      "type": "COMMONLY_AVAILABLE_UTILITY",
+      "requiresConcentration": false,
+      "sourceBook": "Player's Handbook"
+    },
+    {
+      "name": "Help",
+      "description": "You can lend your aid to another creature in the completion of a task",
+      "actionCost": "Action",
+      "type": "COMMONLY_AVAILABLE_UTILITY",
+      "requiresConcentration": false,
+      "sourceBook": "Player's Handbook"
+    },
+    {
+      "name": "Hide",
+      "description": "Make a Dexterity (Stealth) check in an attempt to hide",
+      "actionCost": "Action",
+      "type": "COMMONLY_AVAILABLE_UTILITY",
+      "requiresConcentration": false,
+      "sourceBook": "Player's Handbook"
+    },
+    {
+      "name": "Ready",
+      "description": "Choose an action and a trigger condition",
+      "actionCost": "Action",
+      "type": "COMMONLY_AVAILABLE_UTILITY",
+      "requiresConcentration": true,
+      "sourceBook": "Player's Handbook"
+    },
+    {
+      "name": "Search",
+      "description": "Devote your attention to finding something",
+      "actionCost": "Action",
+      "type": "COMMONLY_AVAILABLE_UTILITY",
+      "requiresConcentration": false,
+      "sourceBook": "Player's Handbook"
+    },
+    {
+      "name": "Use an Object",
+      "description": "You normally interact with an object while doing something else",
+      "actionCost": "Action",
+      "type": "COMMONLY_AVAILABLE_UTILITY",
+      "requiresConcentration": false,
+      "sourceBook": "Player's Handbook"
+    }
+  ],
+  "classActions": {
+    "Fighter": [
+      {
+        "name": "Second Wind",
+        "description": "You have a limited well of stamina that you can draw on to protect yourself from harm",
+        "actionCost": "Bonus Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Fighter",
+        "usesPer": "Short Rest",
+        "maxUses": 1
+      },
+      {
+        "name": "Action Surge",
+        "description": "You can push yourself beyond your normal limits for a moment",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Fighter",
+        "usesPer": "Short Rest",
+        "maxUses": 1
+      }
+    ],
+    "Wizard": [
+      {
+        "name": "Arcane Recovery",
+        "description": "You have learned to regain some of your magical energy by studying your spellbook",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Wizard",
+        "usesPer": "Long Rest",
+        "maxUses": 1
+      },
+      {
+        "name": "Ritual Casting",
+        "description": "You can cast a wizard spell as a ritual if that spell has the ritual tag",
+        "actionCost": "Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Wizard"
+      }
+    ],
+    "Cleric": [
+      {
+        "name": "Divine Domain",
+        "description": "Choose one domain related to your deity",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Cleric"
+      },
+      {
+        "name": "Channel Divinity",
+        "description": "You gain the ability to channel divine energy directly from your deity",
+        "actionCost": "Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Cleric",
+        "usesPer": "Short Rest",
+        "maxUses": 1
+      }
+    ],
+    "Rogue": [
+      {
+        "name": "Sneak Attack",
+        "description": "You know how to strike subtly and exploit a foe's distraction",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Rogue"
+      },
+      {
+        "name": "Cunning Action",
+        "description": "Your quick thinking and agility allow you to move and act quickly",
+        "actionCost": "Bonus Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Rogue"
+      }
+    ],
+    "Ranger": [
+      {
+        "name": "Favored Enemy",
+        "description": "You have significant experience studying, tracking, hunting, and even talking to a certain type of enemy",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Ranger"
+      },
+      {
+        "name": "Natural Explorer",
+        "description": "You are particularly familiar with one type of natural environment",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Ranger"
+      }
+    ],
+    "Paladin": [
+      {
+        "name": "Divine Sense",
+        "description": "The presence of strong evil registers on your senses like a noxious odor",
+        "actionCost": "Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Paladin",
+        "usesPer": "Long Rest",
+        "maxUses": 4
+      },
+      {
+        "name": "Lay on Hands",
+        "description": "Your blessed touch can heal wounds",
+        "actionCost": "Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Paladin"
+      }
+    ],
+    "Barbarian": [
+      {
+        "name": "Rage",
+        "description": "In battle, you fight with primal ferocity",
+        "actionCost": "Bonus Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Barbarian",
+        "usesPer": "Long Rest",
+        "maxUses": 2
+      },
+      {
+        "name": "Reckless Attack",
+        "description": "You can throw aside all concern for defense to attack with fierce desperation",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Barbarian"
+      }
+    ],
+    "Bard": [
+      {
+        "name": "Bardic Inspiration",
+        "description": "You can inspire others through stirring words or music",
+        "actionCost": "Bonus Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Bard",
+        "usesPer": "Long Rest",
+        "maxUses": 3
+      },
+      {
+        "name": "Song of Rest",
+        "description": "You can use soothing music or oration to help revitalize your wounded allies",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Bard"
+      }
+    ],
+    "Druid": [
+      {
+        "name": "Wild Shape",
+        "description": "You can use your action to magically assume the shape of a beast",
+        "actionCost": "Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Druid",
+        "usesPer": "Short Rest",
+        "maxUses": 2
+      },
+      {
+        "name": "Druidic",
+        "description": "You know Druidic, the secret language of druids",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Druid"
+      }
+    ],
+    "Monk": [
+      {
+        "name": "Unarmored Defense",
+        "description": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Wisdom modifier",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Monk"
+      },
+      {
+        "name": "Martial Arts",
+        "description": "Your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons",
+        "actionCost": "Bonus Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Monk"
+      }
+    ],
+    "Sorcerer": [
+      {
+        "name": "Sorcery Points",
+        "description": "You have 2 sorcery points, and you gain more as you reach higher levels",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Sorcerer"
+      },
+      {
+        "name": "Flexible Casting",
+        "description": "You can use your sorcery points to gain additional spell slots",
+        "actionCost": "Bonus Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Sorcerer"
+      }
+    ],
+    "Warlock": [
+      {
+        "name": "Pact Magic",
+        "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Warlock"
+      },
+      {
+        "name": "Eldritch Invocations",
+        "description": "In your study of occult lore, you have unearthed eldritch invocations",
+        "actionCost": "No Action",
+        "type": "CLASS_FEATURE",
+        "requiresConcentration": false,
+        "sourceBook": "Player's Handbook",
+        "className": "Warlock"
+      }
+    ]
+  },
+  "monsterActions": [
+    {
+      "name": "Multiattack",
+      "description": "The monster makes two melee attacks",
+      "actionCost": "Action",
+      "type": "OTHER",
+      "requiresConcentration": false,
+      "sourceBook": "Monster Manual"
+    },
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack",
+      "actionCost": "Action",
+      "type": "MELEE_ATTACK",
+      "requiresConcentration": false,
+      "sourceBook": "Monster Manual",
+      "attackBonusAbilityScore": "strength",
+      "isProficient": true,
+      "damageRolls": [
+        {
+          "dice": { "count": 1, "type": "D6" },
+          "modifier": 2,
+          "damageType": "PIERCING"
+        }
+      ]
+    },
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack",
+      "actionCost": "Action",
+      "type": "MELEE_ATTACK",
+      "requiresConcentration": false,
+      "sourceBook": "Monster Manual",
+      "attackBonusAbilityScore": "strength",
+      "isProficient": true,
+      "damageRolls": [
+        {
+          "dice": { "count": 1, "type": "D4" },
+          "modifier": 1,
+          "damageType": "SLASHING"
+        }
+      ]
+    }
+  ]
+} 

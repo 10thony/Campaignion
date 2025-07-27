@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useQuery } from 'convex/react'
 import { SignedIn, SignedOut } from '@clerk/clerk-react'
 import { CampaignCard } from '@/components/CampaignCard'
+import { CampaignModal } from '@/components/modals/CampaignModal'
+import { SampleDataPanel } from '@/components/SampleDataPanel'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus } from 'lucide-react'
@@ -10,16 +12,37 @@ import { api } from '../../convex/_generated/api'
 export function CampaignsPage() {
   const campaigns = useQuery(api.campaigns.getCampaigns)
   const myCampaigns = useQuery(api.campaigns.getMyCampaigns)
-  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create")
+  const [selectedCampaign, setSelectedCampaign] = useState<any>(null)
 
   const handleViewCampaign = (campaignId: string) => {
-    console.log('View campaign:', campaignId)
-    // TODO: Navigate to campaign detail page
+    const campaign = [...(myCampaigns || []), ...(campaigns || [])].find(c => c._id === campaignId)
+    if (campaign) {
+      setSelectedCampaign(campaign)
+      setModalMode("view")
+      setModalOpen(true)
+    }
   }
 
   const handleEditCampaign = (campaignId: string) => {
-    console.log('Edit campaign:', campaignId)
-    // TODO: Open edit modal or navigate to edit page
+    const campaign = myCampaigns?.find(c => c._id === campaignId)
+    if (campaign) {
+      setSelectedCampaign(campaign)
+      setModalMode("edit")
+      setModalOpen(true)
+    }
+  }
+
+  const handleCreateCampaign = () => {
+    setSelectedCampaign(null)
+    setModalMode("create")
+    setModalOpen(true)
+  }
+
+  const handleModalSuccess = () => {
+    // Modal will close itself, this is called after successful creation/edit
+    // The queries will automatically refetch due to Convex reactivity
   }
 
   return (
@@ -33,7 +56,7 @@ export function CampaignsPage() {
         </div>
         
         <SignedIn>
-          <Button onClick={() => setShowCreateModal(true)}>
+          <Button onClick={handleCreateCampaign}>
             <Plus className="h-4 w-4 mr-2" />
             Create Campaign
           </Button>
@@ -54,6 +77,15 @@ export function CampaignsPage() {
       </SignedOut>
 
       <SignedIn>
+        {/* Sample Data Panel */}
+        <SampleDataPanel 
+          entityType="campaigns" 
+          onDataLoaded={() => {
+            // Refresh the page data
+            window.location.reload()
+          }} 
+        />
+
         {/* My Campaigns Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">My Campaigns</h2>
@@ -69,7 +101,7 @@ export function CampaignsPage() {
                 <p className="text-muted-foreground mb-4">
                   You haven't created any campaigns yet.
                 </p>
-                <Button onClick={() => setShowCreateModal(true)}>
+                <Button onClick={handleCreateCampaign}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create Your First Campaign
                 </Button>
@@ -125,6 +157,14 @@ export function CampaignsPage() {
           )}
         </div>
       </SignedIn>
+
+      <CampaignModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        mode={modalMode}
+        campaign={selectedCampaign}
+        onSuccess={handleModalSuccess}
+      />
     </div>
   )
 } 

@@ -15,9 +15,11 @@ import type {
 } from "convex/server";
 import type * as campaigns from "../campaigns.js";
 import type * as characters from "../characters.js";
+import type * as clerkService from "../clerkService.js";
 import type * as items from "../items.js";
 import type * as monsters from "../monsters.js";
 import type * as quests from "../quests.js";
+import type * as sampleData from "../sampleData.js";
 import type * as users from "../users.js";
 
 /**
@@ -31,9 +33,11 @@ import type * as users from "../users.js";
 declare const fullApi: ApiFromModules<{
   campaigns: typeof campaigns;
   characters: typeof characters;
+  clerkService: typeof clerkService;
   items: typeof items;
   monsters: typeof monsters;
   quests: typeof quests;
+  sampleData: typeof sampleData;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

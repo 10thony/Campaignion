@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "description": "Sample D&D campaigns for testing and demonstration",
+  "campaigns": [
+    {
+      "name": "The Lost Mines of Phandelver",
+      "description": "A classic adventure for new players and DMs. Set in the Sword Coast region of the Forgotten Realms, this adventure takes characters from level 1 to 5 as they investigate the disappearance of a dwarf named Gundren Rockseeker.",
+      "worldSetting": "Forgotten Realms",
+      "isPublic": true
+    },
+    {
+      "name": "Curse of Strahd",
+      "description": "A gothic horror adventure in the land of Barovia. The characters are trapped in a realm ruled by the vampire lord Strahd von Zarovich, and must find a way to escape while confronting the darkness within.",
+      "worldSetting": "Ravenloft",
+      "isPublic": true
+    },
+    {
+      "name": "Tomb of Annihilation",
+      "description": "Adventure in the steaming jungles of Chult to find the cause of a death curse that is affecting the entire world. Explore ancient ruins and face deadly traps in this challenging adventure.",
+      "worldSetting": "Forgotten Realms",
+      "isPublic": true
+    },
+    {
+      "name": "Waterdeep: Dragon Heist",
+      "description": "A caper adventure set in the city of Waterdeep. The characters become embroiled in a conspiracy involving missing gold and must navigate the politics and dangers of the City of Splendors.",
+      "worldSetting": "Forgotten Realms",
+      "isPublic": true
+    },
+    {
+      "name": "Custom Homebrew Campaign",
+      "description": "A completely custom campaign set in a homebrew world where magic has recently returned after being absent for centuries.",
+      "worldSetting": "Aethermoor",
+      "isPublic": false
+    }
+  ]
+} 

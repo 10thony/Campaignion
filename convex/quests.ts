@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { getCurrentUser } from "./clerkService";
 
 export const getQuests = query({
   args: {},
@@ -28,24 +29,17 @@ export const getQuestsByCampaign = query({
 export const getMyQuests = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
+    try {
+      const user = await getCurrentUser(ctx);
+      
+      return await ctx.db
+        .query("quests")
+        .filter((q) => q.eq(q.field("creatorId"), user._id))
+        .collect();
+    } catch (error) {
+      // Return empty array if not authenticated
       return [];
     }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      return [];
-    }
-
-    return await ctx.db
-      .query("quests")
-      .filter((q) => q.eq(q.field("creatorId"), user._id))
-      .collect();
   },
 });
 
@@ -81,19 +75,7 @@ export const createQuest = mutation({
     })),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await getCurrentUser(ctx);
 
     // If quest is assigned to a campaign, check permissions
     if (args.campaignId) {
@@ -102,7 +84,7 @@ export const createQuest = mutation({
         throw new Error("Campaign not found");
       }
 
-      const isDM = campaign.dmId === identity.subject;
+      const isDM = campaign.dmId === user.clerkId;
       const isAdmin = user.role === "admin";
 
       if (!isDM && !isAdmin) {
@@ -149,19 +131,7 @@ export const createQuestTask = mutation({
     requiredItemIds: v.optional(v.array(v.id("items"))),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await getCurrentUser(ctx);
 
     const quest = await ctx.db.get(args.questId);
     if (!quest) {
@@ -173,7 +143,7 @@ export const createQuestTask = mutation({
 
     if (quest.campaignId && !canCreate) {
       const campaign = await ctx.db.get(quest.campaignId);
-      if (campaign && campaign.dmId === identity.subject) {
+      if (campaign && campaign.dmId === user.clerkId) {
         canCreate = true;
       }
     }
@@ -215,7 +185,7 @@ export const updateQuestStatus = mutation({
     questId: v.id("quests"),
     status: v.union(
       v.literal("idle"),
-      v.literal("in_progress"), 
+      v.literal("in_progress"),
       v.literal("completed"),
       v.literal("NotStarted"),
       v.literal("InProgress"),
@@ -223,23 +193,11 @@ export const updateQuestStatus = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
+    const user = await getCurrentUser(ctx);
 
     const quest = await ctx.db.get(args.questId);
     if (!quest) {
       throw new Error("Quest not found");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
     }
 
     // Check permissions
@@ -247,7 +205,7 @@ export const updateQuestStatus = mutation({
 
     if (quest.campaignId && !canUpdate) {
       const campaign = await ctx.db.get(quest.campaignId);
-      if (campaign && campaign.dmId === identity.subject) {
+      if (campaign && campaign.dmId === user.clerkId) {
         canUpdate = true;
       }
     }
@@ -280,10 +238,7 @@ export const updateTaskStatus = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
+    const user = await getCurrentUser(ctx);
 
     const task = await ctx.db.get(args.taskId);
     if (!task) {
@@ -295,21 +250,12 @@ export const updateTaskStatus = mutation({
       throw new Error("Quest not found");
     }
 
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
     // Check permissions
     let canUpdate = quest.creatorId === user._id || user.role === "admin";
 
     if (quest.campaignId && !canUpdate) {
       const campaign = await ctx.db.get(quest.campaignId);
-      if (campaign && campaign.dmId === identity.subject) {
+      if (campaign && campaign.dmId === user.clerkId) {
         canUpdate = true;
       }
     }
@@ -354,23 +300,11 @@ export const updateTaskStatus = mutation({
 export const deleteQuest = mutation({
   args: { questId: v.id("quests") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
+    const user = await getCurrentUser(ctx);
 
     const quest = await ctx.db.get(args.questId);
     if (!quest) {
       throw new Error("Quest not found");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
     }
 
     // Check permissions
@@ -378,7 +312,7 @@ export const deleteQuest = mutation({
 
     if (quest.campaignId && !canDelete) {
       const campaign = await ctx.db.get(quest.campaignId);
-      if (campaign && campaign.dmId === identity.subject) {
+      if (campaign && campaign.dmId === user.clerkId) {
         canDelete = true;
       }
     }

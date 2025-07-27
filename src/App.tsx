@@ -7,10 +7,12 @@ import { MonstersPage } from './pages/MonstersPage'
 import { CharactersPage } from './pages/CharactersPage'
 import { QuestsPage } from './pages/QuestsPage'
 import { ItemsPage } from './pages/ItemsPage'
+import { useSyncUser } from './lib/clerkService';
+
 
 type Page = 'home' | 'campaigns' | 'characters' | 'monsters' | 'quests' | 'items' | 'locations' | 'maps'
 
-function App() {
+function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('home')
 
   const renderPage = () => {
@@ -25,6 +27,7 @@ function App() {
         return <QuestsPage />
       case 'items':
         return <ItemsPage />
+
       case 'locations':
         return <div className="container mx-auto py-6"><h1 className="text-3xl font-bold">Locations (Coming Soon)</h1></div>
       case 'maps':
@@ -174,6 +177,8 @@ function App() {
                       {page}
                     </Button>
                   ))}
+                  
+
                 </div>
                 <UserButton />
               </div>
@@ -195,6 +200,11 @@ function App() {
       </main>
     </div>
   )
+}
+
+function App() {
+  useSyncUser();
+  return <AppContent />
 }
 
 export default App 

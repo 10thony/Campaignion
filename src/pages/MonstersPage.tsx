@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useQuery } from 'convex/react'
 import { SignedIn, SignedOut } from '@clerk/clerk-react'
 import { MonsterCard } from '@/components/MonsterCard'
+import { MonsterModal } from '@/components/modals/MonsterModal'
+import { SampleDataPanel } from '@/components/SampleDataPanel'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -13,6 +15,9 @@ export function MonstersPage() {
   const monsters = useQuery(api.monsters.getMonsters)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCR, setSelectedCR] = useState<string>('')
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create")
+  const [selectedMonster, setSelectedMonster] = useState<any>(null)
 
   const filteredMonsters = monsters?.filter(monster => {
     const matchesSearch = monster.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -25,13 +30,32 @@ export function MonstersPage() {
                            '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30']
 
   const handleViewMonster = (monsterId: string) => {
-    console.log('View monster:', monsterId)
-    // TODO: Navigate to monster detail page
+    const monster = monsters?.find(m => m._id === monsterId)
+    if (monster) {
+      setSelectedMonster(monster)
+      setModalMode("view")
+      setModalOpen(true)
+    }
   }
 
   const handleEditMonster = (monsterId: string) => {
-    console.log('Edit monster:', monsterId)
-    // TODO: Open edit modal or navigate to edit page
+    const monster = monsters?.find(m => m._id === monsterId)
+    if (monster) {
+      setSelectedMonster(monster)
+      setModalMode("edit")
+      setModalOpen(true)
+    }
+  }
+
+  const handleCreateMonster = () => {
+    setSelectedMonster(null)
+    setModalMode("create")
+    setModalOpen(true)
+  }
+
+  const handleModalSuccess = () => {
+    // Modal will close itself, this is called after successful creation/edit
+    // The queries will automatically refetch due to Convex reactivity
   }
 
   return (
@@ -45,7 +69,7 @@ export function MonstersPage() {
         </div>
         
         <SignedIn>
-          <Button>
+          <Button onClick={handleCreateMonster}>
             <Plus className="h-4 w-4 mr-2" />
             Create Monster
           </Button>
@@ -66,6 +90,15 @@ export function MonstersPage() {
       </SignedOut>
 
       <SignedIn>
+        {/* Sample Data Panel */}
+        <SampleDataPanel 
+          entityType="monsters" 
+          onDataLoaded={() => {
+            // Refresh the page data
+            window.location.reload()
+          }} 
+        />
+
         {/* Search and Filter Controls */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
@@ -115,7 +148,7 @@ export function MonstersPage() {
                   : 'No monsters available. Create your first monster!'}
               </p>
               {(!searchTerm && !selectedCR) && (
-                <Button>
+                <Button onClick={handleCreateMonster}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create Monster
                 </Button>
@@ -175,6 +208,14 @@ export function MonstersPage() {
           </div>
         )}
       </SignedIn>
+
+      <MonsterModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        mode={modalMode}
+        monster={selectedMonster}
+        onSuccess={handleModalSuccess}
+      />
     </div>
   )
 } 

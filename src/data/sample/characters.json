@@ -1,0 +1,152 @@
+{
+  "version": "1.0.0",
+  "description": "Sample player characters and NPCs",
+  "playerCharacters": [
+    {
+      "name": "Thorin Ironfist",
+      "race": "Dwarf",
+      "class": "Fighter",
+      "level": 5,
+      "hitPoints": 45,
+      "armorClass": 18,
+      "characterType": "PlayerCharacter",
+      "abilityModifiers": {
+        "strength": 3,
+        "dexterity": 1,
+        "constitution": 2,
+        "intelligence": 0,
+        "wisdom": 1,
+        "charisma": -1
+      },
+      "experiencePoints": 6500,
+      "proficiencyBonus": 3
+    },
+    {
+      "name": "Elara Moonwhisper",
+      "race": "Elf",
+      "class": "Wizard",
+      "level": 4,
+      "hitPoints": 24,
+      "armorClass": 12,
+      "characterType": "PlayerCharacter",
+      "abilityModifiers": {
+        "strength": -1,
+        "dexterity": 2,
+        "constitution": 1,
+        "intelligence": 4,
+        "wisdom": 2,
+        "charisma": 0
+      },
+      "experiencePoints": 2700,
+      "proficiencyBonus": 2
+    },
+    {
+      "name": "Brother Marcus",
+      "race": "Human",
+      "class": "Cleric",
+      "level": 3,
+      "hitPoints": 30,
+      "armorClass": 16,
+      "characterType": "PlayerCharacter",
+      "abilityModifiers": {
+        "strength": 1,
+        "dexterity": 0,
+        "constitution": 2,
+        "intelligence": 1,
+        "wisdom": 3,
+        "charisma": 2
+      },
+      "experiencePoints": 900,
+      "proficiencyBonus": 2
+    },
+    {
+      "name": "Whisper",
+      "race": "Halfling",
+      "class": "Rogue",
+      "level": 6,
+      "hitPoints": 38,
+      "armorClass": 15,
+      "characterType": "PlayerCharacter",
+      "abilityModifiers": {
+        "strength": 0,
+        "dexterity": 4,
+        "constitution": 1,
+        "intelligence": 2,
+        "wisdom": 1,
+        "charisma": 3
+      },
+      "experiencePoints": 14000,
+      "proficiencyBonus": 3
+    }
+  ],
+  "npcs": [
+    {
+      "name": "Gundren Rockseeker",
+      "race": "Dwarf",
+      "class": "Fighter",
+      "level": 3,
+      "hitPoints": 30,
+      "armorClass": 16,
+      "characterType": "NonPlayerCharacter",
+      "abilityModifiers": {
+        "strength": 2,
+        "dexterity": 0,
+        "constitution": 2,
+        "intelligence": 1,
+        "wisdom": 0,
+        "charisma": 1
+      }
+    },
+    {
+      "name": "Sister Garaele",
+      "race": "Half-Elf",
+      "class": "Cleric",
+      "level": 4,
+      "hitPoints": 32,
+      "armorClass": 15,
+      "characterType": "NonPlayerCharacter",
+      "abilityModifiers": {
+        "strength": 0,
+        "dexterity": 1,
+        "constitution": 1,
+        "intelligence": 2,
+        "wisdom": 3,
+        "charisma": 2
+      }
+    },
+    {
+      "name": "Toblen Stonehill",
+      "race": "Human",
+      "class": "Commoner",
+      "level": 1,
+      "hitPoints": 8,
+      "armorClass": 10,
+      "characterType": "NonPlayerCharacter",
+      "abilityModifiers": {
+        "strength": 0,
+        "dexterity": 0,
+        "constitution": 0,
+        "intelligence": 0,
+        "wisdom": 0,
+        "charisma": 1
+      }
+    },
+    {
+      "name": "Sildar Hallwinter",
+      "race": "Human",
+      "class": "Fighter",
+      "level": 5,
+      "hitPoints": 45,
+      "armorClass": 17,
+      "characterType": "NonPlayerCharacter",
+      "abilityModifiers": {
+        "strength": 2,
+        "dexterity": 1,
+        "constitution": 2,
+        "intelligence": 1,
+        "wisdom": 2,
+        "charisma": 1
+      }
+    }
+  ]
+} 

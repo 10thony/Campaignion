@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
+import { getCurrentUser } from "./clerkService";
 
 export const getItems = query({
   args: {},
@@ -18,24 +19,17 @@ export const getItemById = query({
 export const getMyItems = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
+    try {
+      const user = await getCurrentUser(ctx);
+      
+      return await ctx.db
+        .query("items")
+        .filter((q) => q.eq(q.field("userId"), user._id))
+        .collect();
+    } catch (error) {
+      // Return empty array if not authenticated
       return [];
     }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      return [];
-    }
-
-    return await ctx.db
-      .query("items")
-      .filter((q) => q.eq(q.field("userId"), user._id))
-      .collect();
   },
 });
 
@@ -88,19 +82,7 @@ export const createItem = mutation({
     }))),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await getCurrentUser(ctx);
 
     const itemId = await ctx.db.insert("items", {
       ...args,
@@ -163,23 +145,11 @@ export const updateItem = mutation({
 export const deleteItem = mutation({
   args: { itemId: v.id("items") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
+    const user = await getCurrentUser(ctx);
 
     const item = await ctx.db.get(args.itemId);
     if (!item) {
       throw new Error("Item not found");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .filter((q) => q.eq(q.field("clerkId"), identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
     }
 
     // Check permissions
