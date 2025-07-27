@@ -1,0 +1,187 @@
+This is a DND 5e CRUD MVP web application that supports user generated content.
+
+ All generated code, components, queries, mutations, and types must:
+
+• Use React + TypeScript
+• Use TanStack (React Query, React Table)
+• Use Convex for database & server functions
+• Use ShadCN/UI primitives for styling
+• Use Clerk for authentication & roles
+• Honor official D&D 5e rulings
+
+––––––––––––––––––––––––––––––––––––––––––––––
+0. AUTHENTICATION & AUTHORIZATION
+
+0.1 Clerk Integration
+• Wrap app in <ClerkProvider>; use <SignedIn>, <SignedOut>, useUser() and useAuth() hooks.
+• All creation/edit forms require authentication.
+• List pages are public: if not signed in, UI components render in read-only mode automatically (disable buttons/inputs).
+
+0.2 Global Roles
+• Base roles (from users.role):
+– “user”: standard
+– “admin”: can CREATE/READ/UPDATE/DELETE any object across campaigns
+• Campaign-level roles (from campaigns.dmId and campaigns.players):
+– Campaign Master (CM) = dmId (ClerkId)
+– Player (PC) = entries in players (array of ClerkIds)
+• Authorization rules:
+– Only CMs and admins may LINK any object to a campaign or manage its sub-resources (monsters, NPCs, items, quests, locations, maps).
+– PCs may CRUD their own PlayerCharacters (and view all campaign data read-only).
+– Any authenticated user may CREATE standalone objects (e.g. monsters, items) but only CMs can attach them to a campaign.
+
+––––––––––––––––––––––––––––––––––––––––––––––
+
+
+1. PURPOSE & SCOPE
+1.1 Manage Campaigns and all related sub-resources:
+• Monsters (CR 0–30, boss variants with legendary & lair actions)
+• Items & Inventory (weapons, armor, consumables; weight & capacity)
+• Player Characters & NPCs (friendly & hostile; level scaling)
+• Initiative & Combat mechanics
+• Travel & Exploration rules
+• Quests & Quest Tasks (status, dependencies, rewards)
+• Locations & Maps (grid cells, terrain, occupancy)
+• Home-brew Content (actions, spells, abilities, traits)
+
+––––––––––––––––––––––––––––––––––––––––––––––
+2. D&D 5E RULING GUIDELINES
+
+2.1 Monsters
+• challengeRatingValue: number (0–30) ↔ XP yield
+• Hit Points = HD count × die + Con mod × count
+• Boss monsters: legendaryActionCount, lairActionCount fields
+• Compute ability modifiers server-side:
+\(\text{mod} = \lfloor(\text{score} - 10)/2\rfloor\)
+
+2.2 Items & Inventory
+• Weapons: damageRolls[], damageType, weaponProperties: string[] (finesse, versatile, etc.)
+• Armor: armorClass, typeOfArmor (“Light”/“Medium”/“Heavy”/“Shield”)
+• Inventory entries include quantity, enforce total weight ≤ capacity
+
+2.3 Characters & NPCs
+• Six ability scores + derived modifiers + proficiency bonus (by level)
+• Skills, saving throws arrays
+• NPCs mirror monsters’ stats without CR
+
+2.4 Combat & Initiative
+• Initiative = d20 + Dex mod + optional class/feat bonus
+• Track order in initiativeOrder[] and currentInitiativeIndex
+
+2.5 Travel & Exploration
+• Speed field (e.g. “30 ft.”), terrain effects from map cells
+• Rest mechanics beyond CRUD scope
+
+2.6 Quests & Tasks
+• Quest statuses: idle, in_progress, completed, failed
+• Task types: Fetch, Kill, Speak, Explore, Puzzle, Deliver, Escort, Custom
+• Support dependencies via dependsOn[]
+
+2.7 Locations & Maps
+• Grid cells: inbounds/outbounds/occupied, optional terrain, terrainModifier, occupant
+
+2.8 Home-brew Content
+• Actions, Spells, Class Features stored in generic tables, with full CRUD
+
+––––––––––––––––––––––––––––––––––––––––––––––
+3. DATA MODELING & SCHEMA ENHANCEMENTS
+
+3.1 Use the provided Convex schema as the source of truth.
+
+3.2 Proposed Enhancements:
+• Monsters: add
+– challengeRatingValue: number
+– legendaryActionCount: number
+– lairActionCount: number
+• Inventory objects: add quantity: number
+• Characters/NPCs: add isArchived: boolean for soft deletes
+• Computed server-side fields:
+– abilityModifiers object (all six mods)
+– totalArmorClass = 10 + Dex mod + equipmentBonuses.armorClass
+
+––––––––––––––––––––––––––––––––––––––––––––––
+4. UI COMPONENTS & ROUTING
+
+4.1 Layout & Auth Wrapping
+• <ClerkProvider> at root, <SignedIn> around forms, <SignedOut> for public read-only views
+
+4.2 Card + Modal Pattern
+• List pages render a grid/list of ShadCN Card components showing:
+– Monsters: Name, CR, HP (current/max), AC, Speed, key ability mods (Str, Dex, Con)
+– PCs/NPCs: Name, Level, HP, AC, Speed, Dex mod, Portrait imageUrl
+– Items: Name, Type, Rarity, Weight, Quantity
+– Quests: Name, Status, XP reward
+– Locations: Name, Type, Map preview thumbnail
+• Clicking a card opens a ShadCN Modal:
+– readOnly mode if viewer ≠ creator & not admin/CM
+– edit mode if viewer = creator or admin/CM
+– Disable save/delete buttons in readOnly
+
+4.3 Page & Component Inventory
+A) Campaigns
+– CampaignListPage (public read-only list + admin CM buttons)
+– CampaignCard (Name, DM name, isPublic flag)
+– CampaignModal (details + tabs: Monsters, Items, Characters, Quests, Locations)
+
+B) Monsters
+– MonsterListPage → MonsterCard
+– MonsterModal / MonsterForm (stats, actions, legendary/lair)
+
+C) Items & Inventory
+– ItemListPage → ItemCard
+– ItemModal / ItemForm
+– InventoryPanel component (list of cards + quantity controls)
+
+D) Characters & NPCs
+– CharacterListPage → CharacterCard
+– CharacterModal / CharacterForm
+– NPCListPage → NPCCard / Modal
+
+E) Quests & Tasks
+– QuestListPage → QuestCard
+– QuestModal (QuestDetail tab + TaskList subcomponent)
+– TaskRow component with dependency manager
+
+F) Locations & Maps
+– LocationListPage → LocationCard
+– LocationModal / LocationForm
+– MapEditorModal: interactive grid using Canvas or HTML elements
+
+4.4 Routing (TanStack Router)
+• /campaigns
+• /campaigns/:campaignId
+• /campaigns/:campaignId/monsters
+• … etc., nested under a CampaignLayout
+
+––––––––––––––––––––––––––––––––––––––––––––––
+5. DB & SERVER (CONVEX)
+
+5.1 Authentication Wrappers
+• requireAuth() in mutations; requireAdmin() when needed; assertCampaignMaster(campaignId)
+
+5.2 Queries (public)
+• getCampaigns(), getCampaignById(id)
+• getMonstersByCampaign(campaignId), getMonster(id)
+• … same pattern for Items, Characters, NPCs, Quests, Tasks, Locations, Maps
+
+5.3 Mutations (auth-protected)
+• createCampaign(input), updateCampaign(id,input), deleteCampaign(id)
+• createMonster(input), updateMonster(id,input), deleteMonster(id)
+• … similarly for all entities
+
+5.4 Server-Side Logic
+• Enforce D&D rules on input (CR range, valid ability scores)
+• Compute derived fields (mods, AC, proficiency bonus by level)
+• Enforce referential integrity (campaignId, userId exist)
+
+––––––––––––––––––––––––––––––––––––––––––––––
+6. TYPE-SAFE INTEGRATION & WORKFLOW
+
+• Use Convex-generated TypeScript types for props & hook generics
+• Fetch data with Convex React hooks + TanStack Query caching
+• Render tables with TanStack Table, forms with ShadCN primitives
+• Handle loading, error, empty states consistently
+• Follow ShadCN/UI theming & accessibility guidelines
+
+––––––––––––––––––––––––––––––––––––––––––––––
+Binding Contract:
+Every generated artifact must reference the schema (and enhancements above), respect D&D 5e rulings, enforce auth & roles as specified, and fit within the tanstack-react-typescript-convex-shadcn-clerk MVP architecture.
