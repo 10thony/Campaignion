@@ -7,6 +7,7 @@ import { MonstersPage } from './pages/MonstersPage'
 import { CharactersPage } from './pages/CharactersPage'
 import { QuestsPage } from './pages/QuestsPage'
 import { ItemsPage } from './pages/ItemsPage'
+import { MapsPage } from './pages/MapsPage'
 import { useSyncUser } from './lib/clerkService';
 
 
@@ -27,11 +28,11 @@ function AppContent() {
         return <QuestsPage />
       case 'items':
         return <ItemsPage />
+      case 'maps':
+        return <MapsPage />
 
       case 'locations':
         return <div className="container mx-auto py-6"><h1 className="text-3xl font-bold">Locations (Coming Soon)</h1></div>
-      case 'maps':
-        return <div className="container mx-auto py-6"><h1 className="text-3xl font-bold">Maps (Coming Soon)</h1></div>
       default:
         return (
           <>
@@ -166,7 +167,7 @@ function AppContent() {
             <SignedIn>
               <div className="flex items-center space-x-4">
                 <div className="hidden md:flex space-x-2">
-                  {(['campaigns', 'monsters', 'characters', 'quests', 'items'] as const).map((page) => (
+                  {(['campaigns', 'monsters', 'characters', 'quests', 'items', 'maps'] as const).map((page) => (
                     <Button
                       key={page}
                       variant={currentPage === page ? 'default' : 'ghost'}

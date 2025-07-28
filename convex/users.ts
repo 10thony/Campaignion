@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
-import { getCurrentUser as getCurrentUserFromClerk, upsertUser } from "./clerkService";
+import { getCurrentUser as getCurrentUserFromClerk, upsertUser as upsertUserFromClerk } from "./clerkService";
 
 export const createUser = mutation({
   args: {
@@ -79,7 +79,11 @@ export const getCurrentUser = query({
     try {
       return await getCurrentUserFromClerk(ctx);
     } catch (error) {
+      // Log the error for debugging
+      console.error('getCurrentUser error:', error);
+      
       // Return null if user is not authenticated or not found
+      // This allows the frontend to handle the error gracefully
       return null;
     }
   },

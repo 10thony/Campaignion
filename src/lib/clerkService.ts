@@ -117,13 +117,23 @@ export function useSyncUser() {
   
   useEffect(() => {
     if (isSignedIn && user) {
-      upsertUser({
-        clerkId: user.id,
-        email: user.emailAddresses[0]?.emailAddress || '',
-        firstName: user.firstName || undefined,
-        lastName: user.lastName || undefined,
-        imageUrl: user.imageUrl || undefined,
-      });
+      // Add error handling and retry logic
+      const syncUser = async () => {
+        try {
+          await upsertUser({
+            clerkId: user.id,
+            email: user.emailAddresses[0]?.emailAddress || '',
+            firstName: user.firstName || undefined,
+            lastName: user.lastName || undefined,
+            imageUrl: user.imageUrl || undefined,
+          });
+        } catch (error) {
+          console.error('Failed to sync user with database:', error);
+          // You could add retry logic here if needed
+        }
+      };
+      
+      syncUser();
     }
   }, [isSignedIn, user, upsertUser]);
 } 

@@ -423,6 +423,7 @@ export default defineSchema({
       })
     ),
     createdBy: v.id("users"),
+    clerkId: v.optional(v.string()), // Make optional for backward compatibility
     createdAt: v.number(),
     updatedAt: v.number(),
   }),
@@ -1043,6 +1044,7 @@ export default defineSchema({
       })
     ),
     createdBy: v.id("users"),
+    clerkId: v.optional(v.string()), // Make optional for backward compatibility
     createdAt: v.number(),
     updatedAt: v.number(),
   }),
