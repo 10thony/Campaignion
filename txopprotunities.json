@@ -1,0 +1,1617 @@
+{
+    "opportunities": [
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "I-35 Capital Express South",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Texas Department of Transportation",
+          "level": "State"
+        },
+        "location": {
+          "city": "Austin",
+          "county": "Travis",
+          "region": "Austin-San Antonio"
+        },
+        "status": "In Progress",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Fluor Breaks Ground on I-35 Capital Express South Project in Austin, Texas",
+          "url": "https://acppubs.com/TXC/article/54020EE1-fluor-breaks-ground-on-i-35-capital-express-south-project-in-austin-texas"
+        },
+        "summary": "Project to relieve traffic congestion and improve mobility and safety on Interstate 35. Substantial completion is anticipated in early 2028.",
+        "primeContractor": "Fluor Corporation"
+      },
+      {
+        "opportunityType": "Private Subcontract",
+        "opportunityTitle": "Subcontracting for I-35 Capital Express South Project",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Fluor Corporation",
+          "level": "Private"
+        },
+        "location": {
+          "city": "Austin",
+          "county": "Travis",
+          "region": "Austin-San Antonio"
+        },
+        "status": "Seeking Subcontractors",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2025-06-01",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-15"
+        },
+        "source": {
+          "documentName": "Fluor Breaks Ground on I-35 Capital Express South Project in Austin, Texas",
+          "url": "https://acppubs.com/TXC/article/54020EE1-fluor-breaks-ground-on-i-35-capital-express-south-project-in-austin-texas"
+        },
+        "summary": "Subcontracting opportunities for the I-35 Capital Express South project. Fluor is the prime contractor."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Liberty Hill Bypass East Construction",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Williamson County",
+          "level": "County"
+        },
+        "location": {
+          "city": "Liberty Hill",
+          "county": "Williamson",
+          "region": "Austin-San Antonio"
+        },
+        "status": "In Design",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-15"
+        },
+        "source": {
+          "documentName": "Liberty Hill Bypass East | Williamson County, TX",
+          "url": "https://www.wilcotx.gov/1552/Liberty-Hill-Bypass-East"
+        },
+        "summary": "Design and construction of two lanes of the new Liberty Hill Bypass from Bagdad Road to SH 29. Construction is expected to begin in early 2026."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "CR 279 / Bagdad Road Reconstruction",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Williamson County",
+          "level": "County"
+        },
+        "location": {
+          "city": "Leander",
+          "county": "Williamson",
+          "region": "Austin-San Antonio"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-03-20"
+        },
+        "source": {
+          "documentName": "CR 279 / Bagdad Road (Loop 332 to CR 281 / Leander City Limits)",
+          "url": "https://www.wilcotx.gov/818/CR-279-Bagdad-Road-Loop-332-to-CR-281-Le"
+        },
+        "summary": "Reconstruction of a two-lane road to a three-lane roadway with a center turn lane and shoulders. Road construction is expected to begin in spring 2026."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "SH 195 at Ronald Reagan Boulevard Ramps (Phase 2)",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Williamson County",
+          "level": "County"
+        },
+        "location": {
+          "city": null,
+          "county": "Williamson",
+          "region": "Austin-San Antonio"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2027-01-15"
+        },
+        "source": {
+          "documentName": "SH 195 at Ronald Reagan Boulevard",
+          "url": "https://www.wilcotx.gov/831/SH-195-at-Ronald-Reagan-Boulevard"
+        },
+        "summary": "Design and construction of southbound Ronald Reagan exit and entrance ramps to and from SH 195, along with an additional northbound entrance ramp. Construction is anticipated to begin in early 2027."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Wastewater Line Renewal and Spot Rehab Service IDIQ (2026-2028)",
+        "contractID": "IFB 6100 CLMC1127",
+        "issuingBody": {
+          "name": "City of Austin",
+          "level": "City"
+        },
+        "location": {
+          "city": "Austin",
+          "county": "Travis",
+          "region": "Austin-San Antonio"
+        },
+        "status": "Open for Bidding",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": "2025-07-24",
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Active Solicitations - Austin Finance Online",
+          "url": "https://financeonline.austintexas.gov/afo/account_services/solicitation/solicitations.cfm"
+        },
+        "summary": "An as-needed contract for the repair and replacement of deteriorated wastewater mains throughout the city, including emergency repairs."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "East Water Purification Plant Overhaul",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of Houston",
+          "level": "City"
+        },
+        "location": {
+          "city": "Houston",
+          "county": "Harris",
+          "region": "Houston"
+        },
+        "status": "Budgeted for FY2026",
+        "estimatedValueUSD": 2100000000,
+        "keyDates": {
+          "publishedDate": "2025-06-25",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-07-01"
+        },
+        "source": {
+          "documentName": "Houston City Council approves $16.7 billion capital improvement plan",
+          "url": "https://www.houstonpublicmedia.org/articles/news/city-of-houston/2025/06/25/524914/houston-city-council-approves-16-7-billion-capital-improvement-plan-with-amendments/"
+        },
+        "summary": "A multi-billion dollar project to overhaul the critical East Water Purification Plant, which is at risk of failure. Part of the FY2026-2030 Capital Improvement Plan."
+      },
+      {
+        "opportunityType": "Private Subcontract",
+        "opportunityTitle": "Apple Advanced Manufacturing Facility Construction",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Apple, Inc. / Foxconn",
+          "level": "Private"
+        },
+        "location": {
+          "city": "Houston",
+          "county": "Harris",
+          "region": "Houston"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-03-01"
+        },
+        "source": {
+          "documentName": "Apple Unveils New Houston Manufacturing Hub in $500B U.S. Investment Push",
+          "url": "https://www.bldup.com/posts/apple-unveils-new-houston-manufacturing-hub-in-500b-u-s-investment-push"
+        },
+        "summary": "Construction of a 250,000-square-foot manufacturing facility for servers. The facility is slated to open in 2026, creating significant subcontracting opportunities for physical and digital infrastructure."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Naaman Forrest High School Additions & Renovations",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Garland Independent School District",
+          "level": "Regional"
+        },
+        "location": {
+          "city": "Garland",
+          "county": "Dallas",
+          "region": "Dallas-Fort Worth"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": 18300000,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "GARLAND ISD: | Naaman Forrest High School — WRA Architects",
+          "url": "https://www.wraarchitects.com/work/naaman-forrest-high-school"
+        },
+        "summary": "Project includes 8,000 SF of additions and 95,000 SF of renovations with a completion date of Fall 2027. Prime contractor is Lee Lewis Construction."
+      },
+      {
+        "opportunityType": "Private Subcontract",
+        "opportunityTitle": "Naaman Forrest High School Subcontracting",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Lee Lewis Construction",
+          "level": "Private"
+        },
+        "location": {
+          "city": "Garland",
+          "county": "Dallas",
+          "region": "Dallas-Fort Worth"
+        },
+        "status": "Seeking Subcontractors",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-02-01"
+        },
+        "source": {
+          "documentName": "GARLAND ISD: | Naaman Forrest High School — WRA Architects",
+          "url": "https://www.wraarchitects.com/work/naaman-forrest-high-school"
+        },
+        "summary": "Subcontracting opportunities for the renovation and addition at Naaman Forrest High School."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Shadow Mountain Shared Use Path",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of El Paso",
+          "level": "City"
+        },
+        "location": {
+          "city": "El Paso",
+          "county": "El Paso",
+          "region": "El Paso"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2024-09-09",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-09-01"
+        },
+        "source": {
+          "documentName": "File #: 24-1270 - El Paso, TX - Calendar",
+          "url": "https://elpasotexas.legistar.com/LegislationDetail.aspx?From=RSS&ID=6868731&GUID=97DAAAF5-5719-4DF5-B327-A3444AE14A6B"
+        },
+        "summary": "A project for a shared use path funded through the Transportation Alternatives Set-Aside Call for Projects FY 2026-2028. The city commits to advance to construction within three years from the date of selection."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Great Homes Update Program - 2026 Round",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of Sugar Land",
+          "level": "City"
+        },
+        "location": {
+          "city": "Sugar Land",
+          "county": "Fort Bend",
+          "region": "Houston"
+        },
+        "status": "Budgeted for FY2026",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Great Homes Update Program | Sugar Land, Texas",
+          "url": "https://sugarlandecodev.com/great-homes/update-program"
+        },
+        "summary": "An incentive program for homeowners to apply for reimbursement for exterior property enhancements. The next application round opens January 1, 2026, pending budget approval. This represents numerous small-scale physical infrastructure opportunities."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "New Oklahoma City Arena Construction",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of Oklahoma City",
+          "level": "City"
+        },
+        "location": {
+          "city": "Oklahoma City",
+          "county": "Oklahoma",
+          "region": "Oklahoma City Metro"
+        },
+        "status": "In Design",
+        "estimatedValueUSD": 900000000,
+        "keyDates": {
+          "publishedDate": "2025-03-11",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-02-01"
+        },
+        "source": {
+          "documentName": "Construction firms hired for OKC new arena | City of OKC",
+          "url": "https://www.okc.gov/News-articles/Construction-firms-hired-for-OKC-new-arena"
+        },
+        "summary": "Construction of a new 750,000 sq ft, state-of-the-art NBA arena and entertainment venue. Construction will start in 2026 with completion scheduled for 2028."
+      },
+      {
+        "opportunityType": "Private Subcontract",
+        "opportunityTitle": "Subcontracting for New OKC Arena",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Flintco-Mortenson",
+          "level": "Private"
+        },
+        "location": {
+          "city": "Oklahoma City",
+          "county": "Oklahoma",
+          "region": "Oklahoma City Metro"
+        },
+        "status": "Seeking Subcontractors",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2025-03-20",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-03-01"
+        },
+        "source": {
+          "documentName": "Mortenson partners to build $900M NBA arena in Oklahoma City",
+          "url": "https://www.constructiondive.com/news/mortenson-flintco-nba-arena-oklahoma-city/742852/"
+        },
+        "summary": "Subcontracting opportunities for the new $900 million NBA arena in Oklahoma City. The prime contractors are a joint venture of Flintco and Mortenson."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "I-44 and US-75 Interchange Full Construction (Phase 2)",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Oklahoma Department of Transportation",
+          "level": "State"
+        },
+        "location": {
+          "city": "Tulsa",
+          "county": "Tulsa",
+          "region": "Tulsa Metro"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2025-01-15",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Transportation Commissioners updated on highway projects",
+          "url": "https://www.okenergytoday.com/2025/01/transportation-commissioners-updated-on-highway-projects/"
+        },
+        "summary": "Second phase of full construction on the I-44 and US-75 interchange. The project will continue through 2028."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Louisiana International Terminal (LIT) Construction",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Port of New Orleans",
+          "level": "Regional"
+        },
+        "location": {
+          "city": "Violet",
+          "county": "St. Bernard",
+          "region": "New Orleans"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": 1800000000,
+        "keyDates": {
+          "publishedDate": "2025-02-21",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Top Construction Projects 2025 | New Orleans CityBusiness",
+          "url": "https://neworleanscitybusiness.com/blog/2025/02/21/top-construction-projects-2025/"
+        },
+        "summary": "Construction of a new $1.8-billion international container terminal in Violet, St. Bernard Parish. This is a massive infrastructure project with a long timeline."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Sail 250 America's Sestercentennial Infrastructure Support",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of New Orleans / Port of New Orleans",
+          "level": "City"
+        },
+        "location": {
+          "city": "New Orleans",
+          "county": "Orleans",
+          "region": "New Orleans"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Sail 250® New Orleans",
+          "url": "https://www.sail250neworleans.com/"
+        },
+        "summary": "Temporary and permanent infrastructure projects to support the largest-ever flotilla of tall ships for America's 250th anniversary celebration between May 28 and June 1, 2026. Includes needs for waterfront access, security, and event support."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Texas State University - STEM / Ingram Parking Garage",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Texas State University",
+          "level": "State"
+        },
+        "location": {
+          "city": "San Marcos",
+          "county": "Hays",
+          "region": "Austin-San Antonio"
+        },
+        "status": "New Project",
+        "estimatedValueUSD": 21600000,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Capital Improvement Plan - TXST Facilities",
+          "url": "https://www.facilities.txst.edu/pdc/cip.html"
+        },
+        "summary": "Construction of a new parking garage for the STEM/Ingram area of campus, listed in the 2026 CIP."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Texas State University - East (Chiller) Plant Refresh",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Texas State University",
+          "level": "State"
+        },
+        "location": {
+          "city": "San Marcos",
+          "county": "Hays",
+          "region": "Austin-San Antonio"
+        },
+        "status": "Carry Over Amended",
+        "estimatedValueUSD": 14750000,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Capital Improvement Plan - TXST Facilities",
+          "url": "https://www.facilities.txst.edu/pdc/cip.html"
+        },
+        "summary": "Refresh of the East Chiller Plant, a public utility project listed in the 2026 CIP."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Texas State University - Music Building Construction",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Texas State University",
+          "level": "State"
+        },
+        "location": {
+          "city": "San Marcos",
+          "county": "Hays",
+          "region": "Austin-San Antonio"
+        },
+        "status": "Carry Over",
+        "estimatedValueUSD": 90000000,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2027-01-01"
+        },
+        "source": {
+          "documentName": "Capital Improvement Plan - TXST Facilities",
+          "url": "https://www.facilities.txst.edu/pdc/cip.html"
+        },
+        "summary": "Construction of a new Music Building, listed in the 2027 CIP."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Texas State University - Chemistry Building Construction",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Texas State University",
+          "level": "State"
+        },
+        "location": {
+          "city": "San Marcos",
+          "county": "Hays",
+          "region": "Austin-San Antonio"
+        },
+        "status": "Carry Over",
+        "estimatedValueUSD": 226800000,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2028-01-01"
+        },
+        "source": {
+          "documentName": "Capital Improvement Plan - TXST Facilities",
+          "url": "https://www.facilities.txst.edu/pdc/cip.html"
+        },
+        "summary": "Construction of a new Chemistry Building, listed in the 2028 CIP."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Texas State University - Facilities / Live Oak Parking Garage",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Texas State University",
+          "level": "State"
+        },
+        "location": {
+          "city": "San Marcos",
+          "county": "Hays",
+          "region": "Austin-San Antonio"
+        },
+        "status": "New Project",
+        "estimatedValueUSD": 29160000,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2028-01-01"
+        },
+        "source": {
+          "documentName": "Capital Improvement Plan - TXST Facilities",
+          "url": "https://www.facilities.txst.edu/pdc/cip.html"
+        },
+        "summary": "Construction of a new parking garage for the Facilities/Live Oak area, listed in the 2028 CIP."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "US-70/Roosevelt Bridge Replacement",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Oklahoma Department of Transportation",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": "Bryan",
+          "region": "Southeastern Oklahoma"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "More Than $9B in Improvements Scheduled for Oklahoma Highways",
+          "url": "https://acppubs.com/CN/article/3C369F1C-more-than-9b-in-improvements-scheduled-for-oklahoma-highways"
+        },
+        "summary": "Replacement of the US-70/Roosevelt Bridge over Lake Texoma. Project was advanced from 2029 to 2026 in the Eight-Year Construction Work Plan."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "I-35 Widening to Six Lanes (Love County)",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Oklahoma Department of Transportation",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": "Love",
+          "region": "South Central Oklahoma"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "More Than $9B in Improvements Scheduled for Oklahoma Highways",
+          "url": "https://acppubs.com/CN/article/3C369F1C-more-than-9b-in-improvements-scheduled-for-oklahoma-highways"
+        },
+        "summary": "Widening of I-35 to six lanes in Love County, part of the 2025-2032 Construction Work Plan."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "I-40 at I-40 Business Interchange Improvement",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Oklahoma Department of Transportation",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": "Custer",
+          "region": "Western Oklahoma"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2027-01-01"
+        },
+        "source": {
+          "documentName": "More Than $9B in Improvements Scheduled for Oklahoma Highways",
+          "url": "https://acppubs.com/CN/article/3C369F1C-more-than-9b-in-improvements-scheduled-for-oklahoma-highways"
+        },
+        "summary": "An interchange improvement project along I-40 at I-40 Business in Custer County, part of the 2025-2032 Construction Work Plan."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "US-412/US-60 Shoulder Addition",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Oklahoma Department of Transportation",
+          "level": "State"
+        },
+        "location": {
+          "city": "Ringwood",
+          "county": "Major",
+          "region": "Northwestern Oklahoma"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2027-01-01"
+        },
+        "source": {
+          "documentName": "More Than $9B in Improvements Scheduled for Oklahoma Highways",
+          "url": "https://acppubs.com/CN/article/3C369F1C-more-than-9b-in-improvements-scheduled-for-oklahoma-highways"
+        },
+        "summary": "Adding shoulders to more than 6 miles of US-412/US-60 between Ringwood and the Garfield County line, part of the 2025-2032 Construction Work Plan."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "River Reintroduction into Maurepas Swamp",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Coastal Protection and Restoration Authority (CPRA)",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": null,
+          "region": "Pontchartrain Basin"
+        },
+        "status": "In Progress",
+        "estimatedValueUSD": 130000000,
+        "keyDates": {
+          "publishedDate": "2024-03-01",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Fiscal Year 2026 Annual Plan - CPRA",
+          "url": "https://coastal.la.gov/wp-content/uploads/2025/01/CPRA_FY26-AP_20250109_pdf.pdf"
+        },
+        "summary": "A large-scale ecosystem restoration project. Groundbreaking occurred in December 2024, with major construction phases expected in the 2026-2028 timeframe."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Houma Navigation Canal (HNC) Lock Complex",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Coastal Protection and Restoration Authority (CPRA)",
+          "level": "State"
+        },
+        "location": {
+          "city": "Houma",
+          "county": "Terrebonne",
+          "region": "Terrebonne Basin"
+        },
+        "status": "In Progress",
+        "estimatedValueUSD": 163000000,
+        "keyDates": {
+          "publishedDate": "2024-03-01",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Fiscal Year 2026 Annual Plan - CPRA",
+          "url": "https://coastal.la.gov/wp-content/uploads/2025/01/CPRA_FY26-AP_20250109_pdf.pdf"
+        },
+        "summary": "A critical hurricane protection project. Groundbreaking for Phase 2 occurred in August 2024, with major construction phases expected in the 2026-2028 timeframe."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Southwest Coastal Louisiana Hurricane Protection",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Coastal Protection and Restoration Authority (CPRA)",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": "Cameron",
+          "region": "Calcasieu/Sabine Basin"
+        },
+        "status": "In Progress",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2024-10-01",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Fiscal Year 2026 Annual Plan - CPRA",
+          "url": "https://coastal.la.gov/wp-content/uploads/2025/01/CPRA_FY26-AP_20250109_pdf.pdf"
+        },
+        "summary": "Project to fortify thousands of homes across Cameron, Calcasieu, and Vermilion Parishes and provide shoreline protection. Groundbreaking occurred in October 2024, with major construction phases expected in the 2026-2028 timeframe."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "St. Tammany Parish Flood Risk Management Project",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Coastal Protection and Restoration Authority (CPRA)",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": "St. Tammany",
+          "region": "Pontchartrain Basin"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": 5900000000,
+        "keyDates": {
+          "publishedDate": "2024-12-01",
+          "bidDeadline": null,
+          "projectedStartDate": "2027-01-01"
+        },
+        "source": {
+          "documentName": "Fiscal Year 2026 Annual Plan - CPRA",
+          "url": "https://coastal.la.gov/wp-content/uploads/2025/01/CPRA_FY26-AP_20250109_pdf.pdf"
+        },
+        "summary": "A major flood risk management project federally authorized through the 2024 Water Resources Development Act (WRDA)."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Morganza to the Gulf Hurricane Protection",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Coastal Protection and Restoration Authority (CPRA)",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": "Terrebonne",
+          "region": "Terrebonne Basin"
+        },
+        "status": "In Progress",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2024-10-01",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Fiscal Year 2026 Annual Plan - CPRA",
+          "url": "https://coastal.la.gov/wp-content/uploads/2025/01/CPRA_FY26-AP_20250109_pdf.pdf"
+        },
+        "summary": "Large hurricane protection system. Groundbreaking on the Reach A Levee System occurred in October 2024, with ongoing construction phases expected through 2026-2028."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Upper Barataria Basin Coastal Storm Risk Management",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Coastal Protection and Restoration Authority (CPRA)",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": null,
+          "region": "Barataria Basin"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2027-01-01"
+        },
+        "source": {
+          "documentName": "Fiscal Year 2026 Annual Plan - CPRA",
+          "url": "https://coastal.la.gov/wp-content/uploads/2025/01/CPRA_FY26-AP_20250109_pdf.pdf"
+        },
+        "summary": "Implementation of a large hurricane protection system in the Upper Barataria Basin."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "East Timbalier Island Restoration",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Coastal Protection and Restoration Authority (CPRA)",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": "Lafourche",
+          "region": "Terrebonne Basin"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-06-01"
+        },
+        "source": {
+          "documentName": "Fiscal Year 2026 Annual Plan - CPRA",
+          "url": "https://coastal.la.gov/wp-content/uploads/2025/01/CPRA_FY26-AP_20250109_pdf.pdf"
+        },
+        "summary": "Significant effort to provide restoration and resilience to the critical barrier island of East Timbalier."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Chandeleur Islands Restoration",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Coastal Protection and Restoration Authority (CPRA)",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": "St. Bernard",
+          "region": "Breton Sound Basin"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2027-01-01"
+        },
+        "source": {
+          "documentName": "Fiscal Year 2026 Annual Plan - CPRA",
+          "url": "https://coastal.la.gov/wp-content/uploads/2025/01/CPRA_FY26-AP_20250109_pdf.pdf"
+        },
+        "summary": "Significant effort to provide restoration and resilience to the critical barrier island chain of the Chandeleur Islands."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Wine Island Restoration",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Coastal Protection and Restoration Authority (CPRA)",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": "Terrebonne",
+          "region": "Terrebonne Basin"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-08-01"
+        },
+        "source": {
+          "documentName": "Fiscal Year 2026 Annual Plan - CPRA",
+          "url": "https://coastal.la.gov/wp-content/uploads/2025/01/CPRA_FY26-AP_20250109_pdf.pdf"
+        },
+        "summary": "Significant effort to provide restoration and resilience to the critical barrier island of Wine Island."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Caminada Headland Restoration",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Coastal Protection and Restoration Authority (CPRA)",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": "Lafourche",
+          "region": "Barataria Basin"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-09-01"
+        },
+        "source": {
+          "documentName": "Fiscal Year 2026 Annual Plan - CPRA",
+          "url": "https://coastal.la.gov/wp-content/uploads/2025/01/CPRA_FY26-AP_20250109_pdf.pdf"
+        },
+        "summary": "Significant effort to provide restoration and resilience to the critical Caminada Headland."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Development Process Software Solution",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Unknown Texas Municipality",
+          "level": "City"
+        },
+        "location": {
+          "city": null,
+          "county": null,
+          "region": "Texas"
+        },
+        "status": "Open for Bidding",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2025-07-10",
+          "bidDeadline": "2025-08-14",
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Programming and Software Development Government Bids and RFPs",
+          "url": "https://www.bidprime.com/bid/category/programming-and-software-development"
+        },
+        "summary": "Solicitation for a development process software solution, a key component of digital infrastructure for a city's planning and permitting."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Rate Cyber Security Pilot Program",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Unknown Texas Entity",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": null,
+          "region": "Texas"
+        },
+        "status": "Open for Bidding",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2025-07-10",
+          "bidDeadline": "2025-08-06",
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Programming and Software Development Government Bids and RFPs",
+          "url": "https://www.bidprime.com/bid/category/programming-and-software-development"
+        },
+        "summary": "Pilot program for rate cyber security, indicating a focus on protecting digital infrastructure for utilities or other public services."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Backflow Testing Data Management Software Services for Water Utilities",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Unknown Texas Municipality",
+          "level": "City"
+        },
+        "location": {
+          "city": null,
+          "county": null,
+          "region": "Texas"
+        },
+        "status": "Open for Bidding",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2025-06-30",
+          "bidDeadline": "2025-07-17",
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Programming and Software Development Government Bids and RFPs",
+          "url": "https://www.bidprime.com/bid/category/programming-and-software-development"
+        },
+        "summary": "Solicitation for a software solution to manage backflow testing data, a critical component of public water utility management."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Texas Sea Grant Research Projects",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Texas Sea Grant",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": null,
+          "region": "Texas"
+        },
+        "status": "Open for Bidding",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2025-02-11",
+          "bidDeadline": "2025-05-05",
+          "projectedStartDate": "2026-02-01"
+        },
+        "source": {
+          "documentName": "Research Funding through Texas Sea Grant - TAMIDS",
+          "url": "https://tamids.tamu.edu/2025/02/11/research-funding-through-texas-sea-grant/"
+        },
+        "summary": "Request for Proposals for the 2026-2028 cycle to support community-engaged and outcome-oriented research. This can include infrastructure-related studies for coastal resilience."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "MSC Cruises Galveston New Cruise Terminal",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Port of Galveston",
+          "level": "Regional"
+        },
+        "location": {
+          "city": "Galveston",
+          "county": "Galveston",
+          "region": "Houston"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": 151000000,
+        "keyDates": {
+          "publishedDate": "2023-10-17",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "MSC Cruises Galveston - New Terminal Coming Soon | Port of Galveston, TX",
+          "url": "https://www.portofgalveston.com/300/MSC-Cruises-Galveston"
+        },
+        "summary": "Development of a new, fourth cruise terminal at the Port of Galveston. The project involves repurposing a cargo warehouse into a 165,000 sq ft terminal and constructing a new parking structure. Completion is slated for late 2025, with operations beginning shortly after."
+      },
+      {
+        "opportunityType": "Private Subcontract",
+        "opportunityTitle": "Subcontracting for MSC Cruises Galveston Terminal",
+        "contractID": null,
+        "issuingBody": {
+          "name": "MSC Cruises",
+          "level": "Private"
+        },
+        "location": {
+          "city": "Galveston",
+          "county": "Galveston",
+          "region": "Houston"
+        },
+        "status": "Seeking Subcontractors",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-02-01"
+        },
+        "source": {
+          "documentName": "MSC Cruises Galveston - New Terminal Coming Soon | Port of Galveston, TX",
+          "url": "https://www.portofgalveston.com/300/MSC-Cruises-Galveston"
+        },
+        "summary": "Subcontracting opportunities for the construction and outfitting of the new cruise terminal and parking structure at the Port of Galveston."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "OKC Zoo Master Plan - Sea Lion Cove",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Oklahoma City Zoo and Botanical Gardens",
+          "level": "City"
+        },
+        "location": {
+          "city": "Oklahoma City",
+          "county": "Oklahoma",
+          "region": "Oklahoma City Metro"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "What's New in Oklahoma City | Exciting Openings & Projects",
+          "url": "https://www.visitokc.com/media/whats-new-whats-coming/"
+        },
+        "summary": "Part of a $71 million infrastructure improvement plan through 2028. Upcoming projects include a new three-acre Sea Lion Cove habitat."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "OAK Mixed-Use Development Infrastructure",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of Oklahoma City",
+          "level": "City"
+        },
+        "location": {
+          "city": "Oklahoma City",
+          "county": "Oklahoma",
+          "region": "Oklahoma City Metro"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "What's New in Oklahoma City | Exciting Openings & Projects",
+          "url": "https://www.visitokc.com/media/whats-new-whats-coming/"
+        },
+        "summary": "A new multi-phase development to transform NW Expressway and Pennsylvania Avenue into an entertainment, residential, and retail space. Will require significant public infrastructure support (roads, utilities)."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "FAMily Discovery Center at First Americans Museum",
+        "contractID": null,
+        "issuingBody": {
+          "name": "First Americans Museum",
+          "level": "Regional"
+        },
+        "location": {
+          "city": "Oklahoma City",
+          "county": "Oklahoma",
+          "region": "Oklahoma City Metro"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "What's New in Oklahoma City | Exciting Openings & Projects",
+          "url": "https://www.visitokc.com/media/whats-new-whats-coming/"
+        },
+        "summary": "Construction of a new immersive exhibit at the First Americans Museum, opening in Summer 2025, with construction and outfitting likely extending into 2026."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "River District Infrastructure Work",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of New Orleans",
+          "level": "City"
+        },
+        "location": {
+          "city": "New Orleans",
+          "county": "Orleans",
+          "region": "New Orleans"
+        },
+        "status": "In Progress",
+        "estimatedValueUSD": 30000000,
+        "keyDates": {
+          "publishedDate": "2024-06-01",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Top Construction Projects 2025 | New Orleans CityBusiness",
+          "url": "https://neworleanscitybusiness.com/blog/2025/02/21/top-construction-projects-2025/"
+        },
+        "summary": "Ongoing infrastructure work for the $1 billion River District development, with phases continuing through the 2026-2028 period."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "LCMC Health System Expansions and Renovations",
+        "contractID": null,
+        "issuingBody": {
+          "name": "LCMC Health",
+          "level": "Regional"
+        },
+        "location": {
+          "city": "New Orleans",
+          "county": "Orleans",
+          "region": "New Orleans"
+        },
+        "status": "In Progress",
+        "estimatedValueUSD": 774000000,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Top Construction Projects 2025 | New Orleans CityBusiness",
+          "url": "https://neworleanscitybusiness.com/blog/2025/02/21/top-construction-projects-2025/"
+        },
+        "summary": "LCMC Health is completing eight years' worth of expansions, renovations, and upgrades by the end of 2025, with many projects carrying over into the 2026-2028 timeframe."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Charity Hospital Revitalization",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of New Orleans",
+          "level": "City"
+        },
+        "location": {
+          "city": "New Orleans",
+          "county": "Orleans",
+          "region": "New Orleans"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-06-01"
+        },
+        "source": {
+          "documentName": "Top Construction Projects 2025 | New Orleans CityBusiness",
+          "url": "https://neworleanscitybusiness.com/blog/2025/02/21/top-construction-projects-2025/"
+        },
+        "summary": "Revitalization plans for the former New Orleans Charity Hospital are in the development phase, with Tulane University as the lead tenant. Major construction is expected in the 2026-2028 window."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "New Orleans Convention Center Upgrades",
+        "contractID": null,
+        "issuingBody": {
+          "name": "New Orleans Ernest N. Morial Convention Center",
+          "level": "Regional"
+        },
+        "location": {
+          "city": "New Orleans",
+          "county": "Orleans",
+          "region": "New Orleans"
+        },
+        "status": "In Progress",
+        "estimatedValueUSD": 270000000,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Top Construction Projects 2025 | New Orleans CityBusiness",
+          "url": "https://neworleanscitybusiness.com/blog/2025/02/21/top-construction-projects-2025/"
+        },
+        "summary": "Ongoing improvements including a new energy-efficient roofing system, renovation and technology upgrades of meeting rooms, and exhibition hall improvements."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Bayou Phoenix (Former Six Flags) Redevelopment",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of New Orleans",
+          "level": "City"
+        },
+        "location": {
+          "city": "New Orleans",
+          "county": "Orleans",
+          "region": "New Orleans"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-08-01"
+        },
+        "source": {
+          "documentName": "Top Construction Projects 2025 | New Orleans CityBusiness",
+          "url": "https://neworleanscitybusiness.com/blog/2025/02/21/top-construction-projects-2025/"
+        },
+        "summary": "Redevelopment of the former Six Flags site in New Orleans East. Infrastructure and initial construction phases are expected within the 2026-2028 timeframe."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "RTA Fleet and Infrastructure Modernization",
+        "contractID": null,
+        "issuingBody": {
+          "name": "New Orleans Regional Transit Authority (RTA)",
+          "level": "Regional"
+        },
+        "location": {
+          "city": "New Orleans",
+          "county": "Orleans",
+          "region": "New Orleans"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Top Construction Projects 2025 | New Orleans CityBusiness",
+          "url": "https://neworleanscitybusiness.com/blog/2025/02/21/top-construction-projects-2025/"
+        },
+        "summary": "The RTA plans to modernize its fleet and infrastructure using federal funding grants, with projects rolling out over the next several years."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "The Gayle and Tom Benson Ochsner Children’s Hospital",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Ochsner Health",
+          "level": "Regional"
+        },
+        "location": {
+          "city": "New Orleans",
+          "county": "Orleans",
+          "region": "New Orleans"
+        },
+        "status": "In Progress",
+        "estimatedValueUSD": 100000000,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Top Construction Projects 2025 | New Orleans CityBusiness",
+          "url": "https://neworleanscitybusiness.com/blog/2025/02/21/top-construction-projects-2025/"
+        },
+        "summary": "Construction of a new 343,000 square foot children's hospital. Construction is ongoing and will continue through the 2026-2028 period."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Loyola University New Residence Hall",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Loyola University New Orleans",
+          "level": "State"
+        },
+        "location": {
+          "city": "New Orleans",
+          "county": "Orleans",
+          "region": "New Orleans"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Top Construction Projects 2025 | New Orleans CityBusiness",
+          "url": "https://neworleanscitybusiness.com/blog/2025/02/21/top-construction-projects-2025/"
+        },
+        "summary": "Construction of an apartment-style, seven-story, 210,000 square foot residence hall to replace the former Mercy Hall."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Louisiana Highway Construction Program FY 2025-2026",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Louisiana Department of Transportation and Development (DOTD)",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": null,
+          "region": "Louisiana"
+        },
+        "status": "Budgeted for FY2026",
+        "estimatedValueUSD": 1110000000,
+        "keyDates": {
+          "publishedDate": "2025-05-02",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Louisiana Legislature Approves $1.11 Billion in Major Highway Projects",
+          "url": "https://www.constructconnect.com/construction-economic-news/louisiana-legislature-approves-1.11-billion-in-major-highway-projects"
+        },
+        "summary": "A statewide program of 343 highway construction projects approved for bidding in the 2025-2026 fiscal year. This represents numerous opportunities across Louisiana, including the New Orleans and Baton Rouge regions."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "TxDOT Aviation Capital Improvement Program (ACIP) 2026-2028",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Texas Department of Transportation (TxDOT) Aviation Division",
+          "level": "State"
+        },
+        "location": {
+          "city": null,
+          "county": null,
+          "region": "Texas"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": 535000000,
+        "keyDates": {
+          "publishedDate": "2025-07-01",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Aviation Capital Improvement Program 2026-2028 Executive Summary",
+          "url": "https://www.txdot.gov/content/dam/docs/division/avn/acip-2026-2028-exec-summary.pdf"
+        },
+        "summary": "A detailed listing of potential General Aviation (GA) airport development projects across Texas for FY 2026-2028. This program represents hundreds of individual project opportunities at various airports."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "NCTCOG Transportation Improvement Program (TIP) 2025-2028",
+        "contractID": null,
+        "issuingBody": {
+          "name": "North Central Texas Council of Governments",
+          "level": "Regional"
+        },
+        "location": {
+          "city": null,
+          "county": null,
+          "region": "Dallas-Fort Worth"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2024-04-26",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "2025 - 2028 Transportation Improvement Program - NCTCOG",
+          "url": "https://www.nctcog.org/trans/funds/tip/transportation-improvement-program-docs/2025-2028tip"
+        },
+        "summary": "A multi-year program of projects approved for funding by federal, state, and local sources within the Dallas-Fort Worth metropolitan area. Contains numerous projects with committed funds in fiscal years 2026, 2027, and 2028."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Corpus Christi MPO Transportation Improvement Program (TIP) 2025-2028",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Corpus Christi MPO",
+          "level": "Regional"
+        },
+        "location": {
+          "city": "Corpus Christi",
+          "county": "Nueces",
+          "region": "Corpus Christi"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": "2025-02-06",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Transportation Improvement Program (TIP) - Corpus Christi MPO",
+          "url": "https://www.corpuschristi-mpo.org/01_tip.html"
+        },
+        "summary": "Identifies how the Corpus Christi region plans to invest in the transportation system during the next 4 years, including projects for FY 2026-2028."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Houston Capital Improvement Plan (CIP) 2026-2030",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of Houston",
+          "level": "City"
+        },
+        "location": {
+          "city": "Houston",
+          "county": "Harris",
+          "region": "Houston"
+        },
+        "status": "Budgeted for FY2026",
+        "estimatedValueUSD": 16700000000,
+        "keyDates": {
+          "publishedDate": "2025-06-25",
+          "bidDeadline": null,
+          "projectedStartDate": "2026-07-01"
+        },
+        "source": {
+          "documentName": "Houston City Council approves $16.7 billion capital improvement plan",
+          "url": "https://www.houstonpublicmedia.org/articles/news/city-of-houston/2025/06/25/524914/houston-city-council-approves-16-7-billion-capital-improvement-plan-with-amendments/"
+        },
+        "summary": "A five-year, $16.7 billion plan for updates to streets, drainage, new fire stations, a massive water plant overhaul, airport renovations and other projects. Represents hundreds of individual opportunities."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Fort Worth Capital Improvement Plan Projects",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of Fort Worth",
+          "level": "City"
+        },
+        "location": {
+          "city": "Fort Worth",
+          "county": "Tarrant",
+          "region": "Dallas-Fort Worth"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Capital Projects - the City of Fort Worth",
+          "url": "https://www.fortworthtexas.gov/projects"
+        },
+        "summary": "The City of Fort Worth has numerous funded capital projects for the coming years, including new buildings and infrastructure maintenance. Specific projects with start dates in the 2026-2028 range are included in the city's CIP."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "San Antonio Capital Improvement Program Projects",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of San Antonio",
+          "level": "City"
+        },
+        "location": {
+          "city": "San Antonio",
+          "county": "Bexar",
+          "region": "Austin-San Antonio"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "CAPITAL IMPROVEMENTS PROGRAM - City of San Antonio",
+          "url": "https://www.sa.gov/files/assets/main/omb/documents/fy2025/adopted-capital-budget.pdf"
+        },
+        "summary": "The City of San Antonio's multi-year CIP outlines projects for streets, drainage, public facilities, and more. The FY2025-and-beyond documents contain numerous projects scheduled for the 2026-2028 timeframe."
+      },
+      {
+        "opportunityType": "Public Sector",
+        "opportunityTitle": "Austin Capital Improvement Program Projects",
+        "contractID": null,
+        "issuingBody": {
+          "name": "City of Austin",
+          "level": "City"
+        },
+        "location": {
+          "city": "Austin",
+          "county": "Travis",
+          "region": "Austin-San Antonio"
+        },
+        "status": "In Planning Phase",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": null,
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Capital Improvement Program - AustinTexas.gov",
+          "url": "https://www.austintexas.gov/page/capital-improvement-program"
+        },
+        "summary": "The City of Austin's CIP includes projects for facilities, street reconstruction, water/wastewater lines, and power. The five-year plan contains projects scheduled for the 2026-2028 timeframe."
+      },
+      {
+        "opportunityType": "Private Subcontract",
+        "opportunityTitle": "Kiewit/Boh, AJV Subcontracting Opportunities",
+        "contractID": null,
+        "issuingBody": {
+          "name": "Kiewit/Boh, AJV",
+          "level": "Private"
+        },
+        "location": {
+          "city": null,
+          "county": null,
+          "region": "Louisiana"
+        },
+        "status": "Seeking Subcontractors",
+        "estimatedValueUSD": null,
+        "keyDates": {
+          "publishedDate": null,
+          "bidDeadline": "2025-05-23",
+          "projectedStartDate": "2026-01-01"
+        },
+        "source": {
+          "documentName": "Contract Opportunities - Kiewit/Boh, AJV",
+          "url": "https://buildwithkbjv.com/contract-opportunities/"
+        },
+        "summary": "A joint venture soliciting subcontractor bids for various services including concrete flatwork, electrical/lighting, pavement markings, and bridge drainage. Given the bid deadline, projects are likely to start in 2026."
+      }
+    ]
+  }

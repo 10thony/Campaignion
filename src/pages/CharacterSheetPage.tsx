@@ -1,8 +1,6 @@
 import { useQuery } from 'convex/react'
-import { useParams } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { InventoryPanel } from '@/components/InventoryPanel'
 import { Heart, Shield, Zap, User, Dice6 } from 'lucide-react'
 import { formatModifier } from '@/lib/utils'

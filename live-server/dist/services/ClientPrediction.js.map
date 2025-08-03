@@ -1,0 +1,1 @@
+{"version":3,"file":"ClientPrediction.js","sourceRoot":"","sources":["../../src/services/ClientPrediction.ts"],"names":[],"mappings":";;;AAOA,MAAa,gBAAgB;IAI3B,aAAa,CAAC,SAAoB,EAAE,MAAkB;QAEpD,OAAO,SAAS,CAAC;IACnB,CAAC;IAED,mBAAmB,CAAC,cAAyB,EAAE,WAAsB;QAEnE,OAAO,WAAW,CAAC;IACrB,CAAC;IAED,kBAAkB,CAAC,SAAoB,EAAE,MAAkB;QAEzD,OAAO,SAAS,CAAC;IACnB,CAAC;CACF;AAlBD,4CAkBC"}

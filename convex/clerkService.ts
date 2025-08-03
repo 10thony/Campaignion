@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+
 
 /**
  * Get the current user from Clerk authentication context

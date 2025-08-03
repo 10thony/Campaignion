@@ -31,6 +31,8 @@ interface MapPreviewProps {
   cellSize?: number;
   interactive?: boolean;
   onCellClick?: (x: number, y: number) => void;
+  onCellHover?: (x: number, y: number) => void;
+  onCellLeave?: () => void;
   className?: string;
   showTerrainInfo?: boolean;
   onBulkColorChange?: (color: string) => void;
@@ -42,6 +44,8 @@ export const MapPreview: React.FC<MapPreviewProps> = ({
   cellSize = 20, 
   interactive = false,
   onCellClick,
+  onCellHover,
+  onCellLeave,
   className = "",
   showTerrainInfo = false,
   onBulkColorChange,
@@ -179,6 +183,8 @@ export const MapPreview: React.FC<MapPreviewProps> = ({
                 } border border-gray-300 dark:border-gray-600 relative`}
                 style={inlineStyle}
                 onClick={() => interactive && onCellClick && onCellClick(cell.x, cell.y)}
+                onMouseEnter={() => interactive && onCellHover && onCellHover(cell.x, cell.y)}
+                onMouseLeave={() => interactive && onCellLeave && onCellLeave()}
                 title={
                   showTerrainInfo && cell.terrain
                     ? `${cell.terrain} terrain (${cell.terrainModifier || 0} modifier)`

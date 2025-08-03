@@ -1,0 +1,4 @@
+import type { appRouter } from '../routers';
+export type AppRouter = typeof appRouter;
+export type { LiveInteractionRouter, TestModeRouter, AppRouterInterface, RouterInputs as SharedRouterInputs, RouterOutputs as SharedRouterOutputs, JoinRoomInput, JoinRoomOutput, LeaveRoomInput, LeaveRoomOutput, PauseInteractionInput, PauseInteractionOutput, ResumeInteractionInput, ResumeInteractionOutput, TakeTurnOutput, SkipTurnInput, SkipTurnOutput, BacktrackTurnInput, BacktrackTurnOutput, GetRoomStateInput, GetRoomStateOutput, SendChatMessageInput, SendChatMessageOutput, GetChatHistoryInput, GetChatHistoryOutput, RoomUpdatesInput, HealthOutput, TestModeInput, TestModeOutput, } from '@campaignion/shared-types';
+//# sourceMappingURL=router.d.ts.map

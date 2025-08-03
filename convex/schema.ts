@@ -562,6 +562,7 @@ export default defineSchema({
     status: v.union(
       v.literal("idle"),
       v.literal("live"),
+      v.literal("paused"),
       v.literal("completed"),
       v.literal("PENDING_INITIATIVE"), // Keep for backwards compatibility
       v.literal("INITIATIVE_ROLLED"),
@@ -606,6 +607,24 @@ export default defineSchema({
     npcIds: v.optional(v.array(v.id("npcs"))),
     monsterIds: v.optional(v.array(v.id("monsters"))),
     timelineEventIds: v.optional(v.array(v.id("timelineEvents"))),
+    
+    // Live system specific fields
+    liveRoomId: v.optional(v.string()),
+    lastStateSnapshot: v.optional(v.any()),
+    snapshotTimestamp: v.optional(v.number()),
+    
+    // Connection tracking
+    connectedParticipants: v.optional(v.array(v.string())),
+    lastActivity: v.optional(v.number()),
+    
+    // Turn management
+    currentTurnTimeout: v.optional(v.number()),
+    turnTimeLimit: v.optional(v.number()), // seconds
+    
+    // Chat and communication
+    chatEnabled: v.optional(v.boolean()),
+    allowPrivateChat: v.optional(v.boolean()),
+    
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),
   }),
@@ -1071,5 +1090,37 @@ export default defineSchema({
     data: v.string(), // JSON stringified scenario data
     createdBy: v.id("users"),
     createdAt: v.number(),
+  }),
+
+  // Live interaction system tables
+  liveInteractionLogs: defineTable({
+    interactionId: v.id("interactions"),
+    eventType: v.string(),
+    eventData: v.any(),
+    userId: v.optional(v.id("users")),
+    entityId: v.optional(v.string()),
+    timestamp: v.number(),
+    sessionId: v.string(), // For grouping events by session
+  }),
+
+  turnRecords: defineTable({
+    interactionId: v.id("interactions"),
+    entityId: v.string(),
+    entityType: v.union(
+      v.literal("playerCharacter"),
+      v.literal("npc"), 
+      v.literal("monster")
+    ),
+    turnNumber: v.number(),
+    roundNumber: v.number(),
+    actions: v.array(v.any()),
+    startTime: v.number(),
+    endTime: v.optional(v.number()),
+    status: v.union(
+      v.literal("completed"),
+      v.literal("skipped"),
+      v.literal("timeout")
+    ),
+    userId: v.optional(v.id("users")),
   }),
 });

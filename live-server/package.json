@@ -1,0 +1,68 @@
+{
+  "name": "live-interaction-server",
+  "version": "1.0.0",
+  "description": "Real-time D&D 5e live interaction server with tRPC and WebSocket support",
+  "main": "dist/index.js",
+  "types": "dist/router-export.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./router": {
+      "types": "./dist/router-export.d.ts",
+      "import": "./dist/router-export.js",
+      "require": "./dist/router-export.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:integration": "vitest --config vitest.integration.config.ts --run",
+    "test:integration:watch": "vitest --config vitest.integration.config.ts",
+    "test:all": "npm run test && npm run test:integration",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "type-check": "tsc --noEmit",
+    "validate-config": "tsx src/scripts/validate-config.ts",
+    "prestart": "npm run validate-config",
+    "predev": "npm run validate-config"
+  },
+  "keywords": ["trpc", "websocket", "dnd", "real-time", "multiplayer"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@trpc/server": "^10.45.0",
+    "@clerk/backend": "^0.38.0",
+    "@campaignion/shared-types": "file:../shared-types",
+    "express": "^4.18.2",
+    "ws": "^8.16.0",
+    "zod": "^3.22.4",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "dotenv": "^16.3.1",
+    "convex": "^1.8.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/ws": "^8.5.10",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^20.11.0",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "msw": "^2.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

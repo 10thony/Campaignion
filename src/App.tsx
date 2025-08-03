@@ -8,10 +8,13 @@ import { CharactersPage } from './pages/CharactersPage'
 import { QuestsPage } from './pages/QuestsPage'
 import { ItemsPage } from './pages/ItemsPage'
 import { MapsPage } from './pages/MapsPage'
+import { InteractionsPage } from './pages/InteractionsPage'
+import { LiveInteractionDemo } from './components/LiveInteractionDemo'
+import { ThemeToggle } from './components/theme/ThemeToggle'
 import { useSyncUser } from './lib/clerkService';
 
 
-type Page = 'home' | 'campaigns' | 'characters' | 'monsters' | 'quests' | 'items' | 'locations' | 'maps'
+type Page = 'home' | 'campaigns' | 'characters' | 'monsters' | 'quests' | 'items' | 'locations' | 'maps' | 'interactions' | 'live-demo'
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('home')
@@ -30,6 +33,10 @@ function AppContent() {
         return <ItemsPage />
       case 'maps':
         return <MapsPage />
+      case 'interactions':
+        return <InteractionsPage />
+      case 'live-demo':
+        return <LiveInteractionDemo />
 
       case 'locations':
         return <div className="container mx-auto py-6"><h1 className="text-3xl font-bold">Locations (Coming Soon)</h1></div>
@@ -167,7 +174,7 @@ function AppContent() {
             <SignedIn>
               <div className="flex items-center space-x-4">
                 <div className="hidden md:flex space-x-2">
-                  {(['campaigns', 'monsters', 'characters', 'quests', 'items', 'maps'] as const).map((page) => (
+                  {(['campaigns', 'monsters', 'characters', 'quests', 'items', 'maps', 'interactions', 'live-demo'] as const).map((page) => (
                     <Button
                       key={page}
                       variant={currentPage === page ? 'default' : 'ghost'}
@@ -175,12 +182,11 @@ function AppContent() {
                       onClick={() => setCurrentPage(page)}
                       className="capitalize"
                     >
-                      {page}
+                      {page === 'live-demo' ? 'Live Demo' : page}
                     </Button>
                   ))}
-                  
-
                 </div>
+                <ThemeToggle />
                 <UserButton />
               </div>
             </SignedIn>
