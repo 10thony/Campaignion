@@ -20,5 +20,13 @@ export default defineConfig({
   define: {
     // Define global for PDF.js compatibility
     global: 'globalThis',
+  },
+  worker: {
+    format: 'es', // Use ES modules for workers instead of IIFE
+    rollupOptions: {
+      output: {
+        format: 'es' // Ensure consistent ES format
+      }
+    }
   }
 }) 
