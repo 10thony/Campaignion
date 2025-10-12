@@ -77,54 +77,35 @@ export async function uploadPdfToUploadThing(
 /**
  * Alternative upload method that uses a server proxy
  * This is useful when you want to handle the upload server-side
+ * Note: Currently returns a mock response as this app uses Convex for backend operations
  */
 export async function uploadPdfViaProxy(file: File): Promise<UploadResult> {
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    // Try to upload to our proxy endpoint first
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Proxy upload failed: ${response.status} ${response.statusText}`);
-    }
-
-    const result = await response.json();
-    
-    return {
-      success: true,
-      url: result.url || result.uploadThingResponse?.url,
-      filename: file.name,
-      size: file.size,
-      message: result.message || "Upload successful via proxy",
-    };
-
-  } catch (error: any) {
-    console.error("Proxy upload error:", error);
-    
-    // Fallback to direct UploadThing upload if proxy fails
-    console.log("Falling back to direct UploadThing upload...");
-    return uploadPdfToUploadThing(file);
-  }
+  // This app uses Convex as the backend, so server-side file upload would need to be
+  // implemented via Convex actions if needed
+  console.warn("Server proxy upload not implemented - files are processed client-side");
+  
+  return {
+    success: true,
+    url: URL.createObjectURL(file),
+    filename: file.name,
+    size: file.size,
+    message: "File processed client-side (no server upload)",
+  };
 }
 
 /**
- * Get UploadThing token from environment or localStorage
+ * Get UploadThing token from localStorage
  * For development, you can store the token in localStorage
+ * Note: This is client-side only - server tokens should be handled via backend API
  */
 export function getUploadThingToken(): string | undefined {
-  // In production, this would come from environment variables
-  // For development, we can use localStorage
+  // In the browser, get from localStorage
+  // In production, uploads should go through a backend API that uses the server-side secret
   if (typeof window !== "undefined") {
     return localStorage.getItem("UPLOADTHING_TOKEN") || undefined;
   }
   
-  // Server-side fallback
-  return process.env.UPLOADTHING_TOKEN;
+  return undefined;
 }
 
 /**

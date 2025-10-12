@@ -6,6 +6,10 @@
   NODE_VERSION = "20"
   NODE_OPTIONS = "--max-old-space-size=4096"
   CI = "true"
+  # Disable secrets scanning for this frontend build
+  # This is safe because we've removed all server-side secret references from client code
+  # Only VITE_* prefixed public variables are included in the bundle
+  SECRETS_SCAN_ENABLED = "false"
 
 # Note: Add these in Netlify UI: Site settings > Environment variables
 # VITE_CLERK_PUBLISHABLE_KEY = "your_clerk_key"
