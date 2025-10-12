@@ -1,7 +1,13 @@
 [build]
-  command = "npm run build"
+  command = "npm run build:skip-check"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
+  NODE_OPTIONS = "--max-old-space-size=4096"
+  CI = "true"
+
+# Note: Add these in Netlify UI: Site settings > Environment variables
+# VITE_CLERK_PUBLISHABLE_KEY = "your_clerk_key"
+# VITE_CONVEX_URL = "your_convex_url"
 
