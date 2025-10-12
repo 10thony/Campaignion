@@ -36,7 +36,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@trpc/server": "^10.45.0",
+    "@trpc/server": "^11.4.3",
+    "@trpc/client": "^11.4.3",
     "@clerk/backend": "^0.38.0",
     "@campaignion/shared-types": "file:../shared-types",
     "express": "^4.18.2",

@@ -1,0 +1,135 @@
+/* Shared Section Styles */
+.section-header {
+  @apply flex justify-between items-center p-5 bg-gray-50 border-b border-gray-200;
+}
+
+.dark .section-header {
+  @apply bg-gray-900 border-gray-700;
+}
+
+.section-title {
+  @apply text-lg font-semibold text-gray-900 m-0 transition-colors duration-200;
+}
+
+.dark .section-title {
+  @apply text-gray-100;
+}
+
+.header-actions {
+  @apply flex items-center gap-2;
+}
+
+.add-button {
+  @apply px-4 py-2 bg-green-600 text-white border-none rounded-md text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-green-700 hover:transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-green-600/30;
+}
+
+.collapse-indicator {
+  @apply text-gray-500 text-sm font-medium;
+}
+
+.dark .collapse-indicator {
+  @apply text-gray-400;
+}
+
+.section-content {
+  @apply p-5;
+}
+
+.entities-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+.entity-card {
+  @apply bg-gray-50 border border-gray-200 rounded-lg p-4 flex justify-between items-start transition-all duration-200 hover:shadow-md;
+}
+
+.dark .entity-card {
+  @apply bg-gray-700 border-gray-600;
+}
+
+.entity-info {
+  @apply flex-1;
+}
+
+.entity-name {
+  @apply text-lg font-semibold text-gray-900 mb-1 transition-colors duration-200;
+}
+
+.dark .entity-name {
+  @apply text-gray-100;
+}
+
+.entity-description {
+  @apply text-sm text-gray-600 transition-colors duration-200 mb-2;
+}
+
+.dark .entity-description {
+  @apply text-gray-400;
+}
+
+.entity-actions {
+  @apply flex items-center gap-2;
+}
+
+.unlink-button {
+  @apply px-3 py-1 bg-red-600 text-white border-none rounded-md text-xs font-medium cursor-pointer transition-all duration-200 hover:bg-red-700 hover:transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-red-600/30;
+}
+
+.empty-state {
+  @apply text-center py-8;
+}
+
+.empty-state p {
+  @apply text-gray-600 transition-colors duration-200;
+}
+
+.dark .empty-state p {
+  @apply text-gray-400;
+}
+
+/* Status and type badges */
+.entity-status,
+.entity-type,
+.entity-cr {
+  @apply inline-block px-2 py-1 text-xs font-medium rounded-full;
+}
+
+.entity-status:contains("Active") {
+  @apply bg-green-100 text-green-800;
+}
+
+.dark .entity-status:contains("Active") {
+  @apply bg-green-900/30 text-green-300;
+}
+
+.entity-status:contains("Completed") {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.dark .entity-status:contains("Completed") {
+  @apply bg-blue-900/30 text-blue-300;
+}
+
+.entity-status:contains("Failed") {
+  @apply bg-red-100 text-red-800;
+}
+
+.dark .entity-status:contains("Failed") {
+  @apply bg-red-900/30 text-red-300;
+}
+
+.entity-type {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.dark .entity-type {
+  @apply bg-blue-900/30 text-blue-300;
+}
+
+.entity-cr {
+  @apply bg-red-100 text-red-800;
+}
+
+.dark .entity-cr {
+  @apply bg-red-900/30 text-red-300;
+} 

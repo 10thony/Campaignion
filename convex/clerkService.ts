@@ -17,7 +17,19 @@ export async function getCurrentUser(ctx: any) {
     .first();
 
   if (!user) {
-    throw new Error("User not found in database");
+    // Auto-create user if they don't exist in database but are authenticated
+    // This handles the race condition where Clerk auth is valid but user sync hasn't completed
+    const newUser = await ctx.db.insert("users", {
+      clerkId: identity.subject,
+      email: identity.email || '',
+      firstName: identity.given_name || undefined,
+      lastName: identity.family_name || undefined,
+      imageUrl: identity.picture || undefined,
+      createdAt: Date.now(),
+      role: "user" as const,
+    });
+    
+    return await ctx.db.get(newUser);
   }
 
   return user;

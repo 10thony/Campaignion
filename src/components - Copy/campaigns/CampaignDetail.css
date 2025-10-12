@@ -1,0 +1,514 @@
+/* Campaign Detail Container */
+.campaign-detail-container {
+  @apply max-w-6xl mx-auto p-6 bg-white min-h-screen transition-all duration-300;
+}
+
+.dark .campaign-detail-container {
+  @apply bg-gray-900 text-gray-100;
+}
+
+/* Access Denied State */
+.access-denied {
+  @apply flex flex-col items-center justify-center min-h-96 text-center p-8;
+}
+
+.access-denied h2 {
+  @apply text-3xl font-bold text-red-600 mb-4 transition-colors duration-200;
+}
+
+.dark .access-denied h2 {
+  @apply text-red-400;
+}
+
+.access-denied p {
+  @apply text-lg text-gray-600 mb-8 max-w-md transition-colors duration-200;
+}
+
+.dark .access-denied p {
+  @apply text-gray-400;
+}
+
+/* Header Section */
+.detail-header {
+  @apply flex justify-between items-start mb-8 pb-6 border-b-2 border-gray-200;
+}
+
+.dark .detail-header {
+  @apply border-gray-700;
+}
+
+.header-content {
+  @apply flex-1;
+}
+
+.campaign-title {
+  @apply text-4xl font-bold text-gray-900 mb-4 leading-tight transition-colors duration-200;
+}
+
+.dark .campaign-title {
+  @apply text-gray-100;
+}
+
+.campaign-meta {
+  @apply flex gap-6 flex-wrap;
+}
+
+.meta-item {
+  @apply flex items-center gap-2 text-gray-600 text-sm transition-colors duration-200;
+}
+
+.dark .meta-item {
+  @apply text-gray-400;
+}
+
+.meta-icon {
+  @apply text-base;
+}
+
+.header-actions {
+  @apply flex gap-3;
+}
+
+.back-button {
+  @apply px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700 text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-gray-200 hover:border-gray-400 no-underline inline-flex items-center;
+}
+
+.dark .back-button {
+  @apply bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-gray-500;
+}
+
+.join-request-button {
+  @apply px-4 py-2 bg-blue-600 border border-blue-600 rounded-md text-white text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-blue-700 hover:border-blue-700 no-underline inline-flex items-center;
+}
+
+.join-request-button:hover {
+  @apply bg-blue-700 border-blue-700;
+}
+
+/* Validation Status */
+.validation-status {
+  @apply mb-8 p-6 rounded-lg border-2 transition-all duration-200;
+}
+
+.validation-status.complete {
+  @apply bg-green-50 border-green-200;
+}
+
+.dark .validation-status.complete {
+  @apply bg-green-900/20 border-green-700;
+}
+
+.validation-status.incomplete {
+  @apply bg-yellow-50 border-yellow-200;
+}
+
+.dark .validation-status.incomplete {
+  @apply bg-yellow-900/20 border-yellow-700;
+}
+
+.validation-header {
+  @apply flex justify-between items-center mb-4;
+}
+
+.validation-title {
+  @apply text-lg font-semibold m-0 transition-colors duration-200;
+}
+
+.validation-status.complete .validation-title {
+  @apply text-green-800;
+}
+
+.dark .validation-status.complete .validation-title {
+  @apply text-green-200;
+}
+
+.validation-status.incomplete .validation-title {
+  @apply text-yellow-800;
+}
+
+.dark .validation-status.incomplete .validation-title {
+  @apply text-yellow-200;
+}
+
+.validation-progress {
+  @apply text-sm font-medium transition-colors duration-200;
+}
+
+.validation-status.complete .validation-progress {
+  @apply text-green-700;
+}
+
+.dark .validation-status.complete .validation-progress {
+  @apply text-green-300;
+}
+
+.validation-status.incomplete .validation-progress {
+  @apply text-yellow-700;
+}
+
+.dark .validation-status.incomplete .validation-progress {
+  @apply text-yellow-300;
+}
+
+.validation-items {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-3;
+}
+
+.validation-item {
+  @apply flex items-center gap-3 p-3 rounded-md transition-all duration-200;
+}
+
+.validation-item.complete {
+  @apply bg-green-100;
+}
+
+.dark .validation-item.complete {
+  @apply bg-green-900/30;
+}
+
+.validation-item.incomplete {
+  @apply bg-yellow-100;
+}
+
+.dark .validation-item.incomplete {
+  @apply bg-yellow-900/30;
+}
+
+.validation-icon {
+  @apply text-lg;
+}
+
+.validation-text {
+  @apply text-sm font-medium transition-colors duration-200;
+}
+
+.validation-item.complete .validation-text {
+  @apply text-green-800;
+}
+
+.dark .validation-item.complete .validation-text {
+  @apply text-green-200;
+}
+
+.validation-item.incomplete .validation-text {
+  @apply text-yellow-800;
+}
+
+.dark .validation-item.incomplete .validation-text {
+  @apply text-yellow-200;
+}
+
+/* Campaign Sections */
+.campaign-sections {
+  @apply space-y-6 mb-8;
+}
+
+/* Placeholder Sections */
+.placeholder-section {
+  @apply bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm transition-all duration-200;
+}
+
+.dark .placeholder-section {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.placeholder-section .section-header {
+  @apply flex justify-between items-center p-5 bg-gray-50 border-b border-gray-200;
+}
+
+.dark .placeholder-section .section-header {
+  @apply bg-gray-900 border-gray-700;
+}
+
+.placeholder-section .section-title {
+  @apply text-lg font-semibold text-gray-900 m-0 transition-colors duration-200;
+}
+
+.dark .placeholder-section .section-title {
+  @apply text-gray-100;
+}
+
+.placeholder-content {
+  @apply p-5 text-center;
+}
+
+.placeholder-content p {
+  @apply text-gray-600 transition-colors duration-200;
+}
+
+.dark .placeholder-content p {
+  @apply text-gray-400;
+}
+
+/* Save Section */
+.save-section {
+  @apply flex justify-center pt-6 border-t-2 border-gray-200;
+}
+
+.dark .save-section {
+  @apply border-gray-700;
+}
+
+.save-button {
+  @apply px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-200 cursor-pointer;
+}
+
+.save-button.enabled {
+  @apply bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg;
+}
+
+.save-button.disabled {
+  @apply bg-gray-300 text-gray-500 cursor-not-allowed;
+}
+
+.dark .save-button.disabled {
+  @apply bg-gray-700 text-gray-400;
+}
+
+/* Live Interaction Section */
+.live-interaction-section {
+  @apply mb-8 p-6 rounded-lg border-2 border-blue-200 bg-blue-50 transition-all duration-200;
+}
+
+.dark .live-interaction-section {
+  @apply border-blue-700 bg-blue-900/20;
+}
+
+.active-interaction-status {
+  @apply space-y-4;
+}
+
+.status-header {
+  @apply flex justify-between items-center;
+}
+
+.status-header h3 {
+  @apply text-xl font-semibold text-blue-900 m-0 transition-colors duration-200;
+}
+
+.dark .status-header h3 {
+  @apply text-blue-100;
+}
+
+.status-badge {
+  @apply px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide;
+}
+
+.status-badge.pending_initiative {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.dark .status-badge.pending_initiative {
+  @apply bg-yellow-900/30 text-yellow-200;
+}
+
+.status-badge.initiative_rolled {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.dark .status-badge.initiative_rolled {
+  @apply bg-blue-900/30 text-blue-200;
+}
+
+.status-badge.waiting_for_player_turn {
+  @apply bg-green-100 text-green-800;
+}
+
+.dark .status-badge.waiting_for_player_turn {
+  @apply bg-green-900/30 text-green-200;
+}
+
+.status-badge.processing_player_action {
+  @apply bg-purple-100 text-purple-800;
+}
+
+.dark .status-badge.processing_player_action {
+  @apply bg-purple-900/30 text-purple-200;
+}
+
+.status-badge.dm_review {
+  @apply bg-orange-100 text-orange-800;
+}
+
+.dark .status-badge.dm_review {
+  @apply bg-orange-900/30 text-orange-200;
+}
+
+.status-badge.completed {
+  @apply bg-gray-100 text-gray-800;
+}
+
+.dark .status-badge.completed {
+  @apply bg-gray-700 text-gray-200;
+}
+
+.status-badge.cancelled {
+  @apply bg-red-100 text-red-800;
+}
+
+.dark .status-badge.cancelled {
+  @apply bg-red-900/30 text-red-200;
+}
+
+.interaction-info {
+  @apply space-y-2;
+}
+
+.interaction-info p {
+  @apply text-sm text-blue-800 transition-colors duration-200;
+}
+
+.dark .interaction-info p {
+  @apply text-blue-200;
+}
+
+.interaction-info strong {
+  @apply font-semibold;
+}
+
+.interaction-actions {
+  @apply flex gap-3;
+}
+
+.join-interaction-button {
+  @apply px-4 py-2 bg-green-600 text-white rounded-md font-medium cursor-pointer transition-all duration-200 hover:bg-green-700 shadow-md hover:shadow-lg;
+}
+
+.no-active-interaction {
+  @apply text-center space-y-4;
+}
+
+.no-active-interaction h3 {
+  @apply text-xl font-semibold text-blue-900 m-0 transition-colors duration-200;
+}
+
+.dark .no-active-interaction h3 {
+  @apply text-blue-100;
+}
+
+.no-active-interaction p {
+  @apply text-blue-700 transition-colors duration-200;
+}
+
+.dark .no-active-interaction p {
+  @apply text-blue-300;
+}
+
+.start-interaction-button {
+  @apply px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold cursor-pointer transition-all duration-200 hover:bg-blue-700 shadow-md hover:shadow-lg;
+}
+
+/* Live Interaction Modal */
+.live-interaction-modal {
+  @apply max-w-4xl w-full max-h-[90vh] overflow-y-auto;
+}
+
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4;
+}
+
+.modal-content {
+  @apply bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden;
+}
+
+.dark .modal-content {
+  @apply bg-gray-800;
+}
+
+.modal-header {
+  @apply flex justify-between items-center p-6 border-b border-gray-200;
+}
+
+.dark .modal-header {
+  @apply border-gray-700;
+}
+
+.modal-header h2 {
+  @apply text-xl font-semibold text-gray-900 m-0 transition-colors duration-200;
+}
+
+.dark .modal-header h2 {
+  @apply text-gray-100;
+}
+
+.modal-close {
+  @apply text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer transition-colors duration-200;
+}
+
+.dark .modal-close {
+  @apply text-gray-500 hover:text-gray-300;
+}
+
+.modal-body {
+  @apply p-6;
+}
+
+/* Loading State */
+.loading-state {
+  @apply flex flex-col items-center justify-center min-h-96 text-center p-8;
+}
+
+.dark .loading-state {
+  @apply text-gray-300;
+}
+
+.loading-spinner {
+  @apply w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4;
+}
+
+.dark .loading-spinner {
+  @apply border-gray-700 border-t-blue-400;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .campaign-detail-container {
+    @apply p-4;
+  }
+
+  .detail-header {
+    @apply flex-col gap-4;
+  }
+
+  .campaign-title {
+    @apply text-2xl;
+  }
+
+  .campaign-meta {
+    @apply gap-3;
+  }
+
+  .validation-header {
+    @apply flex-col gap-2;
+  }
+
+  .validation-items {
+    @apply grid-cols-1;
+  }
+
+  .save-button {
+    @apply w-full;
+  }
+
+  .live-interaction-section {
+    @apply p-4;
+  }
+
+  .status-header {
+    @apply flex-col gap-2 items-start;
+  }
+
+  .interaction-actions {
+    @apply flex-col;
+  }
+
+  .join-interaction-button,
+  .start-interaction-button {
+    @apply w-full;
+  }
+} 

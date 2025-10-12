@@ -5,8 +5,16 @@ import {
   TurnActionSchema,
   ChatMessageSchema,
   GameEventSchema,
-  type ValidationResult,
-} from '@campaignion/shared-types/schemas';
+} from '@campaignion/shared-types';
+
+// Define local ValidationResult type to avoid conflicts
+export interface ValidationResult {
+  valid: boolean;
+  errors: Array<{
+    path: string;
+    message: string;
+  }>;
+}
 
 /**
  * Validates game state data and returns a validation result

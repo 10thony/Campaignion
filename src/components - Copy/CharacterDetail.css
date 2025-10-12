@@ -1,0 +1,313 @@
+.character-detail {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    @apply transition-colors duration-200;
+  }
+  
+  .character-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    @apply border-b-2 border-gray-300 transition-colors duration-200;
+  }
+  
+  .dark .character-detail-header {
+    @apply border-gray-600;
+  }
+  
+  .character-title h1 {
+    margin: 0;
+    @apply text-gray-700 text-3xl transition-colors duration-200;
+  }
+  
+  .dark .character-title h1 {
+    @apply text-gray-200;
+  }
+  
+  .character-subtitle {
+    @apply text-gray-600 text-lg mt-2 transition-colors duration-200;
+  }
+  
+  .dark .character-subtitle {
+    @apply text-gray-400;
+  }
+  
+  .character-actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .character-detail-content {
+    margin-bottom: 2rem;
+  }
+  
+  .character-info-grid {
+    display: grid;
+    gap: 2rem;
+  }
+  
+  .info-section {
+    @apply bg-gray-50 p-6 rounded-lg border border-gray-200 transition-colors duration-200;
+  }
+  
+  .dark .info-section {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .info-section h2 {
+    margin: 0 0 1rem 0;
+    @apply text-gray-700 text-xl border-b border-gray-300 pb-2 transition-colors duration-200;
+  }
+  
+  .dark .info-section h2 {
+    @apply text-gray-200 border-gray-600;
+  }
+  
+  .info-section h3 {
+    margin: 1rem 0 0.5rem 0;
+    @apply text-gray-700 text-base transition-colors duration-200;
+  }
+  
+  .dark .info-section h3 {
+    @apply text-gray-200;
+  }
+  
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .info-item {
+    @apply bg-white p-3 rounded border border-gray-300 transition-colors duration-200;
+  }
+  
+  .dark .info-item {
+    @apply bg-gray-700 border-gray-600;
+  }
+  
+  .info-item strong {
+    @apply text-gray-700 transition-colors duration-200;
+  }
+  
+  .dark .info-item strong {
+    @apply text-gray-200;
+  }
+  
+  .combat-stats {
+    display: flex;
+    gap: 2rem;
+    justify-content: space-around;
+  }
+  
+  .combat-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    @apply bg-white rounded-lg border border-gray-300 min-w-[100px] transition-colors duration-200;
+  }
+  
+  .dark .combat-stat {
+    @apply bg-gray-700 border-gray-600;
+  }
+  
+  .combat-stat .stat-value {
+    font-size: 2rem;
+    font-weight: 600;
+    @apply text-gray-700 mb-2 transition-colors duration-200;
+  }
+  
+  .dark .combat-stat .stat-value {
+    @apply text-gray-200;
+  }
+  
+  .combat-stat .stat-label {
+    @apply text-sm text-gray-600 font-semibold uppercase transition-colors duration-200;
+  }
+  
+  .dark .combat-stat .stat-label {
+    @apply text-gray-400;
+  }
+  
+  .ability-scores-section {
+    grid-column: 1 / -1;
+  }
+  
+  .ability-scores-detail {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+  }
+  
+  .ability-score-detail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    @apply bg-white rounded-lg border border-gray-300 transition-colors duration-200;
+  }
+  
+  .dark .ability-score-detail {
+    @apply bg-gray-700 border-gray-600;
+  }
+  
+  .ability-name {
+    @apply text-sm text-gray-600 font-semibold uppercase mb-2 transition-colors duration-200;
+  }
+  
+  .dark .ability-name {
+    @apply text-gray-400;
+  }
+  
+  .ability-score-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    @apply text-gray-700 mb-1 transition-colors duration-200;
+  }
+  
+  .dark .ability-score-value {
+    @apply text-gray-200;
+  }
+  
+  .ability-modifier {
+    @apply text-base text-gray-600 font-medium transition-colors duration-200;
+  }
+  
+  .dark .ability-modifier {
+    @apply text-gray-400;
+  }
+  
+  .proficiencies-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .proficiency-category {
+    @apply bg-white p-4 rounded-lg border border-gray-300 transition-colors duration-200;
+  }
+  
+  .dark .proficiency-category {
+    @apply bg-gray-700 border-gray-600;
+  }
+  
+  .proficiency-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .proficiency-item {
+    @apply bg-gray-200 px-2 py-1 rounded text-sm font-medium transition-colors duration-200;
+  }
+  
+  .dark .proficiency-item {
+    @apply bg-gray-600 text-gray-200;
+  }
+  
+  .trait-list,
+  .equipment-list {
+    @apply bg-white p-4 rounded-lg border border-gray-300 m-0 transition-colors duration-200;
+  }
+  
+  .dark .trait-list,
+  .dark .equipment-list {
+    @apply bg-gray-700 border-gray-600;
+  }
+  
+  .trait-list li,
+  .equipment-list li {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    @apply bg-gray-50 rounded transition-colors duration-200;
+  }
+  
+  .dark .trait-list li,
+  .dark .equipment-list li {
+    @apply bg-gray-600;
+  }
+  
+  .language-list {
+    @apply bg-white p-4 rounded-lg border border-gray-300 transition-colors duration-200;
+  }
+  
+  .dark .language-list {
+    @apply bg-gray-700 border-gray-600;
+  }
+  
+  .character-meta {
+    text-align: center;
+    padding-top: 1rem;
+    @apply border-t border-gray-300 transition-colors duration-200;
+  }
+  
+  .dark .character-meta {
+    @apply border-gray-600;
+  }
+  
+  .loading,
+  .error {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.1rem;
+    @apply transition-colors duration-200;
+  }
+  
+  .loading {
+    @apply text-gray-700;
+  }
+  
+  .dark .loading {
+    @apply text-gray-300;
+  }
+  
+  .error {
+    @apply text-red-500;
+  }
+  
+  .dark .error {
+    @apply text-red-400;
+  }
+  
+  /* Text utility classes for dark mode */
+  .text-primary {
+    @apply text-gray-700 transition-colors duration-200;
+  }
+  
+  .dark .text-primary {
+    @apply text-gray-200;
+  }
+  
+  @media (max-width: 768px) {
+    .character-detail {
+      padding: 1rem;
+    }
+  
+    .character-detail-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  
+    .character-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+  
+    .combat-stats {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  
+    .ability-scores-detail {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  

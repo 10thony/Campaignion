@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { useAuth } from '@clerk/clerk-react';
+import { useAuthentication } from '../components/providers/AuthenticationProvider';
 import { api } from '../../convex/_generated/api';
 import { Id } from '../../convex/_generated/dataModel';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { LiveInteractionModal } from '../components/modals/LiveInteractionModal';
-import { trpc } from '../lib/trpc';
+// tRPC import removed - migrated to Convex
 import {
   Play,
   Pause,
@@ -21,32 +22,66 @@ import {
 } from 'lucide-react';
 
 export function InteractionsPage() {
-  const { userId } = useAuth();
+  const { userId, isLoaded: isAuthLoaded } = useAuth();
+  const { isAuthenticated, isLoading: isAuthProviderLoading } = useAuthentication();
   const [selectedInteraction, setSelectedInteraction] = useState<string | null>(null);
   const [isLiveModalOpen, setIsLiveModalOpen] = useState(false);
   const [selectedCampaign] = useState<Id<"campaigns"> | undefined>();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [componentError, setComponentError] = useState<Error | null>(null);
 
-  // Convex queries
-  const interactions = useQuery(api.interactions.getAllInteractionsWithLiveStatus, {
-    campaignId: selectedCampaign,
-  });
+  // Error boundary effect to catch and handle component errors
+  useEffect(() => {
+    const handleError = (error: ErrorEvent) => {
+      console.error('InteractionsPage Error:', error.error);
+      // Only set component error for non-auth related errors
+      if (error.error && !error.error.message?.includes('authentication') && !error.error.message?.includes('Not authenticated')) {
+        setComponentError(error.error);
+      }
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('InteractionsPage Promise Rejection:', event.reason);
+      // Handle Convex authentication errors gracefully
+      if (event.reason && (
+        event.reason.message?.includes('Not authenticated') ||
+        event.reason.message?.includes('Unauthenticated') ||
+        event.reason.code === 'Unauthenticated'
+      )) {
+        // Don't set component error for auth issues - let auth provider handle them
+        return;
+      }
+      setComponentError(event.reason);
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
+
+  // Convex queries - only run when authentication is complete
+  const interactions = useQuery(
+    api.interactions.getAllInteractionsWithLiveStatus, 
+    isAuthenticated && isAuthLoaded ? { campaignId: selectedCampaign } : "skip"
+  );
 
   const updateInteractionStatus = useMutation(api.interactions.updateInteractionStatus);
 
-  // tRPC queries for live server communication
-  const joinRoomMutation = trpc.interaction.joinRoom.useMutation();
-  const pauseInteractionMutation = trpc.interaction.pauseInteraction.useMutation();
-  const resumeInteractionMutation = trpc.interaction.resumeInteraction.useMutation();
+  // Convex mutations for live room management with error handling
+  const joinRoomMutation = useMutation(api.liveSystemAPI.quickJoinRoom);
+  const pauseRoomMutation = useMutation(api.liveSystemAPI.pauseLiveRoom);
+  const resumeRoomMutation = useMutation(api.liveSystemAPI.resumeLiveRoom);
 
-  // Health check to verify live server connection
-  const { data: healthData, error: healthError } = trpc.interaction.health.useQuery(
-    undefined,
-    {
-      retry: 3,
-      retryDelay: 1000,
-    }
+  // Health check using Convex system health with error boundary
+  const healthData = useQuery(
+    api.liveSystemAPI.getComprehensiveSystemHealth,
+    isAuthenticated && isAuthLoaded ? {} : "skip"
   );
+  const healthError = healthData === null ? new Error("System health unavailable") : null;
 
   // Auto-refresh interactions every 30 seconds for real-time updates
   useEffect(() => {
@@ -64,8 +99,8 @@ export function InteractionsPage() {
     try {
       // For now, we'll use a placeholder entity ID
       // In a real implementation, this would come from the user's selected character
-      const result = await joinRoomMutation.mutateAsync({
-        interactionId,
+      const result = await joinRoomMutation({
+        interactionId: interactionId as Id<"interactions">,
         entityId: `character-${userId}`,
         entityType: 'playerCharacter'
       });
@@ -80,7 +115,7 @@ export function InteractionsPage() {
     }
   };
 
-  // Handle DM status changes via live server
+  // Handle DM status changes via Convex live system
   const handleStatusChange = async (
     interactionId: Id<"interactions">,
     newStatus: 'idle' | 'live' | 'paused' | 'completed'
@@ -92,14 +127,14 @@ export function InteractionsPage() {
           interactionId,
           status: newStatus,
         });
-        // The live server will pick up the status change
+        // The live system will automatically create the room if needed
       } else if (newStatus === 'paused') {
-        // Use live server to pause
-        await pauseInteractionMutation.mutateAsync({
+        // Use Convex live system to pause
+        await pauseRoomMutation({
           interactionId,
           reason: 'DM paused interaction'
         });
-        // Also update Convex
+        // Also update Convex interaction status
         await updateInteractionStatus({
           interactionId,
           status: newStatus,
@@ -112,7 +147,7 @@ export function InteractionsPage() {
         });
       } else {
         // Resume interaction
-        await resumeInteractionMutation.mutateAsync({
+        await resumeRoomMutation({
           interactionId,
         });
         await updateInteractionStatus({
@@ -179,6 +214,47 @@ export function InteractionsPage() {
     return `${diffDays}d ago`;
   };
 
+  // Display error state if component error occurred
+  if (componentError) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <AlertCircle className="w-12 h-12 text-destructive mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Something went wrong</h2>
+          <p className="text-muted-foreground text-center mb-4">
+            There was an error loading the interactions page. Please refresh the page or try again later.
+          </p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Refresh Page
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state while authentication is being established
+  if (!isAuthLoaded || isAuthProviderLoading || !isAuthenticated) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" data-testid="loading-spinner" />
+            <p className="text-muted-foreground">
+              {!isAuthLoaded ? 'Loading authentication...' : 
+               !isAuthenticated ? 'Authenticating...' : 
+               'Loading interactions...'}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!interactions) {
     return (
       <div className="container mx-auto py-6">
@@ -214,7 +290,7 @@ export function InteractionsPage() {
               aria-live="polite"
             >
               <CheckCircle className="w-4 h-4 text-green-500" aria-hidden="true" />
-              Live server connected ({healthData.stats?.activeRooms || 0} active rooms)
+              Live system connected ({healthData?.detailedStatus?.liveRooms?.active || 0} active rooms)
             </div>
           )}
         </div>
@@ -379,7 +455,7 @@ export function InteractionsPage() {
       {/* Live Interaction Modal */}
       {selectedInteraction && (
         <LiveInteractionModal
-          interactionId={selectedInteraction}
+          interactionId={selectedInteraction as Id<"interactions">}
           open={isLiveModalOpen}
           onOpenChange={(open) => {
             setIsLiveModalOpen(open);

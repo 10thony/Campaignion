@@ -1,0 +1,315 @@
+/* Error Boundary Styles */
+.error-boundary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 2rem;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.error-boundary-container {
+  max-width: 600px;
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.error-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.error-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.error-title h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.error-severity {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background: var(--color-surface-variant);
+  margin-top: 0.5rem;
+}
+
+.error-message {
+  margin-bottom: 2rem;
+}
+
+.error-message p {
+  margin: 0.5rem 0;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.error-type {
+  font-size: 0.875rem;
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.error-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.error-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.retry-button {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.retry-button:hover:not(:disabled) {
+  background: var(--color-primary-variant);
+  transform: translateY(-1px);
+}
+
+.reset-button {
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+}
+
+.reset-button:hover {
+  background: var(--color-secondary-variant);
+  transform: translateY(-1px);
+}
+
+.report-button {
+  background: var(--color-surface-variant);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.report-button:hover {
+  background: var(--color-surface-variant-hover);
+  transform: translateY(-1px);
+}
+
+.error-details {
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.error-details summary {
+  cursor: pointer;
+  padding: 0.75rem;
+  background: var(--color-surface-variant);
+  border-radius: 8px;
+  font-weight: 500;
+  color: var(--color-text);
+  transition: background-color 0.2s ease;
+}
+
+.error-details summary:hover {
+  background: var(--color-surface-variant-hover);
+}
+
+.error-stack {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--color-surface-variant);
+  border-radius: 8px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  overflow-x: auto;
+}
+
+.error-stack h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--color-text);
+  font-size: 0.875rem;
+}
+
+.error-stack pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-text-secondary);
+}
+
+.error-suggestions {
+  margin-top: 2rem;
+  text-align: left;
+  padding: 1.5rem;
+  background: var(--color-surface-variant);
+  border-radius: 8px;
+  border-left: 4px solid var(--color-primary);
+}
+
+.error-suggestions h4 {
+  margin: 0 0 1rem 0;
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.error-suggestions ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: var(--color-text-secondary);
+}
+
+.error-suggestions li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+/* Dark mode specific styles */
+@media (prefers-color-scheme: dark) {
+  .error-boundary-container {
+    background: var(--color-surface-dark, #1a1a1a);
+    border-color: var(--color-border-dark, #333);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .error-severity {
+    background: var(--color-surface-variant-dark, #2a2a2a);
+  }
+
+  .error-stack {
+    background: var(--color-surface-variant-dark, #2a2a2a);
+  }
+
+  .error-suggestions {
+    background: var(--color-surface-variant-dark, #2a2a2a);
+  }
+
+  .error-details summary {
+    background: var(--color-surface-variant-dark, #2a2a2a);
+  }
+
+  .error-details summary:hover {
+    background: var(--color-surface-variant-hover-dark, #3a3a3a);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .error-boundary {
+    padding: 1rem;
+    min-height: 300px;
+  }
+
+  .error-boundary-container {
+    padding: 1.5rem;
+  }
+
+  .error-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .error-icon {
+    font-size: 2.5rem;
+  }
+
+  .error-title h2 {
+    font-size: 1.25rem;
+  }
+
+  .error-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .error-button {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .error-suggestions {
+    padding: 1rem;
+  }
+}
+
+/* Animation for retrying state */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.error-button:disabled {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Focus styles for accessibility */
+.error-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.error-details summary:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .error-boundary-container {
+    border-width: 2px;
+  }
+
+  .error-button {
+    border: 2px solid currentColor;
+  }
+
+  .error-suggestions {
+    border-left-width: 6px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .error-button {
+    transition: none;
+  }
+
+  .error-button:hover {
+    transform: none;
+  }
+
+  .error-button:disabled {
+    animation: none;
+  }
+} 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from 'convex/react'
-import { SignedIn, SignedOut } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-react'
 import { QuestCard } from '@/components/QuestCard'
 import { QuestModal } from '@/components/modals/QuestModal'
 import { SampleDataPanel } from '@/components/SampleDataPanel'
@@ -8,22 +8,67 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Search, BookOpen, CheckCircle, Clock, Play } from 'lucide-react'
+import { Plus, Search, BookOpen, CheckCircle, Clock, Play, Loader2 } from 'lucide-react'
 import { api } from '../../convex/_generated/api'
+import { useAuthentication } from '@/components/providers/AuthenticationProvider'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 type QuestStatus = "idle" | "in_progress" | "completed" | "NotStarted" | "InProgress" | "Failed"
 
 export function QuestsPage() {
-  const quests = useQuery(api.quests.getQuests)
-  const myQuests = useQuery(api.quests.getMyQuests)
+  const { isSignedIn, isLoaded: isAuthLoaded } = useAuth()
+  const { isAuthenticated, isLoading: isAuthProviderLoading } = useAuthentication()
+  
+  // Only run queries if user is authenticated
+  const quests = useQuery(
+    api.quests.getQuests,
+    isAuthenticated ? {} : "skip"
+  )
+  const myQuests = useQuery(
+    api.quests.getMyQuests,
+    isAuthenticated ? {} : "skip"
+  )
+  
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedStatus, setSelectedStatus] = useState<QuestStatus | ''>('')
   const [activeTab, setActiveTab] = useState<'my' | 'all'>('my')
   const [modalOpen, setModalOpen] = useState(false)
-  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create")
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "read">("create")
   const [selectedQuest, setSelectedQuest] = useState<any>(null)
 
   const updateQuestStatus = useMutation(api.quests.updateQuestStatus)
+
+  // Show loading state while authentication is being determined
+  if (!isAuthLoaded || isAuthProviderLoading) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span>Loading...</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show authentication required message if not authenticated
+  if (!isSignedIn || !isAuthenticated) {
+    return (
+      <div className="container mx-auto py-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Authentication Required</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Please sign in to access the quest management system.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   const handleUpdateQuestStatus = async (questId: string, status: QuestStatus) => {
     try {
@@ -49,7 +94,7 @@ export function QuestsPage() {
     const quest = [...(myQuests || []), ...(quests || [])].find(q => q._id === questId)
     if (quest) {
       setSelectedQuest(quest)
-      setModalMode("view")
+      setModalMode("read")
       setModalOpen(true)
     }
   }
@@ -145,7 +190,8 @@ export function QuestsPage() {
   const stats = getQuestStats(activeTab === 'my' ? (myQuests || []) : (quests || []))
 
   return (
-    <div className="container mx-auto py-6">
+    <ErrorBoundary>
+      <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Quest Journal</h1>
@@ -298,6 +344,7 @@ export function QuestsPage() {
         quest={selectedQuest}
         onSuccess={handleModalSuccess}
       />
-    </div>
+      </div>
+    </ErrorBoundary>
   )
 } 

@@ -1,0 +1,112 @@
+.bulk-item-generator {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.generate-items-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.generate-items-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.generate-items-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+}
+
+.success-message {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.items-preview {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+}
+
+.items-preview h4 {
+  margin: 0 0 0.75rem 0;
+  color: var(--text-primary, #374151);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.items-preview ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.items-preview li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-light, #f3f4f6);
+  font-size: 0.875rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.items-preview li:last-child {
+  border-bottom: none;
+}
+
+.items-preview li strong {
+  color: var(--text-primary, #374151);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .bulk-item-generator {
+    background: var(--card-bg-dark, #1f2937);
+    border-color: var(--border-color-dark, #374151);
+  }
+  
+  .items-preview {
+    border-top-color: var(--border-color-dark, #374151);
+  }
+  
+  .items-preview h4 {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+  
+  .items-preview li {
+    border-bottom-color: var(--border-light-dark, #374151);
+    color: var(--text-secondary-dark, #9ca3af);
+  }
+  
+  .items-preview li strong {
+    color: var(--text-primary-dark, #f9fafb);
+  }
+} 

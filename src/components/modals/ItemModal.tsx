@@ -31,7 +31,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
+import { Loader2, Sparkles } from "lucide-react"
+import { useGPTGeneration } from "@/lib/gptGeneration"
+import { toast } from "sonner"
 
 interface Item {
   _id: string
@@ -73,6 +75,7 @@ export function ItemModal({
   onSuccess,
 }: ItemModalProps) {
   const createItem = useMutation(api.items.createItem)
+  const { generate, isGenerating } = useGPTGeneration()
   
   const form = useForm<ItemFormData>({
     resolver: zodResolver(itemSchema),
@@ -208,12 +211,78 @@ export function ItemModal({
   const isSubmitting = form.formState.isSubmitting
   const isArmor = itemType === "Armor"
 
+  // Handle GPT generation
+  const handleGenerateWithGPT = async () => {
+    try {
+      toast.info("Generating item with GPT...", { duration: 2000 })
+      const result = await generate("item")
+      
+      if (result.success && result.data) {
+        // Populate form with generated data
+        form.reset({
+          name: result.data.name || "",
+          type: result.data.type || "Other",
+          rarity: result.data.rarity || "Common",
+          description: result.data.description || "",
+          effects: result.data.effects || "",
+          weight: result.data.weight,
+          cost: result.data.cost,
+          attunement: result.data.attunement || false,
+          typeOfArmor: result.data.typeOfArmor,
+          armorClass: result.data.armorClass,
+          abilityModifiers: result.data.abilityModifiers || {
+            strength: undefined,
+            dexterity: undefined,
+            constitution: undefined,
+            intelligence: undefined,
+            wisdom: undefined,
+            charisma: undefined,
+          },
+        })
+        
+        toast.success("Item generated successfully! Review and adjust as needed.", {
+          duration: 3000,
+        })
+      } else {
+        toast.error(result.error || "Failed to generate item")
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to generate item")
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{getTitle()}</DialogTitle>
-          <DialogDescription>{getDescription()}</DialogDescription>
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <DialogTitle>{getTitle()}</DialogTitle>
+              <DialogDescription>{getDescription()}</DialogDescription>
+            </div>
+            {mode === "create" && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleGenerateWithGPT}
+                disabled={isGenerating || isSubmitting}
+                className="ml-4"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate with GPT
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </DialogHeader>
 
         <Form {...form}>

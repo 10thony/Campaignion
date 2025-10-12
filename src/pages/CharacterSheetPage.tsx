@@ -25,7 +25,7 @@ export function CharacterSheetPage({ characterId }: CharacterSheetPageProps) {
     )
   }
 
-  const isPC = character.characterType === "PlayerCharacter"
+  const isPC = character.characterType === "player"
   
   // Mock inventory data - in real app this would come from character.inventory
   const mockInventoryItems = [

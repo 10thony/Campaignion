@@ -13,7 +13,7 @@ interface Character {
   hitPoints: number
   armorClass: number
   speed?: string
-  characterType: "PlayerCharacter" | "NonPlayerCharacter"
+  characterType: "player" | "npc"
   abilityModifiers?: {
     strength: number
     dexterity: number
@@ -39,7 +39,7 @@ export function CharacterCard({
   onEdit, 
   canEdit = false 
 }: CharacterCardProps) {
-  const isPC = character.characterType === "PlayerCharacter"
+  const isPC = character.characterType === "player"
   const speed = character.speed || "30 ft."
 
   return (

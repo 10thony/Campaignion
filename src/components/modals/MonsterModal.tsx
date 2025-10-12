@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
 import { api } from "../../../convex/_generated/api"
-import { MonsterFormData, monsterSchema, DND_SIZES, DND_ALIGNMENTS, DND_CHALLENGE_RATINGS, DND_HIT_DICE, calculateAbilityModifier } from "@/lib/validation/schemas"
+import { MonsterFormData, monsterSchema, DND_SIZES, DND_CHALLENGE_RATINGS, DND_HIT_DICE, calculateAbilityModifier } from "@/lib/validation/schemas"
 import {
   Dialog,
   DialogContent,
@@ -28,10 +28,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
+import { Loader2, Sparkles } from "lucide-react"
+import { ActionManager } from "@/components/ActionManager"
+import { useGPTGeneration } from "@/lib/gptGeneration"
+import { toast } from "sonner"
 
 interface Monster {
   _id: string
@@ -73,6 +81,10 @@ interface Monster {
   challengeRatingValue?: number
   legendaryActionCount?: number
   lairActionCount?: number
+  actions?: Array<{
+    name: string
+    description: string
+  }>
   createdAt?: number
   creatorId?: string
 }
@@ -93,6 +105,12 @@ export function MonsterModal({
   onSuccess,
 }: MonsterModalProps) {
   const createMonster = useMutation(api.monsters.createMonster)
+  const { generate, isGenerating } = useGPTGeneration()
+  
+  // State for managing inline actions
+  const [inlineActions, setInlineActions] = React.useState<Array<{ name: string; description: string }>>(
+    monster?.actions || []
+  )
   
   const form = useForm<MonsterFormData>({
     resolver: zodResolver(monsterSchema),
@@ -135,6 +153,7 @@ export function MonsterModal({
       challengeRatingValue: monster?.challengeRatingValue || undefined,
       legendaryActionCount: monster?.legendaryActionCount || undefined,
       lairActionCount: monster?.lairActionCount || undefined,
+      actions: monster?.actions || [],
     },
   })
 
@@ -172,7 +191,9 @@ export function MonsterModal({
         challengeRatingValue: monster.challengeRatingValue || undefined,
         legendaryActionCount: monster.legendaryActionCount || undefined,
         lairActionCount: monster.lairActionCount || undefined,
+        actions: monster.actions || [],
       })
+      setInlineActions(monster.actions || [])
     } else if (mode === "create") {
       form.reset({
         name: "",
@@ -204,7 +225,9 @@ export function MonsterModal({
         challengeRatingValue: undefined,
         legendaryActionCount: undefined,
         lairActionCount: undefined,
+        actions: [],
       })
+      setInlineActions([])
     }
   }, [monster, mode, form])
 
@@ -231,6 +254,7 @@ export function MonsterModal({
         challengeRatingValue: data.challengeRatingValue || undefined,
         legendaryActionCount: data.legendaryActionCount || undefined,
         lairActionCount: data.lairActionCount || undefined,
+        actions: inlineActions.length > 0 ? inlineActions : undefined,
       }
 
       if (mode === "create") {
@@ -276,270 +300,189 @@ export function MonsterModal({
   const isReadOnly = mode === "view"
   const isSubmitting = form.formState.isSubmitting
 
+  // Handle GPT generation
+  const handleGenerateWithGPT = async () => {
+    try {
+      toast.info("Generating monster with GPT...", { duration: 2000 })
+      const result = await generate("monster")
+      
+      if (result.success && result.data) {
+        // Populate form with generated data
+        form.reset({
+          name: result.data.name || "",
+          source: result.data.source || "Custom Creation",
+          size: result.data.size || "Medium",
+          type: result.data.type || "",
+          alignment: result.data.alignment || "",
+          armorClass: result.data.armorClass || 10,
+          hitPoints: result.data.hitPoints || 1,
+          hitDice: result.data.hitDice || { count: 1, die: "d8" },
+          speed: result.data.speed || { walk: "30 ft." },
+          abilityScores: result.data.abilityScores || {
+            strength: 10,
+            dexterity: 10,
+            constitution: 10,
+            intelligence: 10,
+            wisdom: 10,
+            charisma: 10,
+          },
+          challengeRating: result.data.challengeRating || "0",
+          proficiencyBonus: result.data.proficiencyBonus || 2,
+          senses: result.data.senses || { passivePerception: 10 },
+          challengeRatingValue: result.data.challengeRatingValue,
+          legendaryActionCount: result.data.legendaryActionCount,
+          lairActionCount: result.data.lairActionCount,
+          actions: result.data.actions || [],
+        })
+        
+        // Update inline actions
+        setInlineActions(result.data.actions || [])
+        
+        toast.success("Monster generated successfully! Review and adjust as needed.", {
+          duration: 3000,
+        })
+      } else {
+        toast.error(result.error || "Failed to generate monster")
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to generate monster")
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{getTitle()}</DialogTitle>
-          <DialogDescription>{getDescription()}</DialogDescription>
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <DialogTitle>{getTitle()}</DialogTitle>
+              <DialogDescription>{getDescription()}</DialogDescription>
+            </div>
+            {mode === "create" && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleGenerateWithGPT}
+                disabled={isGenerating || isSubmitting}
+                className="ml-4"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate with GPT
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid gap-6">
-              {/* Basic Information */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Basic Information</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Monster Name *</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter monster name..."
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          The name of the monster (2-100 characters)
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            <Tabs defaultValue="basic" className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                <TabsTrigger value="stats">Stats</TabsTrigger>
+                <TabsTrigger value="abilities">Special Abilities</TabsTrigger>
+                <TabsTrigger value="actions">Actions</TabsTrigger>
+              </TabsList>
 
-                  <FormField
-                    control={form.control}
-                    name="source"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Source</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="e.g., Monster Manual, Homebrew..."
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Where this monster comes from
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="size"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Size *</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          disabled={isReadOnly}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select size..." />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {DND_SIZES.map((size) => (
-                              <SelectItem key={size} value={size}>
-                                {size}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Type *</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="e.g., humanoid, beast, dragon..."
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="alignment"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Alignment *</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="e.g., chaotic evil, neutral..."
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* Combat Stats */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Combat Statistics</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="armorClass"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Armor Class *</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={e => field.onChange(parseInt(e.target.value))}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormDescription>AC (1-30)</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="hitPoints"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Hit Points *</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={e => field.onChange(parseInt(e.target.value))}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormDescription>Max HP (1-1000)</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="proficiencyBonus"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Proficiency Bonus *</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={e => field.onChange(parseInt(e.target.value))}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormDescription>Prof. bonus (2-9)</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="hitDice.count"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Hit Dice Count *</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={e => field.onChange(parseInt(e.target.value))}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormDescription>Number of hit dice (1-100)</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="hitDice.die"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Hit Die Type *</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          disabled={isReadOnly}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select die..." />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {DND_HIT_DICE.map((die) => (
-                              <SelectItem key={die} value={die}>
-                                {die}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* Speed */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Speed</h4>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  {[
-                    { name: "walk", label: "Walk", placeholder: "30 ft." },
-                    { name: "swim", label: "Swim", placeholder: "30 ft." },
-                    { name: "fly", label: "Fly", placeholder: "60 ft." },
-                    { name: "burrow", label: "Burrow", placeholder: "20 ft." },
-                    { name: "climb", label: "Climb", placeholder: "30 ft." },
-                  ].map(({ name, label, placeholder }) => (
+              {/* Basic Info Tab */}
+              <TabsContent value="basic" className="space-y-6">
+                {/* Basic Information section content */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium">Basic Information</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Name Field */}
                     <FormField
-                      key={name}
                       control={form.control}
-                      name={`speed.${name}` as any}
+                      name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{label}</FormLabel>
+                          <FormLabel>Monster Name *</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder={placeholder}
+                              placeholder="Enter monster name..."
+                              {...field}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            The name of the monster (2-100 characters)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {/* Source Field */}
+                    <FormField
+                      control={form.control}
+                      name="source"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Source</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g., Monster Manual, Homebrew..."
+                              {...field}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Where this monster comes from
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  {/* Size, Type, Alignment Fields */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Size Select */}
+                    <FormField
+                      control={form.control}
+                      name="size"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Size *</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            disabled={isReadOnly}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select size..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {DND_SIZES.map((size) => (
+                                <SelectItem key={size} value={size}>
+                                  {size}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {/* Type Field */}
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g., humanoid, beast, dragon..."
                               {...field}
                               disabled={isReadOnly}
                             />
@@ -548,29 +491,41 @@ export function MonsterModal({
                         </FormItem>
                       )}
                     />
-                  ))}
-                </div>
-              </div>
-
-              {/* Ability Scores */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Ability Scores</h4>
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                  {[
-                    { name: "strength", label: "STR" },
-                    { name: "dexterity", label: "DEX" },
-                    { name: "constitution", label: "CON" },
-                    { name: "intelligence", label: "INT" },
-                    { name: "wisdom", label: "WIS" },
-                    { name: "charisma", label: "CHA" },
-                  ].map(({ name, label }) => (
+                    {/* Alignment Field */}
                     <FormField
-                      key={name}
                       control={form.control}
-                      name={`abilityScores.${name}` as any}
+                      name="alignment"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{label}</FormLabel>
+                          <FormLabel>Alignment *</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g., chaotic evil, neutral..."
+                              {...field}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Stats Tab */}
+              <TabsContent value="stats" className="space-y-6">
+                {/* Combat Stats Section */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium">Combat Statistics</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Armor Class Field */}
+                    <FormField
+                      control={form.control}
+                      name="armorClass"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Armor Class *</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -579,196 +534,366 @@ export function MonsterModal({
                               disabled={isReadOnly}
                             />
                           </FormControl>
-                          <FormDescription>
-                            {field.value ? `(${calculateAbilityModifier(field.value) >= 0 ? '+' : ''}${calculateAbilityModifier(field.value)})` : ''}
-                          </FormDescription>
+                          <FormDescription>AC (1-30)</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                  ))}
-                </div>
-              </div>
-
-              {/* Challenge Rating & Actions */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Challenge & Special Abilities</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="challengeRating"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Challenge Rating *</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          disabled={isReadOnly}
-                        >
+                    {/* Hit Points Field */}
+                    <FormField
+                      control={form.control}
+                      name="hitPoints"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Hit Points *</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select CR..." />
-                            </SelectTrigger>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={e => field.onChange(parseInt(e.target.value))}
+                              disabled={isReadOnly}
+                            />
                           </FormControl>
-                          <SelectContent>
-                            {DND_CHALLENGE_RATINGS.map((cr) => (
-                              <SelectItem key={cr} value={cr}>
-                                {cr}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="legendaryActionCount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Legendary Actions</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...field}
-                            onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                            value={field.value || ""}
+                          <FormDescription>Max HP (1-1000)</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {/* Proficiency Bonus Field */}
+                    <FormField
+                      control={form.control}
+                      name="proficiencyBonus"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Proficiency Bonus *</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={e => field.onChange(parseInt(e.target.value))}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormDescription>Prof. bonus (2-9)</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  {/* Hit Dice Fields */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="hitDice.count"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Hit Dice Count *</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={e => field.onChange(parseInt(e.target.value))}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormDescription>Number of hit dice (1-100)</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="hitDice.die"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Hit Die Type *</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
                             disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormDescription>0-5</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="lairActionCount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Lair Actions</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="0"
-                            {...field}
-                            onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                            value={field.value || ""}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormDescription>0-5</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select die..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {DND_HIT_DICE.map((die) => (
+                                <SelectItem key={die} value={die}>
+                                  {die}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
-              </div>
-
-              {/* Senses */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium">Senses</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="senses.passivePerception"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Passive Perception *</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={e => field.onChange(parseInt(e.target.value))}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormDescription>Passive Perception (1-30)</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="senses.darkvision"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Darkvision</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="e.g., 60 ft."
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="senses.blindsight"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Blindsight</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="e.g., 30 ft."
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                {/* Speed Section */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium">Speed</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    {[
+                      { name: "walk", label: "Walk", placeholder: "30 ft." },
+                      { name: "swim", label: "Swim", placeholder: "30 ft." },
+                      { name: "fly", label: "Fly", placeholder: "60 ft." },
+                      { name: "burrow", label: "Burrow", placeholder: "20 ft." },
+                      { name: "climb", label: "Climb", placeholder: "30 ft." },
+                    ].map(({ name, label, placeholder }) => (
+                      <FormField
+                        key={name}
+                        control={form.control}
+                        name={`speed.${name}` as any}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{label}</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder={placeholder}
+                                {...field}
+                                disabled={isReadOnly}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="senses.tremorsense"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tremorsense</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="e.g., 60 ft."
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="senses.truesight"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Truesight</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="e.g., 120 ft."
-                            {...field}
-                            disabled={isReadOnly}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                {/* Ability Scores Section */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium">Ability Scores</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                    {[
+                      { name: "strength", label: "STR" },
+                      { name: "dexterity", label: "DEX" },
+                      { name: "constitution", label: "CON" },
+                      { name: "intelligence", label: "INT" },
+                      { name: "wisdom", label: "WIS" },
+                      { name: "charisma", label: "CHA" },
+                    ].map(({ name, label }) => (
+                      <FormField
+                        key={name}
+                        control={form.control}
+                        name={`abilityScores.${name}` as any}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{label}</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                {...field}
+                                onChange={e => field.onChange(parseInt(e.target.value))}
+                                disabled={isReadOnly}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              {field.value ? `(${calculateAbilityModifier(field.value) >= 0 ? '+' : ''}${calculateAbilityModifier(field.value)})` : ''}
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </div>
+                {/* Senses Section */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium">Senses</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Passive Perception Field */}
+                    <FormField
+                      control={form.control}
+                      name="senses.passivePerception"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Passive Perception *</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={e => field.onChange(parseInt(e.target.value))}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormDescription>Passive Perception (1-30)</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {/* Darkvision Field */}
+                    <FormField
+                      control={form.control}
+                      name="senses.darkvision"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Darkvision</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g., 60 ft."
+                              {...field}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {/* Blindsight Field */}
+                    <FormField
+                      control={form.control}
+                      name="senses.blindsight"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Blindsight</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g., 30 ft."
+                              {...field}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Tremorsense Field */}
+                    <FormField
+                      control={form.control}
+                      name="senses.tremorsense"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tremorsense</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g., 60 ft."
+                              {...field}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {/* Truesight Field */}
+                    <FormField
+                      control={form.control}
+                      name="senses.truesight"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Truesight</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="e.g., 120 ft."
+                              {...field}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Special Abilities Tab */}
+              <TabsContent value="abilities" className="space-y-6">
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium">Special Abilities</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Challenge Rating Field */}
+                    <FormField
+                      control={form.control}
+                      name="challengeRating"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Challenge Rating *</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            disabled={isReadOnly}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select CR..." />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {DND_CHALLENGE_RATINGS.map((cr) => (
+                                <SelectItem key={cr} value={cr}>
+                                  {cr}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {/* Legendary Actions Field */}
+                    <FormField
+                      control={form.control}
+                      name="legendaryActionCount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Legendary Actions</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0"
+                              {...field}
+                              onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                              value={field.value || ""}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormDescription>0-5</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {/* Lair Actions Field */}
+                    <FormField
+                      control={form.control}
+                      name="lairActionCount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Lair Actions</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0"
+                              {...field}
+                              onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                              value={field.value || ""}
+                              disabled={isReadOnly}
+                            />
+                          </FormControl>
+                          <FormDescription>0-5</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Actions Tab */}
+              <TabsContent value="actions" className="space-y-6">
+                <ActionManager
+                  mode="monster"
+                  inlineActions={inlineActions}
+                  onInlineActionsChange={setInlineActions}
+                  disabled={isReadOnly}
+                />
+              </TabsContent>
+            </Tabs>
 
             {!isReadOnly && (
               <DialogFooter>

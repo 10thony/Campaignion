@@ -4,6 +4,7 @@ import monstersData from '@/data/sample/monsters.json'
 import itemsData from '@/data/sample/items.json'
 import questsData from '@/data/sample/quests.json'
 import actionsData from '@/data/sample/actions.json'
+import mapsData from '@/data/sample/maps.json'
 
 export interface SampleDataInfo {
   version: string
@@ -166,9 +167,22 @@ export class SampleDataService {
         return await this.loadSampleQuests(mutateFn, clerkId)
       case 'actions':
         return await this.loadSampleActions(mutateFn, clerkId)
+      case 'maps':
+        return await this.loadSampleMaps(mutateFn, clerkId)
       default:
         throw new Error(`Unknown entity type: ${entityType}`)
     }
+  }
+
+  static async loadSampleMaps(mutateFn: any, clerkId: string) {
+    const maps = mapsData.maps.map(map => ({
+      name: map.name,
+      width: map.width,
+      height: map.height,
+      description: map.description,
+    }))
+    
+    return await mutateFn({ maps, clerkId })
   }
 
   static getSampleDataInfo(): Record<string, SampleDataInfo> {
@@ -209,6 +223,11 @@ export class SampleDataService {
         count: actionsData.generalActions.length + 
                classActionsCount +
                actionsData.monsterActions.length
+      },
+      maps: {
+        version: mapsData.version,
+        description: mapsData.description,
+        count: mapsData.maps.length
       }
     }
   }

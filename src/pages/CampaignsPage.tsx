@@ -4,6 +4,7 @@ import { SignedIn, SignedOut } from '@clerk/clerk-react'
 import { CampaignCard } from '@/components/CampaignCard'
 import { CampaignModal } from '@/components/modals/CampaignModal'
 import { SampleDataPanel } from '@/components/SampleDataPanel'
+import { AdminSetup } from '@/components/AdminSetup'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus } from 'lucide-react'
@@ -13,14 +14,14 @@ export function CampaignsPage() {
   const campaigns = useQuery(api.campaigns.getCampaigns)
   const myCampaigns = useQuery(api.campaigns.getMyCampaigns)
   const [modalOpen, setModalOpen] = useState(false)
-  const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create")
+  const [modalMode, setModalMode] = useState<"read" | "create" | "edit">("create")
   const [selectedCampaign, setSelectedCampaign] = useState<any>(null)
 
   const handleViewCampaign = (campaignId: string) => {
     const campaign = [...(myCampaigns || []), ...(campaigns || [])].find(c => c._id === campaignId)
     if (campaign) {
       setSelectedCampaign(campaign)
-      setModalMode("view")
+      setModalMode("read")
       setModalOpen(true)
     }
   }
@@ -77,6 +78,9 @@ export function CampaignsPage() {
       </SignedOut>
 
       <SignedIn>
+        {/* Admin Setup */}
+        <AdminSetup />
+        
         {/* Sample Data Panel */}
         <SampleDataPanel 
           entityType="campaigns" 

@@ -1,0 +1,396 @@
+{
+    "actions": [
+      {
+        "name": "Attack",
+        "actionCost": "Action",
+        "type": "MELEE_ATTACK",
+        "description": "Make a melee or ranged weapon attack against a target. Resolve attack roll and apply damage.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Attack (Unarmed)",
+        "actionCost": "Action",
+        "type": "MELEE_ATTACK",
+        "description": "Make an unarmed strike (punch, kick, headbutt) as a melee attack.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Grapple",
+        "actionCost": "Action",
+        "type": "MELEE_ATTACK",
+        "description": "Attempt to grab and restrain a target. Uses an Athletics check contested by the target's Athletics or Acrobatics.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Shove",
+        "actionCost": "Action",
+        "type": "MELEE_ATTACK",
+        "description": "Attempt to push a creature: either knock them prone or push them back 5 feet. Uses an Athletics check contested by target's Athletics or Acrobatics.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Dodge",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Focus entirely on avoiding attacks. Until your next turn, attackers have disadvantage on attacks against you and you have advantage on Dexterity saving throws against effects you can see.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Dash",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Gain extra movement equal to your speed for this turn.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Disengage",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Move without provoking opportunity attacks for the rest of the turn.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Hide",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Attempt to become hidden. Make a Dexterity (Stealth) check contested by observers' passive or active Perception.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Search",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Look carefully for traps, secret doors, hidden objects, or small details. Usually a Wisdom (Perception) or Intelligence (Investigation) check.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Ready",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Prepare a trigger and an action to take later as a reaction when the trigger occurs (use an Action to Ready; consumes Reaction when triggered).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Use Object",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Interact with or use an item that requires more than a free interaction (open a complex device, activate a magic item, pull a lever).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Interact (Free)",
+        "actionCost": "No Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Perform a simple interaction with an object or the environment (draw a weapon, open a door, pick up an item) once during your turn for free.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Help",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Grant an ally advantage on their next ability check or attack against a target within 5 feet of you (or short description when helping with perception).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Stabilize",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Use medicine or a Wisdom (Medicine) check to stop a dying creature from losing more hit points. A stabilized creature remains unconscious but won't die.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Administer First Aid",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Spend an Action to tend to a wounded ally, restoring a small amount of hit points using a successful Medicine check or provided supplies (DM adjudicated).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Cast a Spell",
+        "actionCost": "Action",
+        "type": "SPELL",
+        "description": "Cast a prepared or known spell, following its casting time, components, range, and effects. Some spells require concentration.",
+        "requiresConcentration": true
+      },
+      {
+        "name": "Cast a Cantrip",
+        "actionCost": "Action",
+        "type": "SPELL",
+        "description": "Cast a 0-level spell (cantrip). Cantrips usually do not consume spell slots and rarely require concentration.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Use Bonus Action (General)",
+        "actionCost": "Bonus Action",
+        "type": "BONUS_ACTION",
+        "description": "Take any class/feature or item effect that specifically uses a Bonus Action (e.g., Two-Weapon Fighting off-hand attack, hunter's mark application where allowed).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Two-Weapon Attack (Off-hand)",
+        "actionCost": "Bonus Action",
+        "type": "MELEE_ATTACK",
+        "description": "When you attack with a light melee weapon in one hand, you can use a Bonus Action to make an off-hand attack with a light melee weapon in the other hand.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Flurry of Blows / Martial Strike",
+        "actionCost": "Bonus Action",
+        "type": "CLASS_FEATURE",
+        "description": "Representative bonus-action combat options used by many classes to make extra attacks or maneuvers (apply according to class rules).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Reaction: Opportunity Attack",
+        "actionCost": "Reaction",
+        "type": "REACTION",
+        "description": "Make a melee attack against a creature that leaves your reach. Uses your Reaction for the round.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Reaction: Cast a Quick Reaction Spell",
+        "actionCost": "Reaction",
+        "type": "REACTION",
+        "description": "Cast a spell with casting time 'Reaction' (e.g., Shield, Counterspell) when the specified trigger occurs.",
+        "requiresConcentration": true
+      },
+      {
+        "name": "Reaction: Shield",
+        "actionCost": "Reaction",
+        "type": "REACTION",
+        "description": "Raise a magical barrier (or use a shield) to increase AC or block an incoming attack as allowed by features or spells.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Parry / Block",
+        "actionCost": "Reaction",
+        "type": "REACTION",
+        "description": "Use a Reaction to reduce damage from an incoming attack or impose penalties on the attacker (depends on features or weapons).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Ready a Reaction",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Choose a trigger and specify an action to use your Reaction on when the trigger occurs; you act immediately after the trigger.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Use an Item (Consumable)",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Consume a potion, scroll, or other single-use item, applying its effect (some scrolls require spellcasting ability to use).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Use a Magic Item (Activate)",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Activate a magic item's effect according to its description (may have charges, attunement, or require an Action/Bonus Action/Reaction).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Identify",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Examine a magic item or effect to determine its properties and how to use it (Arcana check or Identify spell may be required).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Search for Traps",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Carefully inspect an area or object for traps. Typically a Wisdom (Perception) or Intelligence (Investigation) check.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Listen / Look Carefully",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Make an active Perception check to hear or spot something that passive perception might miss.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Speak / Negotiate",
+        "actionCost": "No Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Talk, negotiate, taunt, or attempt persuasion/deception. Short speech typically doesn't require an Action; contested checks may be requested by DM.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Intimidate / Coerce",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Try to force someone to act via threats or displays of force. Typically a Charisma (Intimidation) check contested by opponent's Wisdom (Insight) or similar.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Persuade / Bargain",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Attempt to convince or influence someone using Charisma (Persuasion).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Insight Check",
+        "actionCost": "No Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Assess motives, truthfulness, or emotional state of a creature (Wisdom (Insight) check). Often DM calls for it during conversation.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Use Tools",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Employ a set of tools (thieves' tools, healer's kit, alchemist's supplies) to perform specialized tasks, often requiring ability checks.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Disarm Device",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Attempt to disarm traps or deactivate devices using Thieves' Tools or an appropriate skill check.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Mount / Dismount",
+        "actionCost": "No Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Mount or dismount a willing mount; typically costs half your movement. Interacting with an unfamiliar mount may require checks.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Tame / Handle Animal",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Attempt to calm or handle an animal using Animal Handling (Wisdom) checks.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Stun / Knockout (Non-lethal Attack)",
+        "actionCost": "Action",
+        "type": "MELEE_ATTACK",
+        "description": "Use the Attack action to deal non-lethal damage to reduce a target to 0 hit points without killing them (attack rules apply).",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Stabilize (Healer's Kit)",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Use a healer's kit to stabilize a dying creature automatically without a check.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Short Rest (Spend Hit Dice)",
+        "actionCost": "Special",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Take a short rest to spend Hit Dice to regain hit points and recharge limited abilities according to class rules. Not an in-combat action but common between encounters.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Long Rest",
+        "actionCost": "Special",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Take an extended period (typically 8 hours) to restore hit points, hit dice, and class features per rest rules.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Surrender / Yield",
+        "actionCost": "No Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Signal surrender or yield; subject to DM and opponents' reactions. May be allowed as part of roleplay without consuming an Action.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Senses Check (Passive)",
+        "actionCost": "No Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Rely on passive Perception/Insight for noticing hidden or subtle things; DM compares passive values against DCs.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Climb / Swim / Jump",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Move using Athletics checks or by spending movement to climb, swim, or jump; may require checks for difficult situations.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Break Object",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Attempt to break a door, cage, or object with a Strength check or attack; objects often have set HP and AC.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Tie Up / Restrain a Creature",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Use rope or bindings to restrain an incapacitated or willing creature; may require a check and time.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Lift / Carry / Drag",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Attempt to lift, drag, or move heavy objects or creatures; strength checks may be required depending on weight.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Senses: Detect Magic (if available)",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Use a spell, item, or ability to sense magical auras or effects in the area (e.g., Detect Magic).",
+        "requiresConcentration": true
+      },
+      {
+        "name": "Initiative Roll (beginning of encounter)",
+        "actionCost": "No Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Roll initiative to determine order for the combat encounter; not an in-turn action but fundamental to encounters.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Ready/Trigger Trap (Set)",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Attempt to set a trap or prepare an environmental hazard that triggers on a condition; may take time and tools.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Soothe / Calming Touch",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Attempt to calm an enraged, frightened, or hostile creature using Persuasion or Medicine checks; DM adjudicates effects.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Scry / Remote Observe",
+        "actionCost": "Action",
+        "type": "SPELL",
+        "description": "Use a spell, item, or ability to observe a location or creature at a distance (subject to spell/item rules).",
+        "requiresConcentration": true
+      },
+      {
+        "name": "Aid / Stabilize (Longer)",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Use extended care to stabilize or heal over time (bandaging, continuous tending); usually requires time or skill checks.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Perform",
+        "actionCost": "Action",
+        "type": "COMMONLY_AVAILABLE_UTILITY",
+        "description": "Entertain or perform for an audience to earn money or influence social situations; typically a Charisma (Performance) check.",
+        "requiresConcentration": false
+      },
+      {
+        "name": "Scry / Counter-Scry",
+        "actionCost": "Reaction",
+        "type": "REACTION",
+        "description": "Use a Reaction to counter or block a remote observation effect if you possess the appropriate feature or item.",
+        "requiresConcentration": false
+      }
+    ]
+  }

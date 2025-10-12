@@ -1,0 +1,114 @@
+/* Clickable card pattern */
+.item-card-link-wrapper {
+  display: contents;
+}
+
+.item-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+}
+
+.clickable-card {
+  height: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #e5e7eb;
+  background: white;
+  @apply transition-colors duration-200;
+}
+
+.dark .clickable-card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.clickable-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #3b82f6;
+}
+
+.dark .clickable-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  border-color: #60a5fa;
+}
+
+.clickable-card:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.dark .clickable-card:focus {
+  outline-color: #60a5fa;
+}
+
+.item-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.item-card-header {
+  padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.item-title-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item-card-name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+  @apply text-gray-800 transition-colors duration-200;
+}
+
+.dark .item-card-name {
+  @apply text-gray-200;
+}
+
+.item-card-rarity {
+  align-self: flex-start;
+  font-size: 0.9rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  color: white;
+  font-weight: bold;
+}
+
+/* Rarity colors (example) */
+.rarity-common { background-color: #888; }
+.rarity-uncommon { background-color: #1e90ff; } /* DodgerBlue */
+.rarity-rare { background-color: #4682b4; } /* SteelBlue */
+.rarity-very-rare { background-color: #8a2be2; } /* BlueViolet */
+.rarity-legendary { background-color: #ff8c00; } /* DarkOrange */
+.rarity-artifact { background-color: #dc143c; } /* Crimson */
+.rarity-unique { background-color: #ffd700; } /* Gold */
+
+.item-card-body {
+  flex: 1;
+  padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item-card-type {
+  margin: 0;
+  font-size: 0.95rem;
+  @apply text-gray-600 transition-colors duration-200;
+}
+
+.dark .item-card-type {
+  @apply text-gray-400;
+}
+  

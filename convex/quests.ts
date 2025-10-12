@@ -3,9 +3,23 @@ import { query, mutation } from "./_generated/server";
 import { getCurrentUser } from "./clerkService";
 
 export const getQuests = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("quests").collect();
+  args: { campaignId: v.optional(v.id("campaigns")) },
+  handler: async (ctx, args) => {
+    try {
+      // Ensure user is authenticated
+      await getCurrentUser(ctx);
+      
+      if (args.campaignId) {
+        return await ctx.db
+          .query("quests")
+          .filter((q) => q.eq(q.field("campaignId"), args.campaignId))
+          .collect();
+      }
+      return await ctx.db.query("quests").collect();
+    } catch (error) {
+      // Return empty array if not authenticated
+      return [];
+    }
   },
 });
 
@@ -19,10 +33,18 @@ export const getQuestById = query({
 export const getQuestsByCampaign = query({
   args: { campaignId: v.id("campaigns") },
   handler: async (ctx, args) => {
-    return await ctx.db
-      .query("quests")
-      .filter((q) => q.eq(q.field("campaignId"), args.campaignId))
-      .collect();
+    try {
+      // Ensure user is authenticated
+      await getCurrentUser(ctx);
+      
+      return await ctx.db
+        .query("quests")
+        .filter((q) => q.eq(q.field("campaignId"), args.campaignId))
+        .collect();
+    } catch (error) {
+      // Return empty array if not authenticated
+      return [];
+    }
   },
 });
 
@@ -73,6 +95,28 @@ export const createQuest = mutation({
       gold: v.optional(v.number()),
       itemIds: v.optional(v.array(v.id("items"))),
     })),
+    // Enhanced quest properties
+    questType: v.optional(v.union(
+      v.literal("Main"),
+      v.literal("Side"),
+      v.literal("Personal"),
+      v.literal("Guild"),
+      v.literal("Faction")
+    )),
+    difficulty: v.optional(v.union(
+      v.literal("Easy"),
+      v.literal("Medium"),
+      v.literal("Hard"),
+      v.literal("Deadly")
+    )),
+    estimatedSessions: v.optional(v.number()),
+    timelineEventId: v.optional(v.id("timelineEvents")),
+    involvedCharacterIds: v.optional(v.array(v.id("characters"))),
+    requiredLevel: v.optional(v.number()),
+    dmNotes: v.optional(v.string()),
+    playerNotes: v.optional(v.array(v.string())),
+    isRepeatable: v.optional(v.boolean()),
+    prerequisiteQuestIds: v.optional(v.array(v.id("quests"))),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
@@ -294,6 +338,101 @@ export const updateTaskStatus = mutation({
         });
       }
     }
+  },
+});
+
+export const updateQuest = mutation({
+  args: {
+    id: v.id("quests"),
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
+    campaignId: v.optional(v.id("campaigns")),
+    status: v.optional(v.union(
+      v.literal("idle"),
+      v.literal("in_progress"), 
+      v.literal("completed"),
+      v.literal("NotStarted"),
+      v.literal("InProgress"),
+      v.literal("Failed")
+    )),
+    locationId: v.optional(v.id("locations")),
+    completionXP: v.optional(v.number()),
+    rewards: v.optional(v.object({
+      xp: v.optional(v.number()),
+      gold: v.optional(v.number()),
+      itemIds: v.optional(v.array(v.id("items"))),
+    })),
+    // Enhanced quest properties
+    questType: v.optional(v.union(
+      v.literal("Main"),
+      v.literal("Side"),
+      v.literal("Personal"),
+      v.literal("Guild"),
+      v.literal("Faction")
+    )),
+    difficulty: v.optional(v.union(
+      v.literal("Easy"),
+      v.literal("Medium"),
+      v.literal("Hard"),
+      v.literal("Deadly")
+    )),
+    estimatedSessions: v.optional(v.number()),
+    timelineEventId: v.optional(v.id("timelineEvents")),
+    involvedCharacterIds: v.optional(v.array(v.id("characters"))),
+    requiredLevel: v.optional(v.number()),
+    dmNotes: v.optional(v.string()),
+    playerNotes: v.optional(v.array(v.string())),
+    isRepeatable: v.optional(v.boolean()),
+    prerequisiteQuestIds: v.optional(v.array(v.id("quests"))),
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    const { id, ...updateData } = args;
+
+    // Get existing quest
+    const existingQuest = await ctx.db.get(id);
+    if (!existingQuest) {
+      throw new Error("Quest not found");
+    }
+
+    // Check campaign permissions if quest is assigned to a campaign
+    if (existingQuest.campaignId || args.campaignId) {
+      const campaignId = args.campaignId || existingQuest.campaignId;
+      if (campaignId) {
+        const campaign = await ctx.db.get(campaignId);
+        if (!campaign) {
+          throw new Error("Campaign not found");
+        }
+
+        const isDM = campaign.dmId === user.clerkId;
+        const isAdmin = user.role === "admin";
+        const isOwner = existingQuest.creatorId === user._id;
+
+        if (!isDM && !isAdmin && !isOwner) {
+          throw new Error("Insufficient permissions to update this quest");
+        }
+      }
+    } else {
+      // For non-campaign quests, only owner or admin can edit
+      const isAdmin = user.role === "admin";
+      const isOwner = existingQuest.creatorId === user._id;
+
+      if (!isAdmin && !isOwner) {
+        throw new Error("Insufficient permissions to update this quest");
+      }
+    }
+
+    // Filter out undefined values
+    const cleanUpdateData = Object.fromEntries(
+      Object.entries(updateData).filter(([_, value]) => value !== undefined)
+    );
+
+    await ctx.db.patch(id, {
+      ...cleanUpdateData,
+      updatedAt: Date.now(),
+    });
+
+    return id;
   },
 });
 

@@ -1,0 +1,224 @@
+.join-request-modal {
+  min-width: 500px;
+  max-width: 600px;
+}
+
+.join-request-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-section h3 {
+  margin: 0;
+  @apply text-gray-800 font-semibold transition-colors duration-200;
+}
+
+.dark .form-section h3 {
+  @apply text-gray-200;
+}
+
+.form-description {
+  margin: 0;
+  @apply text-gray-600 text-sm transition-colors duration-200;
+}
+
+.dark .form-description {
+  @apply text-gray-400;
+}
+
+.character-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.character-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  @apply bg-gray-50 hover:bg-gray-100 transition-colors duration-200;
+}
+
+.dark .character-option {
+  @apply bg-gray-700 hover:bg-gray-600;
+}
+
+.character-option.selected {
+  border-color: #3b82f6;
+  @apply bg-blue-50;
+}
+
+.dark .character-option.selected {
+  @apply bg-blue-900/20;
+}
+
+.character-info {
+  flex: 1;
+}
+
+.character-info h4 {
+  margin: 0 0 4px 0;
+  @apply text-gray-800 font-medium transition-colors duration-200;
+}
+
+.dark .character-info h4 {
+  @apply text-gray-200;
+}
+
+.character-details {
+  margin: 0 0 2px 0;
+  @apply text-gray-600 text-sm transition-colors duration-200;
+}
+
+.dark .character-details {
+  @apply text-gray-400;
+}
+
+.character-stats {
+  margin: 0;
+  @apply text-gray-500 text-xs transition-colors duration-200;
+}
+
+.dark .character-stats {
+  @apply text-gray-500;
+}
+
+.character-selector {
+  margin-left: 12px;
+}
+
+.character-selector input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #3b82f6;
+}
+
+.no-characters {
+  text-align: center;
+  padding: 20px;
+  @apply bg-gray-50 rounded-lg transition-colors duration-200;
+}
+
+.dark .no-characters {
+  @apply bg-gray-700;
+}
+
+.no-characters p {
+  margin: 0 0 16px 0;
+  @apply text-gray-600 transition-colors duration-200;
+}
+
+.dark .no-characters p {
+  @apply text-gray-400;
+}
+
+.create-character-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  @apply bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200;
+}
+
+.create-character-button:hover {
+  @apply bg-blue-700;
+}
+
+.error-message {
+  padding: 12px;
+  border-radius: 6px;
+  @apply bg-red-50 text-red-700 border border-red-200 transition-colors duration-200;
+}
+
+.dark .error-message {
+  @apply bg-red-900/20 text-red-300 border-red-700;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cancel-button {
+  padding: 10px 20px;
+  border: 1px solid;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  @apply border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200;
+}
+
+.dark .cancel-button {
+  @apply border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600;
+}
+
+.cancel-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  @apply bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200;
+}
+
+.submit-button:hover:not(:disabled) {
+  @apply bg-blue-700;
+}
+
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .join-request-modal {
+    min-width: 90vw;
+    max-width: 90vw;
+  }
+  
+  .character-option {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .character-selector {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .cancel-button,
+  .submit-button {
+    width: 100%;
+  }
+} 

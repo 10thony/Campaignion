@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '@clerk/clerk-react';
-import { MapTab } from './MapTab';
-import { MapModal } from './MapModal';
+import { MapsList } from './MapsList';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 
 export const MapTest: React.FC = () => {
   const { userId } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(null);
+  const [selectedMapId, setSelectedMapId] = useState<string | null>(null);
 
   if (!userId) return <div>Please sign in to test maps</div>;
 
@@ -20,45 +18,32 @@ export const MapTest: React.FC = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2">
-            <Button onClick={() => setIsModalOpen(true)}>
-              Open Map Modal
-            </Button>
             <Button 
               variant="outline"
-              onClick={() => setSelectedInstanceId(null)}
+              onClick={() => setSelectedMapId(null)}
             >
               Clear Selection
             </Button>
           </div>
           
-          {selectedInstanceId && (
+          {selectedMapId && (
             <div className="p-4 bg-green-50 dark:bg-green-900 rounded">
-              <p>Selected Instance ID: {selectedInstanceId}</p>
+              <p>Selected Map ID: {selectedMapId}</p>
             </div>
           )}
 
           <div className="border rounded p-4">
-            <h3 className="font-semibold mb-2">Map Tab Component:</h3>
-            <MapTab
-              userId={userId}
-              onMapInstanceSelected={(instanceId) => {
-                setSelectedInstanceId(instanceId);
-                console.log('Map instance selected:', instanceId);
+            <h3 className="font-semibold mb-2">Maps List Component:</h3>
+            <MapsList
+              onMapSelect={(mapId) => {
+                setSelectedMapId(mapId);
+                console.log('Map selected:', mapId);
               }}
+              isSelectMode={true}
             />
           </div>
         </CardContent>
       </Card>
-
-      <MapModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        userId={userId}
-        onMapInstanceSelected={(instanceId) => {
-          setSelectedInstanceId(instanceId);
-          console.log('Map instance selected from modal:', instanceId);
-        }}
-      />
     </div>
   );
 }; 

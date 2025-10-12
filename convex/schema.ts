@@ -2,6 +2,15 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  parseLogs: defineTable({
+    filename: v.string(),
+    fileSize: v.number(),
+    parseSuccess: v.boolean(),
+    parseLog: v.array(v.string()),
+    sampleText: v.optional(v.string()),
+    confidenceSummary: v.object({ high: v.number(), medium: v.number(), low: v.number() }),
+    createdAt: v.number(),
+  }),
   users: defineTable({
     clerkId: v.string(),
     email: v.string(),
@@ -12,16 +21,28 @@ export default defineSchema({
     role: v.union(v.literal("admin"), v.literal("user")),
   }),
 
-  playerCharacters: defineTable({
+  characters: defineTable({
     name: v.string(),
     race: v.string(),
-    class: v.string(),
+    // Support for multiclass characters
+    class: v.string(), // Primary class for backward compatibility
+    primaryClassId: v.optional(v.id("dndClasses")), // Reference to primary class in dndClasses table
+    classes: v.optional(v.array(v.object({
+      classId: v.optional(v.id("dndClasses")), // Reference to class in dndClasses table
+      name: v.string(), // Keep for backward compatibility and quick access
+      level: v.number(),
+      hitDie: v.string(), // d6, d8, d10, d12
+      features: v.optional(v.array(v.string())),
+      subclass: v.optional(v.string()),
+    }))),
+    subrace: v.optional(v.string()),
     background: v.string(),
     alignment: v.optional(v.string()),
     characterType: v.union(
-      v.literal("PlayerCharacter"),
-      v.literal("NonPlayerCharacter")
+      v.literal("player"),
+      v.literal("npc")
     ),
+    imageUrl: v.optional(v.string()),
 
     abilityScores: v.object({
       strength: v.float64(),
@@ -31,6 +52,26 @@ export default defineSchema({
       wisdom: v.float64(),
       charisma: v.float64(),
     }),
+
+    // Base ability scores before racial/equipment bonuses
+    baseAbilityScores: v.optional(v.object({
+      strength: v.number(),
+      dexterity: v.number(),
+      constitution: v.number(),
+      intelligence: v.number(),
+      wisdom: v.number(),
+      charisma: v.number(),
+    })),
+
+    // Racial ability score improvements
+    racialAbilityScoreImprovements: v.optional(v.object({
+      strength: v.number(),
+      dexterity: v.number(),
+      constitution: v.number(),
+      intelligence: v.number(),
+      wisdom: v.number(),
+      charisma: v.number(),
+    })),
 
     // ← NEW: precomputed ability modifiers
     abilityModifiers: v.optional(
@@ -45,9 +86,27 @@ export default defineSchema({
     ),
 
     skills: v.array(v.string()),
+    skillProficiencies: v.optional(v.array(v.object({
+      skill: v.string(),
+      proficient: v.boolean(),
+      expertise: v.optional(v.boolean()),
+      source: v.optional(v.string()), // "class", "background", "race", "feat"
+    }))),
     savingThrows: v.array(v.string()),
+    savingThrowProficiencies: v.optional(v.array(v.object({
+      ability: v.string(),
+      proficient: v.boolean(),
+      source: v.optional(v.string()),
+    }))),
     proficiencies: v.array(v.string()),
+    weaponProficiencies: v.optional(v.array(v.string())),
+    armorProficiencies: v.optional(v.array(v.string())),
+    toolProficiencies: v.optional(v.array(v.string())),
     traits: v.optional(v.array(v.string())),
+    racialTraits: v.optional(v.array(v.object({
+      name: v.string(),
+      description: v.string(),
+    }))),
     languages: v.optional(v.array(v.string())),
 
     inventory: v.optional(
@@ -94,9 +153,73 @@ export default defineSchema({
       )
     ),
     hitPoints: v.float64(),
+    maxHitPoints: v.optional(v.number()),
+    currentHitPoints: v.optional(v.number()),
+    tempHitPoints: v.optional(v.number()),
+    hitDice: v.optional(v.array(v.object({
+      die: v.string(), // d6, d8, d10, d12
+      current: v.number(),
+      max: v.number(),
+    }))),
     armorClass: v.float64(),
+    baseArmorClass: v.optional(v.number()),
     proficiencyBonus: v.float64(),
     speed: v.optional(v.string()),
+    speeds: v.optional(v.object({
+      walking: v.optional(v.number()),
+      swimming: v.optional(v.number()),
+      flying: v.optional(v.number()),
+      climbing: v.optional(v.number()),
+      burrowing: v.optional(v.number()),
+    })),
+    initiative: v.optional(v.number()),
+    passivePerception: v.optional(v.number()),
+    passiveInvestigation: v.optional(v.number()),
+    passiveInsight: v.optional(v.number()),
+    
+    // Character import metadata
+    importedFrom: v.optional(v.string()), // "manual", "dnd_beyond", "json", "pdf"
+    importData: v.optional(v.any()), // Raw import data for reference
+    importedAt: v.optional(v.number()),
+    
+    // Temporarily capture any parsed fields we don't yet model
+    uncapturedData: v.optional(v.any()),
+    
+    // Spellcasting
+    spellcastingAbility: v.optional(v.string()), // "intelligence", "wisdom", "charisma"
+    spellSaveDC: v.optional(v.number()),
+    spellAttackBonus: v.optional(v.number()),
+    spellSlots: v.optional(v.array(v.object({
+      level: v.number(),
+      total: v.number(),
+      used: v.number(),
+    }))),
+    spellsKnown: v.optional(v.array(v.string())),
+    cantripsKnown: v.optional(v.array(v.string())),
+    
+    // Additional features
+    features: v.optional(v.array(v.object({
+      name: v.string(),
+      description: v.string(),
+      source: v.string(), // "class", "race", "background", "feat"
+      uses: v.optional(v.object({
+        current: v.number(),
+        max: v.number(),
+        resetOn: v.string(), // "short_rest", "long_rest", "dawn"
+      })),
+    }))),
+    feats: v.optional(v.array(v.object({
+      name: v.string(),
+      description: v.string(),
+    }))),
+    
+    // Resources and other mechanics
+    inspiration: v.optional(v.boolean()),
+    deathSaves: v.optional(v.object({
+      successes: v.number(),
+      failures: v.number(),
+    })),
+    
     actions: v.array(v.id("actions")),
     factionId: v.optional(v.id("factions")),
     userId: v.id("users"),
@@ -104,96 +227,7 @@ export default defineSchema({
     updatedAt: v.optional(v.number()),
   }),
 
-  npcs: defineTable({
-    name: v.string(),
-    race: v.string(),
-    class: v.string(),
-    background: v.string(),
-    alignment: v.optional(v.string()),
-    characterType: v.union(
-      v.literal("PlayerCharacter"),
-      v.literal("NonPlayerCharacter")
-    ),
 
-    abilityScores: v.object({
-      strength: v.float64(),
-      dexterity: v.float64(),
-      constitution: v.float64(),
-      intelligence: v.float64(),
-      wisdom: v.float64(),
-      charisma: v.float64(),
-    }),
-
-    // ← NEW: precomputed ability modifiers
-    abilityModifiers: v.optional(
-      v.object({
-        strength: v.number(),
-        dexterity: v.number(),
-        constitution: v.number(),
-        intelligence: v.number(),
-        wisdom: v.number(),
-        charisma: v.number(),
-      })
-    ),
-
-    skills: v.array(v.string()),
-    savingThrows: v.array(v.string()),
-    proficiencies: v.array(v.string()),
-    traits: v.optional(v.array(v.string())),
-    languages: v.optional(v.array(v.string())),
-
-    inventory: v.optional(
-      v.object({
-        capacity: v.number(),
-        items: v.array(v.id("items")),
-      })
-    ),
-    equipment: v.optional(
-      v.object({
-        headgear: v.optional(v.id("items")),
-        armwear: v.optional(v.id("items")),
-        chestwear: v.optional(v.id("items")),
-        legwear: v.optional(v.id("items")),
-        footwear: v.optional(v.id("items")),
-        mainHand: v.optional(v.id("items")),
-        offHand: v.optional(v.id("items")),
-        accessories: v.array(v.id("items")),
-      })
-    ),
-    equipmentBonuses: v.optional(
-      v.object({
-        armorClass: v.number(),
-        abilityScores: v.object({
-          strength: v.number(),
-          dexterity: v.number(),
-          constitution: v.number(),
-          intelligence: v.number(),
-          wisdom: v.number(),
-          charisma: v.number(),
-        }),
-      })
-    ),
-
-    level: v.float64(),
-    experiencePoints: v.float64(),
-    xpHistory: v.optional(
-      v.array(
-        v.object({
-          amount: v.float64(),
-          source: v.string(),
-          date: v.float64(),
-        })
-      )
-    ),
-    hitPoints: v.float64(),
-    armorClass: v.float64(),
-    proficiencyBonus: v.float64(),
-    speed: v.optional(v.string()),
-    actions: v.array(v.id("actions")),
-    userId: v.id("users"),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-  }),
 
   actions: defineTable({
     name: v.string(),
@@ -283,7 +317,24 @@ export default defineSchema({
       })
     ),
     spellEffectDescription: v.optional(v.string()),
+    
+    // Action categorization and availability
+    category: v.union(
+      v.literal("general"),           // Available to all characters
+      v.literal("class_specific"),    // Available only to specific classes
+      v.literal("race_specific"),     // Available only to specific races
+      v.literal("feat_specific")      // Available through specific feats
+    ),
+    requiredClassId: v.optional(v.id("dndClasses")), // Reference to required class in dndClasses table
+    requiredClassIds: v.optional(v.array(v.id("dndClasses"))), // References to required classes in dndClasses table
+    requiredClass: v.optional(v.string()), // For class_specific actions (legacy)
+    requiredClasses: v.optional(v.array(v.string())), // For actions available to multiple classes (legacy)
+    requiredLevel: v.optional(v.number()), // Minimum level required
+    requiredSubclass: v.optional(v.string()), // For subclass-specific actions
+    
+    // Legacy field for backward compatibility
     className: v.optional(v.string()),
+    
     usesPer: v.optional(
       v.union(
         v.literal("Short Rest"),
@@ -293,6 +344,12 @@ export default defineSchema({
       )
     ),
     maxUses: v.optional(v.union(v.number(), v.string())),
+    
+    // Additional metadata
+    isBaseAction: v.optional(v.boolean()), // True for core D&D actions like Attack, Dodge, etc.
+    tags: v.optional(v.array(v.string())), // For categorization and filtering
+    prerequisites: v.optional(v.array(v.string())), // Requirements to use this action
+    
     createdAt: v.number(),
   }),
 
@@ -326,6 +383,12 @@ export default defineSchema({
       v.literal("Unique")
     ),
     description: v.string(),
+    imageUrl: v.optional(v.string()),
+    scope: v.union(
+      v.literal("entitySpecific"), 
+      v.literal("campaignSpecific"), 
+      v.literal("global")
+    ),
     effects: v.optional(v.string()),
     weight: v.optional(v.number()),
     cost: v.optional(v.number()),
@@ -398,22 +461,54 @@ export default defineSchema({
         x: v.number(),
         y: v.number(),
         state: v.union(v.literal("inbounds"), v.literal("outbounds"), v.literal("occupied")),
-        terrain: v.optional(
+        terrainType: v.optional(
           v.union(
             v.literal("normal"),
-            v.literal("soft"),
-            v.literal("rough"),
-            v.literal("intense"),
-            v.literal("brutal"),
-            v.literal("deadly")
+            v.literal("difficult"),
+            v.literal("hazardous"),
+            v.literal("magical"),
+            v.literal("water"),
+            v.literal("ice"),
+            v.literal("fire"),
+            v.literal("acid"),
+            v.literal("poison"),
+            v.literal("unstable")
           )
         ),
-        terrainModifier: v.optional(v.number()),
-        affectedAbilityScores: v.optional(v.array(v.string())),
+        terrainEffect: v.optional(
+          v.object({
+            movementCostMultiplier: v.optional(v.number()),
+            damage: v.optional(
+              v.object({
+                amount: v.number(),
+                type: v.union(
+                  v.literal("fire"),
+                  v.literal("cold"),
+                  v.literal("acid"),
+                  v.literal("poison"),
+                  v.literal("necrotic"),
+                  v.literal("radiant")
+                ),
+                saveType: v.optional(v.string()),
+                saveDC: v.optional(v.number())
+              })
+            ),
+            abilityChecks: v.optional(
+              v.array(
+                v.object({
+                  ability: v.string(),
+                  dc: v.number(),
+                  onFailure: v.string()
+                })
+              )
+            ),
+            specialEffects: v.optional(v.array(v.string()))
+          })
+        ),
         occupant: v.optional(
           v.object({
             id: v.string(),
-            type: v.union(v.literal("playerCharacter"), v.literal("npc"), v.literal("monster")),
+            type: v.union(v.literal("character"), v.literal("monster")),
             color: v.string(),
             speed: v.number(),
             name: v.string(),
@@ -444,7 +539,7 @@ export default defineSchema({
       v.literal("Other")
     ),
     description: v.string(),
-    notableNpcIds: v.array(v.id("npcs")),
+    notableCharacterIds: v.array(v.id("characters")),
     linkedLocations: v.array(v.id("locations")),
     interactionsAtLocation: v.array(v.id("interactions")),
     imageUrls: v.array(v.string()),
@@ -459,18 +554,19 @@ export default defineSchema({
     name: v.string(),
     creatorId: v.id("users"),
     description: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
     worldSetting: v.optional(v.string()),
     startDate: v.optional(v.number()),
     isPublic: v.boolean(),
     dmId: v.string(),
     players: v.optional(v.array(v.string())),
-    participantPlayerCharacterIds: v.optional(v.array(v.id("playerCharacters"))),
+    participantPlayerCharacterIds: v.optional(v.array(v.id("characters"))),
     participantUserIds: v.optional(v.array(v.id("users"))),
     tags: v.optional(v.array(v.id("tags"))),
     locationIds: v.optional(v.array(v.id("locations"))),
     questIds: v.optional(v.array(v.id("quests"))),
     sessionIds: v.optional(v.array(v.id("sessions"))),
-    npcIds: v.optional(v.array(v.id("npcs"))),
+    npcIds: v.optional(v.array(v.id("characters"))),
     factionIds: v.optional(v.array(v.id("factions"))),
     monsterIds: v.optional(v.array(v.id("monsters"))),
     spellIds: v.optional(v.array(v.id("spells"))),
@@ -501,8 +597,8 @@ export default defineSchema({
     locationId: v.optional(v.id("locations")),
     taskIds: v.array(v.id("questTasks")),
     requiredItemIds: v.optional(v.array(v.id("items"))),
-    involvedNpcIds: v.optional(v.array(v.id("npcs"))),
-    participantIds: v.optional(v.array(v.id("playerCharacters"))),
+    involvedCharacterIds: v.optional(v.array(v.id("characters"))),
+    participantIds: v.optional(v.array(v.id("characters"))),
     interactions: v.optional(v.array(v.id("interactions"))),
     rewards: v.optional(
       v.object({
@@ -538,9 +634,9 @@ export default defineSchema({
       v.literal("Failed")
     ),
     dependsOn: v.optional(v.array(v.id("questTasks"))),
-    assignedTo: v.optional(v.array(v.id("playerCharacters"))),
+    assignedTo: v.optional(v.array(v.id("characters"))),
     locationId: v.optional(v.id("locations")),
-    targetNpcId: v.optional(v.id("npcs")),
+    targetNpcId: v.optional(v.id("characters")),
     requiredItemIds: v.optional(v.array(v.id("items"))),
     interactions: v.optional(v.array(v.id("interactions"))),
     userId: v.id("users"),
@@ -588,8 +684,8 @@ export default defineSchema({
     ),
     currentInitiativeIndex: v.optional(v.number()),
     participantMonsterIds: v.optional(v.array(v.id("monsters"))),
-    participantNpcIds: v.optional(v.array(v.id("npcs"))),
-    participantPlayerCharacterIds: v.optional(v.array(v.id("playerCharacters"))),
+    participantNpcIds: v.optional(v.array(v.id("characters"))),
+    participantPlayerCharacterIds: v.optional(v.array(v.id("characters"))),
     mapIds: v.optional(v.array(v.id("maps"))),
     turns: v.optional(v.array(v.id("turns"))),
     interactionLog: v.optional(v.array(v.any())),
@@ -598,13 +694,13 @@ export default defineSchema({
     xpAwards: v.optional(
       v.array(
         v.object({
-          playerCharacterId: v.id("playerCharacters"),
+          playerCharacterId: v.id("characters"),
           xp: v.number(),
         })
       )
     ),
-    playerCharacterIds: v.optional(v.array(v.id("playerCharacters"))),
-    npcIds: v.optional(v.array(v.id("npcs"))),
+    playerCharacterIds: v.optional(v.array(v.id("characters"))),
+    npcIds: v.optional(v.array(v.id("characters"))),
     monsterIds: v.optional(v.array(v.id("monsters"))),
     timelineEventIds: v.optional(v.array(v.id("timelineEvents"))),
     
@@ -631,7 +727,7 @@ export default defineSchema({
 
   playerActions: defineTable({
     interactionId: v.id("interactions"),
-    playerCharacterId: v.id("playerCharacters"),
+    playerCharacterId: v.id("characters"),
     actionDescription: v.string(),
     actionType: v.union(
       v.literal("Dialogue"),
@@ -649,13 +745,13 @@ export default defineSchema({
   sessions: defineTable({
     campaignId: v.id("campaigns"),
     date: v.number(),
-    participantPlayerCharacterIds: v.array(v.id("playerCharacters")),
+    participantPlayerCharacterIds: v.array(v.id("characters")),
     participantUserIds: v.array(v.id("users")),
     summary: v.optional(v.string()),
     xpAwards: v.optional(
       v.array(
         v.object({
-          playerCharacterId: v.id("playerCharacters"),
+          playerCharacterId: v.id("characters"),
           xp: v.number(),
         })
       )
@@ -663,7 +759,7 @@ export default defineSchema({
     lootAwards: v.optional(
       v.array(
         v.object({
-          playerCharacterId: v.id("playerCharacters"),
+          playerCharacterId: v.id("characters"),
           gold: v.optional(v.number()),
           itemIds: v.optional(v.array(v.id("items"))),
         })
@@ -693,7 +789,7 @@ export default defineSchema({
       )
     ),
     relatedLocationIds: v.optional(v.array(v.id("locations"))),
-    relatedNpcIds: v.optional(v.array(v.id("npcs"))),
+    relatedNpcIds: v.optional(v.array(v.id("characters"))),
     relatedFactionIds: v.optional(v.array(v.id("factions"))),
     relatedQuestIds: v.optional(v.array(v.id("quests"))),
     primaryQuestId: v.optional(v.id("quests")),
@@ -706,14 +802,14 @@ export default defineSchema({
     campaignId: v.id("campaigns"),
     name: v.string(),
     description: v.string(),
-    leaderNpcIds: v.optional(v.array(v.id("npcs"))),
+    leaderNpcIds: v.optional(v.array(v.id("characters"))),
     alliedFactionIds: v.optional(v.array(v.id("factions"))),
     enemyFactionIds: v.optional(v.array(v.id("factions"))),
     goals: v.optional(v.array(v.string())),
     reputation: v.optional(
       v.array(
         v.object({
-          playerCharacterId: v.id("playerCharacters"),
+          playerCharacterId: v.id("characters"),
           score: v.number(),
         })
       )
@@ -725,6 +821,7 @@ export default defineSchema({
 
   monsters: defineTable({
     name: v.string(),
+    imageUrl: v.optional(v.string()),
     source: v.optional(v.string()),
     page: v.optional(v.string()),
     size: v.union(
@@ -790,7 +887,10 @@ export default defineSchema({
     }),
     languages: v.optional(v.string()),
     challengeRating: v.string(),
+    challengeRatingValue: v.optional(v.number()),
     experiencePoints: v.optional(v.number()),
+    legendaryActionCount: v.optional(v.number()),
+    lairActionCount: v.optional(v.number()),
     traits: v.optional(
       v.array(
         v.object({
@@ -894,7 +994,8 @@ export default defineSchema({
       v.literal("Necromancy"),
       v.literal("Transmutation")
     ),
-    classes: v.array(v.string()),
+    classes: v.array(v.string()), // Keep for backward compatibility
+    classIds: v.optional(v.array(v.id("dndClasses"))), // References to classes in dndClasses table
     castingTime: v.string(),
     range: v.string(),
     components: v.object({
@@ -938,7 +1039,7 @@ export default defineSchema({
     title: v.string(),
     content: v.string(),
     authorUserId: v.id("users"),
-    authorPlayerCharacterId: v.optional(v.id("playerCharacters")),
+    authorPlayerCharacterId: v.optional(v.id("characters")),
     dateCreated: v.number(),
     lastEdited: v.optional(v.number()),
   }),
@@ -1019,7 +1120,7 @@ export default defineSchema({
     campaignId: v.id("campaigns"),
     requesterUserClerkId: v.string(),
     requesterUserId: v.id("users"),
-    playerCharacterId: v.id("playerCharacters"),
+    playerCharacterId: v.id("characters"),
     status: v.union(v.literal("PENDING"), v.literal("APPROVED"), v.literal("DENIED")),
     denyReason: v.optional(v.string()),
     createdAt: v.number(),
@@ -1123,4 +1224,650 @@ export default defineSchema({
     ),
     userId: v.optional(v.id("users")),
   }),
+
+  // Live System Tables for Real-time D&D Interactions
+  liveRooms: defineTable({
+    interactionId: v.id("interactions"),
+    roomId: v.string(),
+    status: v.union(
+      v.literal("waiting"),
+      v.literal("active"), 
+      v.literal("paused"), 
+      v.literal("completed")
+    ),
+    gameState: v.object({
+      status: v.union(
+        v.literal("waiting"),
+        v.literal("active"),
+        v.literal("paused"),
+        v.literal("completed")
+      ),
+      initiativeOrder: v.array(v.object({
+        entityId: v.string(),
+        entityType: v.union(
+          v.literal("playerCharacter"),
+          v.literal("npc"),
+          v.literal("monster")
+        ),
+        initiativeRoll: v.number(),
+        dexterityModifier: v.number(),
+      })),
+      currentTurnIndex: v.number(),
+      roundNumber: v.number(),
+      mapState: v.object({
+        width: v.number(),
+        height: v.number(),
+        entities: v.any(), // Map serialized as object
+        obstacles: v.array(v.object({
+          x: v.number(),
+          y: v.number(),
+          width: v.number(),
+          height: v.number(),
+          type: v.string()
+        })),
+        terrain: v.array(v.object({
+          x: v.number(),
+          y: v.number(),
+          terrainType: v.string(),
+          effects: v.optional(v.array(v.string()))
+        }))
+      }),
+      turnHistory: v.array(v.object({
+        turnNumber: v.number(),
+        entityId: v.string(),
+        actions: v.array(v.any()),
+        timestamp: v.number()
+      })),
+      chatLog: v.array(v.object({
+        id: v.string(),
+        timestamp: v.number(),
+        userId: v.string(),
+        content: v.string(),
+        type: v.string()
+      })),
+      timestamp: v.number()
+    }),
+    participants: v.array(v.object({
+      userId: v.string(),
+      entityId: v.string(),
+      entityType: v.union(
+        v.literal("playerCharacter"),
+        v.literal("npc"),
+        v.literal("monster")
+      ),
+      connectionId: v.string(),
+      isConnected: v.boolean(),
+      lastActivity: v.number(),
+      characterData: v.optional(v.any()) // Character stats for quick access
+    })),
+    dmUserId: v.string(),
+    currentTurnTimeout: v.optional(v.number()),
+    turnTimeLimit: v.optional(v.number()), // seconds
+    createdAt: v.number(),
+    lastActivity: v.number(),
+    settings: v.optional(v.object({
+      allowPrivateChat: v.boolean(),
+      turnTimeLimit: v.number(),
+      autoSkipInactivePlayers: v.boolean(),
+      enableDiceRolling: v.boolean()
+    }))
+  })
+    .index("by_interaction", ["interactionId"])
+    .index("by_room_id", ["roomId"]),
+
+  liveChatMessages: defineTable({
+    interactionId: v.id("interactions"),
+    roomId: v.string(),
+    userId: v.string(),
+    entityId: v.optional(v.string()),
+    content: v.string(),
+    type: v.union(
+      v.literal("party"),
+      v.literal("dm"),
+      v.literal("private"),
+      v.literal("system"),
+      v.literal("dice"),
+      v.literal("action")
+    ),
+    recipients: v.optional(v.array(v.string())),
+    timestamp: v.number(),
+    metadata: v.optional(v.object({
+      diceRoll: v.optional(v.object({
+        dice: v.string(), // e.g., "1d20+5"
+        result: v.number(),
+        breakdown: v.string() // e.g., "15 + 5 = 20"
+      })),
+      actionType: v.optional(v.string()),
+      targetEntityId: v.optional(v.string()),
+      damage: v.optional(v.object({
+        amount: v.number(),
+        type: v.string()
+      }))
+    })),
+    isVisible: v.boolean(), // For DM-only messages
+    editedAt: v.optional(v.number()),
+    replyToId: v.optional(v.id("liveChatMessages"))
+  })
+    .index("by_interaction", ["interactionId"])
+    .index("by_room", ["roomId"])
+    .index("by_timestamp", ["timestamp"]),
+
+  liveGameEvents: defineTable({
+    interactionId: v.id("interactions"),
+    roomId: v.string(),
+    eventType: v.union(
+      v.literal("PARTICIPANT_JOINED"),
+      v.literal("PARTICIPANT_LEFT"),
+      v.literal("TURN_STARTED"),
+      v.literal("TURN_ENDED"),
+      v.literal("ACTION_PERFORMED"),
+      v.literal("DAMAGE_DEALT"),
+      v.literal("HEALING_APPLIED"),
+      v.literal("STATUS_EFFECT_APPLIED"),
+      v.literal("STATUS_EFFECT_REMOVED"),
+      v.literal("INITIATIVE_ROLLED"),
+      v.literal("ROUND_STARTED"),
+      v.literal("COMBAT_STARTED"),
+      v.literal("COMBAT_ENDED"),
+      v.literal("ROOM_PAUSED"),
+      v.literal("ROOM_RESUMED"),
+      v.literal("ERROR")
+    ),
+    eventData: v.any(),
+    timestamp: v.number(),
+    userId: v.optional(v.string()),
+    entityId: v.optional(v.string()),
+    isSystemEvent: v.boolean(),
+    severity: v.optional(v.union(
+      v.literal("info"),
+      v.literal("warning"),
+      v.literal("error")
+    ))
+  })
+    .index("by_interaction", ["interactionId"])
+    .index("by_room", ["roomId"])
+    .index("by_timestamp", ["timestamp"])
+    .index("by_event_type", ["eventType"]),
+
+  liveTurnActions: defineTable({
+    interactionId: v.id("interactions"),
+    roomId: v.string(),
+    turnNumber: v.number(),
+    entityId: v.string(),
+    entityType: v.union(
+      v.literal("playerCharacter"),
+      v.literal("npc"),
+      v.literal("monster")
+    ),
+    actionType: v.union(
+      v.literal("move"),
+      v.literal("attack"),
+      v.literal("useItem"),
+      v.literal("cast"),
+      v.literal("interact"),
+      v.literal("end")
+    ),
+    actionData: v.object({
+      target: v.optional(v.string()),
+      position: v.optional(v.object({
+        x: v.number(),
+        y: v.number()
+      })),
+      itemId: v.optional(v.string()),
+      spellId: v.optional(v.string()),
+      parameters: v.optional(v.any())
+    }),
+    result: v.optional(v.object({
+      success: v.boolean(),
+      damage: v.optional(v.number()),
+      healing: v.optional(v.number()),
+      effects: v.optional(v.array(v.string())),
+      message: v.optional(v.string())
+    })),
+    diceRolls: v.optional(v.array(v.object({
+      type: v.string(), // "attack", "damage", "save", etc.
+      dice: v.string(),
+      result: v.number(),
+      breakdown: v.string()
+    }))),
+    timestamp: v.number(),
+    processingTime: v.optional(v.number()), // ms to process
+    validationErrors: v.optional(v.array(v.string()))
+  })
+    .index("by_interaction", ["interactionId"])
+    .index("by_room", ["roomId"])
+    .index("by_turn", ["turnNumber"])
+    .index("by_entity", ["entityId"]),
+
+  liveParticipantStates: defineTable({
+    interactionId: v.id("interactions"),
+    roomId: v.string(),
+    userId: v.string(),
+    entityId: v.string(),
+    entityType: v.union(
+      v.literal("playerCharacter"),
+      v.literal("npc"),
+      v.literal("monster")
+    ),
+    currentHP: v.number(),
+    maxHP: v.number(),
+    tempHP: v.optional(v.number()),
+    armorClass: v.number(),
+    position: v.object({
+      x: v.number(),
+      y: v.number()
+    }),
+    statusEffects: v.array(v.object({
+      name: v.string(),
+      description: v.string(),
+      duration: v.optional(v.number()), // rounds remaining
+      stackable: v.boolean(),
+      source: v.optional(v.string())
+    })),
+    conditions: v.array(v.string()), // D&D 5e conditions
+    resources: v.object({
+      spellSlots: v.optional(v.array(v.object({
+        level: v.number(),
+        total: v.number(),
+        used: v.number()
+      }))),
+      features: v.optional(v.array(v.object({
+        name: v.string(),
+        uses: v.number(),
+        maxUses: v.number(),
+        resetOn: v.string() // "short_rest", "long_rest", "dawn"
+      })))
+    }),
+    lastActionTimestamp: v.optional(v.number()),
+    isOnline: v.boolean(),
+    updatedAt: v.number()
+  })
+    .index("by_interaction", ["interactionId"])
+    .index("by_room", ["roomId"])
+    .index("by_entity", ["entityId"])
+    .index("by_user", ["userId"]),
+
+  liveSystemLogs: defineTable({
+    level: v.union(
+      v.literal("debug"),
+      v.literal("info"),
+      v.literal("warn"),
+      v.literal("error")
+    ),
+    component: v.string(),
+    message: v.string(),
+    metadata: v.optional(v.any()),
+    interactionId: v.optional(v.id("interactions")),
+    roomId: v.optional(v.string()),
+    userId: v.optional(v.string()),
+    timestamp: v.number()
+  })
+    .index("by_timestamp", ["timestamp"])
+    .index("by_level", ["level"])
+    .index("by_interaction", ["interactionId"]),
+
+  // Game Constants Tables - Store hardcoded D&D 5e data
+  gameConstants: defineTable({
+    category: v.string(), // "damage_types", "dice_types", "action_costs", "item_types", etc.
+    key: v.string(),
+    value: v.string(),
+    displayName: v.string(),
+    description: v.optional(v.string()),
+    sortOrder: v.optional(v.number()),
+    metadata: v.optional(v.any()), // Additional data like icons, colors, etc.
+    isActive: v.boolean(), // Allow disabling constants without deleting
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_category", ["category"])
+    .index("by_key", ["key"])
+    .index("by_category_sort", ["category", "sortOrder"]),
+
+  equipmentSlots: defineTable({
+    key: v.string(), // "headgear", "armwear", etc.
+    label: v.string(), // "Head", "Arms", etc.
+    icon: v.string(), // Emoji or icon identifier
+    allowedItemTypes: v.array(v.string()), // ["Armor"], ["Weapon", "Shield"], etc.
+    sortOrder: v.number(),
+    description: v.optional(v.string()),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_key", ["key"])
+    .index("by_sort", ["sortOrder"]),
+
+  dndClasses: defineTable({
+    name: v.string(), // "Fighter", "Wizard", etc.
+    hitDie: v.string(), // "d10", "d6", etc.
+    primaryAbility: v.string(), // "Strength", "Intelligence", etc.
+    savingThrowProficiencies: v.array(v.string()), // ["Strength", "Constitution"]
+    armorProficiencies: v.array(v.string()), // ["Light", "Medium", "Heavy"]
+    weaponProficiencies: v.array(v.string()), // ["Simple", "Martial"]
+    description: v.optional(v.string()),
+    sourceBook: v.optional(v.string()),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_name", ["name"])
+    .index("by_primary_ability", ["primaryAbility"]),
+
+  abilityScores: defineTable({
+    key: v.string(), // "strength", "dexterity", etc.
+    label: v.string(), // "Strength", "Dexterity", etc.
+    abbreviation: v.string(), // "STR", "DEX", etc.
+    description: v.optional(v.string()),
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_key", ["key"])
+    .index("by_sort", ["sortOrder"]),
+
+  pointBuyCosts: defineTable({
+    score: v.number(), // 8, 9, 10, etc.
+    cost: v.number(), // 0, 1, 2, etc.
+    description: v.optional(v.string()),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_score", ["score"]),
+
+  actionCosts: defineTable({
+    value: v.string(), // "Action", "Bonus Action", etc.
+    icon: v.optional(v.string()), // Icon identifier
+    color: v.optional(v.string()), // CSS color classes
+    description: v.string(),
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_sort", ["sortOrder"]),
+
+  actionTypes: defineTable({
+    value: v.string(), // "MELEE_ATTACK", "RANGED_ATTACK", etc.
+    displayName: v.string(), // "Melee Attack", "Ranged Attack", etc.
+    description: v.string(),
+    category: v.optional(v.string()), // "combat", "utility", "spell", etc.
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_category", ["category"])
+    .index("by_sort", ["sortOrder"]),
+
+  damageTypes: defineTable({
+    value: v.string(), // "BLUDGEONING", "PIERCING", etc.
+    displayName: v.string(), // "Bludgeoning", "Piercing", etc.
+    description: v.string(),
+    category: v.optional(v.string()), // "physical", "elemental", "magical", etc.
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_category", ["category"])
+    .index("by_sort", ["sortOrder"]),
+
+  diceTypes: defineTable({
+    value: v.string(), // "D4", "D6", "D8", etc.
+    displayName: v.string(), // "d4", "d6", "d8", etc.
+    sides: v.number(), // 4, 6, 8, etc.
+    description: v.optional(v.string()),
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_sides", ["sides"])
+    .index("by_sort", ["sortOrder"]),
+
+  itemTypes: defineTable({
+    value: v.string(), // "Weapon", "Armor", etc.
+    displayName: v.string(), // "Weapon", "Armor", etc.
+    description: v.string(),
+    category: v.optional(v.string()), // "combat", "defense", "consumable", etc.
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_category", ["category"])
+    .index("by_sort", ["sortOrder"]),
+
+  itemRarities: defineTable({
+    value: v.string(), // "Common", "Uncommon", etc.
+    displayName: v.string(), // "Common", "Uncommon", etc.
+    description: v.string(),
+    color: v.optional(v.string()), // CSS color for UI display
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_sort", ["sortOrder"]),
+
+  armorCategories: defineTable({
+    value: v.string(), // "Light", "Medium", "Heavy", "Shield"
+    displayName: v.string(), // "Light", "Medium", "Heavy", "Shield"
+    description: v.string(),
+    maxDexBonus: v.optional(v.number()), // Maximum dexterity bonus
+    stealthDisadvantage: v.optional(v.boolean()), // Whether stealth is at disadvantage
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_sort", ["sortOrder"]),
+
+  spellLevels: defineTable({
+    level: v.number(), // 0, 1, 2, etc.
+    displayName: v.string(), // "Cantrip", "1st Level", "2nd Level", etc.
+    description: v.string(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_level", ["level"]),
+
+  restTypes: defineTable({
+    value: v.string(), // "Short Rest", "Long Rest", etc.
+    displayName: v.string(), // "Short Rest", "Long Rest", etc.
+    description: v.string(),
+    duration: v.optional(v.string()), // "1 hour", "8 hours", etc.
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_sort", ["sortOrder"]),
+
+  characterTypes: defineTable({
+    value: v.string(), // "player", "npc"
+    displayName: v.string(), // "Player Character", "Non-Player Character"
+    description: v.string(),
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_sort", ["sortOrder"]),
+
+  userRoles: defineTable({
+    value: v.string(), // "admin", "user"
+    displayName: v.string(), // "Administrator", "User"
+    description: v.string(),
+    permissions: v.array(v.string()), // Array of permission strings
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_sort", ["sortOrder"]),
+
+  // Battle Map System Tables (Enhanced with terrain and cell features)
+  battleMaps: defineTable({
+    name: v.string(),
+    cols: v.number(),
+    rows: v.number(),
+    cellSize: v.number(), // px
+    // Terrain and cell data (optional for backward compatibility)
+    cells: v.optional(v.array(
+      v.object({
+        x: v.number(),
+        y: v.number(),
+        state: v.optional(v.union(v.literal("inbounds"), v.literal("outbounds"), v.literal("occupied"))),
+        terrainType: v.optional(
+          v.union(
+            v.literal("normal"),
+            v.literal("difficult"),
+            v.literal("hazardous"),
+            v.literal("magical"),
+            v.literal("water"),
+            v.literal("ice"),
+            v.literal("fire"),
+            v.literal("acid"),
+            v.literal("poison"),
+            v.literal("unstable")
+          )
+        ),
+        terrainEffect: v.optional(
+          v.object({
+            movementCostMultiplier: v.optional(v.number()),
+            damage: v.optional(
+              v.object({
+                amount: v.number(),
+                type: v.union(
+                  v.literal("fire"),
+                  v.literal("cold"),
+                  v.literal("acid"),
+                  v.literal("poison"),
+                  v.literal("necrotic"),
+                  v.literal("radiant")
+                ),
+                saveType: v.optional(v.string()),
+                saveDC: v.optional(v.number())
+              })
+            ),
+            abilityChecks: v.optional(
+              v.array(
+                v.object({
+                  ability: v.string(),
+                  dc: v.number(),
+                  onFailure: v.string()
+                })
+              )
+            ),
+            specialEffects: v.optional(v.array(v.string()))
+          })
+        ),
+        customColor: v.optional(v.string()),
+      })
+    )),
+    createdBy: v.optional(v.id("users")),
+    clerkId: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+  })
+    .index("by_name", ["name"])
+    .index("by_creator", ["createdBy"]),
+
+  battleTokens: defineTable({
+    mapId: v.id("battleMaps"),
+    x: v.number(), // 0..cols-1
+    y: v.number(), // 0..rows-1
+    label: v.string(),
+    type: v.union(
+      v.literal("pc"),
+      v.literal("npc_friendly"),
+      v.literal("npc_foe")
+    ),
+    color: v.string(), // hex
+    size: v.number(), // tile size (1=1x1)
+    // Enhanced token data
+    characterId: v.optional(v.id("characters")),
+    monsterId: v.optional(v.id("monsters")),
+    speed: v.optional(v.number()),
+    hp: v.optional(v.number()),
+    maxHp: v.optional(v.number()),
+    conditions: v.optional(v.array(v.string())),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_map", ["mapId"]),
+
+  // Map instances for active game sessions
+  battleMapInstances: defineTable({
+    mapId: v.id("battleMaps"),
+    name: v.string(),
+    campaignId: v.optional(v.id("campaigns")),
+    interactionId: v.optional(v.id("interactions")),
+    currentPositions: v.array(
+      v.object({
+        tokenId: v.id("battleTokens"),
+        x: v.number(),
+        y: v.number(),
+      })
+    ),
+    movementHistory: v.array(
+      v.object({
+        tokenId: v.id("battleTokens"),
+        fromX: v.number(),
+        fromY: v.number(),
+        toX: v.number(),
+        toY: v.number(),
+        timestamp: v.number(),
+        distance: v.number(),
+      })
+    ),
+    createdBy: v.id("users"),
+    clerkId: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_map", ["mapId"])
+    .index("by_campaign", ["campaignId"])
+    .index("by_interaction", ["interactionId"]),
+
+  mapCellStates: defineTable({
+    value: v.string(), // "inbounds", "outbounds", "occupied"
+    displayName: v.string(), // "In Bounds", "Out of Bounds", "Occupied"
+    description: v.string(),
+    color: v.optional(v.string()), // CSS color for map display
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_sort", ["sortOrder"]),
+
+  terrainTypes: defineTable({
+    value: v.string(), // "normal", "difficult", "water", etc.
+    displayName: v.string(), // "Normal", "Difficult Terrain", "Water", etc.
+    description: v.string(),
+    movementCost: v.optional(v.number()), // Movement cost multiplier
+    color: v.optional(v.string()), // CSS color for map display
+    sortOrder: v.number(),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_value", ["value"])
+    .index("by_sort", ["sortOrder"]),
+
 });

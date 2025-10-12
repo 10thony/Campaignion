@@ -4,12 +4,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+} from '../ui/dialog';
+import { Button } from '../ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Badge } from '../ui/badge';
+import { Progress } from '../ui/progress';
 import { 
   Clock, 
   Users, 
@@ -25,12 +25,15 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
-  Loader2
+  Loader2,
+  Map
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useLiveInteraction } from '@/hooks/useLiveInteraction';
-import { LiveMapView } from '@/components/maps/LiveMapView';
-import { MapActionSelector } from '@/components/maps/MapActionSelector';
+import { cn } from '../../lib/utils';
+import { useLiveInteraction } from '../../hooks/useLiveInteraction';
+import { Id } from '../../../convex/_generated/dataModel';
+import { LiveMapView } from '../maps/LiveMapView';
+import { MapActionSelector } from '../maps/MapActionSelector';
+import { MapModal } from '../maps/MapModal';
 
 // Import types from live server schemas
 interface Position {
@@ -141,7 +144,7 @@ interface GameState {
 interface LiveInteractionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  interactionId: string;
+  interactionId: Id<"interactions">;
   currentUserId: string;
   isDM: boolean;
 }
@@ -160,6 +163,13 @@ export function LiveInteractionModal({
   const [chatMessage, setChatMessage] = useState('');
   const [chatChannel, setChatChannel] = useState<'party' | 'dm' | 'private'>('party');
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [diceNotation, setDiceNotation] = useState('1d20');
+  const [diceModifier, setDiceModifier] = useState(0);
+  const [showDiceRoller, setShowDiceRoller] = useState(false);
+  
+  // Map modal state
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [selectedMapId, setSelectedMapId] = useState<Id<"maps"> | null>(null);
 
   // Use the live interaction hook
   const {
@@ -260,6 +270,46 @@ export function LiveInteractionModal({
       setValidationErrors(['Failed to send message. Please try again.']);
     }
   }, [chatMessage, chatChannel, currentUserId, sendChatMessage]);
+
+  const rollDice = useCallback((sides: number, count: number = 1, modifier: number = 0): { rolls: number[], total: number, formula: string } => {
+    const rolls = Array.from({ length: count }, () => Math.floor(Math.random() * sides) + 1);
+    const total = rolls.reduce((sum, roll) => sum + roll, 0) + modifier;
+    const formula = `${count}d${sides}${modifier > 0 ? `+${modifier}` : modifier < 0 ? modifier : ''}`;
+    return { rolls, total, formula };
+  }, []);
+
+  const handleDiceRoll = useCallback(async () => {
+    try {
+      // Parse dice notation (e.g., "2d6", "1d20+5", "3d8-2")
+      const diceRegex = /^(\d+)d(\d+)([+-]\d+)?$/i;
+      const match = diceNotation.match(diceRegex);
+      
+      if (!match) {
+        setValidationErrors(['Invalid dice notation. Use format like "1d20", "2d6+3", etc.']);
+        return;
+      }
+
+      const count = parseInt(match[1]);
+      const sides = parseInt(match[2]);
+      const modifier = match[3] ? parseInt(match[3]) : diceModifier;
+
+      const rollResult = rollDice(sides, count, modifier);
+      
+      const rollMessage = `🎲 **Dice Roll:** ${rollResult.formula} = [${rollResult.rolls.join(', ')}]${modifier !== 0 ? ` ${modifier > 0 ? '+' : ''}${modifier}` : ''} = **${rollResult.total}**`;
+
+      await sendChatMessage({
+        userId: currentUserId,
+        content: rollMessage,
+        type: chatChannel,
+      });
+      
+      setShowDiceRoller(false);
+      setDiceNotation('1d20');
+      setDiceModifier(0);
+    } catch (error) {
+      setValidationErrors(['Failed to roll dice. Please try again.']);
+    }
+  }, [diceNotation, diceModifier, chatChannel, currentUserId, sendChatMessage, rollDice]);
 
   // Render helpers
   const renderConnectionStatus = () => (
@@ -550,12 +600,98 @@ export function LiveInteractionModal({
                   <div>
                     <Card className="h-full">
                       <CardHeader>
-                        <CardTitle>Battle Map</CardTitle>
+                        <CardTitle className="flex items-center justify-between">
+                          <span>Battle Map</span>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>Round {gameState?.roundNumber}</span>
+                            {gameState?.status === 'active' && (
+                              <Badge variant="default" className="animate-pulse">Live</Badge>
+                            )}
+                            {isDM && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  // For now, we'll use a placeholder map ID
+                                  // In a real implementation, this would come from the interaction data
+                                  setSelectedMapId('placeholder-map-id' as Id<"maps">);
+                                  setIsMapModalOpen(true);
+                                }}
+                                className="flex items-center gap-2"
+                              >
+                                <Map className="h-4 w-4" />
+                                Open Tactical View
+                              </Button>
+                            )}
+                          </div>
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-                          <p className="text-muted-foreground">Map visualization would go here</p>
-                        </div>
+                        {gameState?.mapState ? (
+                          <div className="space-y-3">
+                            <div className="aspect-square bg-muted rounded-lg border-2 border-dashed border-muted-foreground/20 flex items-center justify-center relative overflow-hidden">
+                              {/* Simple grid-based map visualization */}
+                              <div 
+                                className="grid gap-0 w-full h-full"
+                                style={{
+                                  gridTemplateColumns: `repeat(${Math.min(gameState.mapState.width, 10)}, 1fr)`,
+                                  gridTemplateRows: `repeat(${Math.min(gameState.mapState.height, 10)}, 1fr)`
+                                }}
+                              >
+                                {Array.from({ length: Math.min(gameState.mapState.width * gameState.mapState.height, 100) }).map((_, index) => {
+                                  const x = index % Math.min(gameState.mapState.width, 10);
+                                  const y = Math.floor(index / Math.min(gameState.mapState.width, 10));
+                                  const entity = Object.values(gameState.mapState.entities).find(e => e.position.x === x && e.position.y === y);
+                                  const isObstacle = gameState.mapState.obstacles.some(obs => obs.x === x && obs.y === y);
+                                  
+                                  return (
+                                    <div
+                                      key={index}
+                                      className={cn(
+                                        "border border-muted-foreground/10 flex items-center justify-center text-xs font-bold relative",
+                                        isObstacle && "bg-stone-600",
+                                        entity && "bg-blue-500 text-white"
+                                      )}
+                                      title={entity ? `${entity.entityId} at (${x}, ${y})` : `(${x}, ${y})`}
+                                    >
+                                      {entity && entity.entityId.charAt(0).toUpperCase()}
+                                      {isObstacle && "█"}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              
+                              {/* Legend */}
+                              <div className="absolute bottom-2 left-2 bg-background/90 rounded p-2 text-xs">
+                                <div className="flex items-center gap-1 mb-1">
+                                  <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                                  <span>Entities</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <div className="w-3 h-3 bg-stone-600 rounded"></div>
+                                  <span>Obstacles</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Entity positions */}
+                            <div className="text-sm">
+                              <h5 className="font-medium mb-2">Entity Positions</h5>
+                              <div className="space-y-1 max-h-24 overflow-y-auto">
+                                {Object.values(gameState.mapState.entities).map(entity => (
+                                  <div key={entity.entityId} className="flex justify-between items-center">
+                                    <span className="truncate">{entity.entityId}</span>
+                                    <span className="text-muted-foreground">({entity.position.x}, {entity.position.y})</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
+                            <p className="text-muted-foreground">No map data available</p>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   </div>
@@ -698,6 +834,70 @@ export function LiveInteractionModal({
                         </Button>
                       </div>
 
+                      {showDiceRoller && (
+                        <div className="p-3 border rounded-lg bg-muted/50">
+                          <h4 className="font-medium mb-2">🎲 Roll Dice</h4>
+                          <div className="space-y-3">
+                            <div className="flex gap-2">
+                              <div className="flex-1">
+                                <label htmlFor="dice-notation" className="block text-sm font-medium mb-1">
+                                  Dice Notation
+                                </label>
+                                <input
+                                  id="dice-notation"
+                                  type="text"
+                                  value={diceNotation}
+                                  onChange={(e) => setDiceNotation(e.target.value)}
+                                  placeholder="1d20, 2d6+3, etc."
+                                  className="w-full px-3 py-2 border rounded-md"
+                                />
+                              </div>
+                              <div className="w-24">
+                                <label htmlFor="dice-modifier" className="block text-sm font-medium mb-1">
+                                  Modifier
+                                </label>
+                                <input
+                                  id="dice-modifier"
+                                  type="number"
+                                  value={diceModifier}
+                                  onChange={(e) => setDiceModifier(parseInt(e.target.value) || 0)}
+                                  className="w-full px-3 py-2 border rounded-md"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={handleDiceRoll}
+                                className="flex items-center gap-2"
+                              >
+                                🎲 Roll
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setShowDiceRoller(false)}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                            <div className="flex gap-1 flex-wrap">
+                              {['1d4', '1d6', '1d8', '1d10', '1d12', '1d20', '2d6', '3d6'].map(preset => (
+                                <Button
+                                  key={preset}
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setDiceNotation(preset)}
+                                  className="text-xs"
+                                >
+                                  {preset}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       <div className="flex gap-2">
                         <label htmlFor="chat-input" className="sr-only">
                           Chat message
@@ -720,6 +920,15 @@ export function LiveInteractionModal({
                         <span id="chat-input-help" className="sr-only">
                           Press Enter to send message, Shift+Enter for new line
                         </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setShowDiceRoller(!showDiceRoller)}
+                          className="flex items-center gap-1"
+                          title="Roll dice"
+                        >
+                          🎲
+                        </Button>
                         <Button 
                           onClick={handleSendChatMessage}
                           disabled={!chatMessage.trim()}
@@ -801,6 +1010,21 @@ export function LiveInteractionModal({
           </div>
         )}
       </DialogContent>
+
+      {/* Map Modal for Tactical View */}
+      {selectedMapId && (
+        <MapModal
+          isOpen={isMapModalOpen}
+          onClose={() => {
+            setIsMapModalOpen(false);
+            setSelectedMapId(null);
+          }}
+          mapId={selectedMapId}
+          mode="interactive"
+          campaignId={undefined} // This would come from the interaction context
+          interactionId={interactionId}
+        />
+      )}
     </Dialog>
   );
 }

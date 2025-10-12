@@ -1,0 +1,357 @@
+.faction-detail-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  @apply transition-colors duration-200;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  @apply bg-gray-600 hover:bg-gray-700 text-white border-none px-4 py-2 rounded text-sm font-medium cursor-pointer transition-colors duration-200;
+}
+
+.dark .back-button {
+  @apply bg-gray-500 hover:bg-gray-600;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.edit-button {
+  @apply bg-blue-600 hover:bg-blue-700 text-white border-none px-4 py-2 rounded text-sm font-medium cursor-pointer transition-colors duration-200;
+}
+
+.dark .edit-button {
+  @apply bg-blue-500 hover:bg-blue-600;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.dark .loading-spinner {
+  border-color: #374151;
+  border-top-color: #3b82f6;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  font-size: 1.1rem;
+  @apply text-gray-600 transition-colors duration-200;
+}
+
+.dark .loading-state p {
+  @apply text-gray-400;
+}
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.error-state h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  @apply text-gray-800 transition-colors duration-200;
+}
+
+.dark .error-state h2 {
+  @apply text-gray-100;
+}
+
+.error-state p {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.1rem;
+  @apply text-gray-600 transition-colors duration-200;
+}
+
+.dark .error-state p {
+  @apply text-gray-400;
+}
+
+.faction-content {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  @apply transition-colors duration-200;
+}
+
+.dark .faction-content {
+  background: #1f2937;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.faction-header {
+  padding: 2rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  @apply transition-colors duration-200;
+}
+
+.dark .faction-header {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.faction-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+  @apply text-gray-800 transition-colors duration-200;
+}
+
+.dark .faction-title {
+  @apply text-gray-100;
+}
+
+.faction-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.created-date, .updated-date {
+  font-size: 0.875rem;
+  @apply text-gray-600 transition-colors duration-200;
+}
+
+.dark .created-date, .dark .updated-date {
+  @apply text-gray-400;
+}
+
+.faction-sections {
+  padding: 2rem;
+}
+
+.detail-section {
+  margin-bottom: 2.5rem;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  @apply text-gray-800 transition-colors duration-200;
+}
+
+.dark .section-title {
+  @apply text-gray-100;
+}
+
+.section-content {
+  @apply text-gray-700 transition-colors duration-200;
+}
+
+.dark .section-content {
+  @apply text-gray-300;
+}
+
+.faction-description {
+  line-height: 1.6;
+  margin: 0;
+}
+
+.goals-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.goal-item {
+  padding: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  @apply transition-colors duration-200;
+}
+
+.dark .goal-item {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.goal-item:last-child {
+  margin-bottom: 0;
+}
+
+.leaders-grid, .factions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.leader-card, .faction-card {
+  padding: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  @apply transition-colors duration-200;
+}
+
+.dark .leader-card, .dark .faction-card {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.faction-card.enemy {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.dark .faction-card.enemy {
+  border-color: #7f1d1d;
+  background: #1f1f1f;
+}
+
+.leader-name, .faction-name {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  @apply text-gray-800 transition-colors duration-200;
+}
+
+.dark .leader-name, .dark .faction-name {
+  @apply text-gray-100;
+}
+
+.leader-details {
+  margin: 0;
+  font-size: 0.875rem;
+  @apply text-gray-600 transition-colors duration-200;
+}
+
+.dark .leader-details {
+  @apply text-gray-400;
+}
+
+.reputation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reputation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  @apply transition-colors duration-200;
+}
+
+.dark .reputation-item {
+  background: #374151;
+  border-color: #4b5563;
+}
+
+.character-name {
+  font-weight: 500;
+  @apply text-gray-700 transition-colors duration-200;
+}
+
+.dark .character-name {
+  @apply text-gray-300;
+}
+
+.reputation-score {
+  font-weight: 600;
+  @apply text-gray-800 transition-colors duration-200;
+}
+
+.dark .reputation-score {
+  @apply text-gray-100;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 768px) {
+  .faction-detail-container {
+    padding: 1rem;
+  }
+  
+  .detail-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .header-actions {
+    justify-content: center;
+  }
+  
+  .faction-header {
+    padding: 1.5rem;
+  }
+  
+  .faction-sections {
+    padding: 1.5rem;
+  }
+  
+  .faction-title {
+    font-size: 1.5rem;
+  }
+  
+  .leaders-grid, .factions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .reputation-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+} 

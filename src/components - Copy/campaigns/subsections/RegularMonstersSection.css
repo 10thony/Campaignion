@@ -1,0 +1,139 @@
+/* Regular Monsters Section */
+.regular-monsters-section {
+  @apply bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm transition-all duration-200;
+}
+
+.dark .regular-monsters-section {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.regular-monsters-section .section-header {
+  @apply flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200 cursor-pointer transition-colors duration-200;
+}
+
+.dark .regular-monsters-section .section-header {
+  @apply bg-gray-700 border-gray-600;
+}
+
+.regular-monsters-section .section-header:hover {
+  @apply bg-gray-100;
+}
+
+.dark .regular-monsters-section .section-header:hover {
+  @apply bg-gray-600;
+}
+
+.regular-monsters-section .header-left {
+  @apply flex items-center gap-3;
+}
+
+.regular-monsters-section .collapse-button {
+  @apply text-gray-500 hover:text-gray-700 transition-colors duration-200 bg-transparent border-none cursor-pointer text-lg;
+}
+
+.dark .regular-monsters-section .collapse-button {
+  @apply text-gray-400 hover:text-gray-200;
+}
+
+.regular-monsters-section .section-title {
+  @apply text-lg font-semibold text-gray-900 m-0 transition-colors duration-200;
+}
+
+.dark .regular-monsters-section .section-title {
+  @apply text-gray-100;
+}
+
+.regular-monsters-section .header-actions {
+  @apply flex gap-2;
+}
+
+.regular-monsters-section .add-button {
+  @apply px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded-md cursor-pointer transition-all duration-200 hover:bg-blue-600 border-none;
+}
+
+.regular-monsters-section .section-content {
+  @apply p-4;
+}
+
+.regular-monsters-section .entities-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+.regular-monsters-section .entity-card {
+  @apply bg-gray-50 border border-gray-200 rounded-lg p-4 transition-all duration-200 hover:shadow-md;
+}
+
+.dark .regular-monsters-section .entity-card {
+  @apply bg-gray-700 border-gray-600;
+}
+
+.regular-monsters-section .entity-info {
+  @apply mb-3;
+}
+
+.regular-monsters-section .entity-info.clickable {
+  @apply cursor-pointer;
+}
+
+.regular-monsters-section .entity-info.clickable:hover {
+  @apply opacity-80;
+}
+
+.regular-monsters-section .entity-name {
+  @apply text-lg font-semibold text-gray-900 mb-2 transition-colors duration-200;
+}
+
+.dark .regular-monsters-section .entity-name {
+  @apply text-gray-100;
+}
+
+.regular-monsters-section .entity-description {
+  @apply text-sm text-gray-600 mb-2 transition-colors duration-200;
+}
+
+.dark .regular-monsters-section .entity-description {
+  @apply text-gray-400;
+}
+
+.regular-monsters-section .entity-cr {
+  @apply text-xs text-gray-500 font-medium transition-colors duration-200;
+}
+
+.dark .regular-monsters-section .entity-cr {
+  @apply text-gray-500;
+}
+
+.regular-monsters-section .entity-actions {
+  @apply flex justify-end;
+}
+
+.regular-monsters-section .unlink-button {
+  @apply px-2 py-1 bg-red-500 text-white text-xs font-medium rounded cursor-pointer transition-all duration-200 hover:bg-red-600 border-none;
+}
+
+.regular-monsters-section .empty-state {
+  @apply text-center py-8;
+}
+
+.regular-monsters-section .empty-state p {
+  @apply text-gray-500 text-sm transition-colors duration-200;
+}
+
+.dark .regular-monsters-section .empty-state p {
+  @apply text-gray-400;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .regular-monsters-section .section-header {
+    @apply flex-col items-start gap-3;
+  }
+  
+  .regular-monsters-section .header-actions {
+    @apply w-full justify-start;
+  }
+  
+  .regular-monsters-section .entities-grid {
+    @apply grid-cols-1;
+  }
+} 

@@ -120,7 +120,7 @@ export declare const TurnCompletedEventSchema: z.ZodObject<{
         actionId: z.ZodOptional<z.ZodString>;
         parameters: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
     }, "strip", z.ZodTypeAny, {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {
@@ -132,7 +132,7 @@ export declare const TurnCompletedEventSchema: z.ZodObject<{
         parameters?: Record<string, any> | undefined;
         actionId?: string | undefined;
     }, {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {
@@ -150,7 +150,7 @@ export declare const TurnCompletedEventSchema: z.ZodObject<{
     interactionId: string;
     entityId: string;
     actions: {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {
@@ -168,7 +168,7 @@ export declare const TurnCompletedEventSchema: z.ZodObject<{
     interactionId: string;
     entityId: string;
     actions: {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {
@@ -590,7 +590,7 @@ export declare const GameEventSchema: z.ZodDiscriminatedUnion<"type", [z.ZodObje
         actionId: z.ZodOptional<z.ZodString>;
         parameters: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
     }, "strip", z.ZodTypeAny, {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {
@@ -602,7 +602,7 @@ export declare const GameEventSchema: z.ZodDiscriminatedUnion<"type", [z.ZodObje
         parameters?: Record<string, any> | undefined;
         actionId?: string | undefined;
     }, {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {
@@ -620,7 +620,7 @@ export declare const GameEventSchema: z.ZodDiscriminatedUnion<"type", [z.ZodObje
     interactionId: string;
     entityId: string;
     actions: {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {
@@ -638,7 +638,7 @@ export declare const GameEventSchema: z.ZodDiscriminatedUnion<"type", [z.ZodObje
     interactionId: string;
     entityId: string;
     actions: {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {

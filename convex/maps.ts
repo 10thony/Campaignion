@@ -17,6 +17,27 @@ export const getAllMaps = query({
   },
 });
 
+// Get maps for the current user
+export const getUserMaps = query({
+  args: {},
+  handler: async (ctx) => {
+    try {
+      const user = await getCurrentUser(ctx);
+      if (!user) {
+        return [];
+      }
+
+      return await ctx.db
+        .query("maps")
+        .filter((q) => q.eq(q.field("createdBy"), user._id))
+        .collect();
+    } catch (error) {
+      console.error('getUserMaps error:', error);
+      return [];
+    }
+  },
+});
+
 // Get all map instances (will be filtered on client side)
 export const getAllMapInstances = query({
   args: {},
@@ -63,6 +84,25 @@ export const getMapInstance = query({
   },
 });
 
+// Get map instance by interaction ID
+export const getMapInstanceByInteraction = query({
+  args: { 
+    interactionId: v.id("interactions"),
+    mapId: v.optional(v.id("maps"))
+  },
+  handler: async (ctx, args) => {
+    const query = ctx.db
+      .query("mapInstances")
+      .filter((q) => q.eq(q.field("interactionId"), args.interactionId));
+    
+    if (args.mapId) {
+      return await query.filter((q) => q.eq(q.field("mapId"), args.mapId)).first();
+    }
+    
+    return await query.first();
+  },
+});
+
 // Create a new map
 export const createMap = mutation({
   args: {
@@ -74,18 +114,50 @@ export const createMap = mutation({
         x: v.number(),
         y: v.number(),
         state: v.union(v.literal("inbounds"), v.literal("outbounds"), v.literal("occupied")),
-        terrain: v.optional(
+        terrainType: v.optional(
           v.union(
             v.literal("normal"),
-            v.literal("soft"),
-            v.literal("rough"),
-            v.literal("intense"),
-            v.literal("brutal"),
-            v.literal("deadly")
+            v.literal("difficult"),
+            v.literal("hazardous"),
+            v.literal("magical"),
+            v.literal("water"),
+            v.literal("ice"),
+            v.literal("fire"),
+            v.literal("acid"),
+            v.literal("poison"),
+            v.literal("unstable")
           )
         ),
-        terrainModifier: v.optional(v.number()),
-        affectedAbilityScores: v.optional(v.array(v.string())),
+        terrainEffect: v.optional(
+          v.object({
+            movementCostMultiplier: v.optional(v.number()),
+            damage: v.optional(
+              v.object({
+                amount: v.number(),
+                type: v.union(
+                  v.literal("fire"),
+                  v.literal("cold"),
+                  v.literal("acid"),
+                  v.literal("poison"),
+                  v.literal("necrotic"),
+                  v.literal("radiant")
+                ),
+                saveType: v.optional(v.string()),
+                saveDC: v.optional(v.number())
+              })
+            ),
+            abilityChecks: v.optional(
+              v.array(
+                v.object({
+                  ability: v.string(),
+                  dc: v.number(),
+                  onFailure: v.string()
+                })
+              )
+            ),
+            specialEffects: v.optional(v.array(v.string()))
+          })
+        ),
         customColor: v.optional(v.string()),
       })
     ),
@@ -132,22 +204,54 @@ export const updateMapCells = mutation({
         x: v.number(),
         y: v.number(),
         state: v.union(v.literal("inbounds"), v.literal("outbounds"), v.literal("occupied")),
-        terrain: v.optional(
+        terrainType: v.optional(
           v.union(
             v.literal("normal"),
-            v.literal("soft"),
-            v.literal("rough"),
-            v.literal("intense"),
-            v.literal("brutal"),
-            v.literal("deadly")
+            v.literal("difficult"),
+            v.literal("hazardous"),
+            v.literal("magical"),
+            v.literal("water"),
+            v.literal("ice"),
+            v.literal("fire"),
+            v.literal("acid"),
+            v.literal("poison"),
+            v.literal("unstable")
           )
         ),
-        terrainModifier: v.optional(v.number()),
-        affectedAbilityScores: v.optional(v.array(v.string())),
+        terrainEffect: v.optional(
+          v.object({
+            movementCostMultiplier: v.optional(v.number()),
+            damage: v.optional(
+              v.object({
+                amount: v.number(),
+                type: v.union(
+                  v.literal("fire"),
+                  v.literal("cold"),
+                  v.literal("acid"),
+                  v.literal("poison"),
+                  v.literal("necrotic"),
+                  v.literal("radiant")
+                ),
+                saveType: v.optional(v.string()),
+                saveDC: v.optional(v.number())
+              })
+            ),
+            abilityChecks: v.optional(
+              v.array(
+                v.object({
+                  ability: v.string(),
+                  dc: v.number(),
+                  onFailure: v.string()
+                })
+              )
+            ),
+            specialEffects: v.optional(v.array(v.string()))
+          })
+        ),
         occupant: v.optional(
           v.object({
             id: v.string(),
-            type: v.union(v.literal("playerCharacter"), v.literal("npc"), v.literal("monster")),
+            type: v.union(v.literal("character"), v.literal("monster")),
             color: v.string(),
             speed: v.number(),
             name: v.string(),

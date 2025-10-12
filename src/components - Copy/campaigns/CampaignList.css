@@ -1,0 +1,387 @@
+/* Campaigns Container */
+.campaigns-container {
+  @apply max-w-6xl mx-auto p-6 bg-white min-h-screen transition-all duration-300;
+}
+
+.dark .campaigns-container {
+  @apply bg-gray-900 text-gray-100;
+}
+
+/* Header Section */
+.campaigns-header {
+  @apply flex justify-between items-start mb-8 pb-6 border-b-2 border-gray-200;
+}
+
+.dark .campaigns-header {
+  @apply border-gray-700;
+}
+
+.header-content {
+  @apply flex-1;
+}
+
+.campaigns-title {
+  @apply text-4xl font-bold text-gray-900 mb-4 leading-tight transition-colors duration-200;
+}
+
+.dark .campaigns-title {
+  @apply text-gray-100;
+}
+
+.campaigns-subtitle {
+  @apply text-lg text-gray-600 transition-colors duration-200;
+}
+
+.dark .campaigns-subtitle {
+  @apply text-gray-400;
+}
+
+.create-button {
+  @apply px-6 py-3 bg-blue-600 text-white border-none rounded-md text-sm font-medium cursor-pointer transition-all duration-200 flex items-center gap-2 hover:bg-blue-700 hover:transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30;
+}
+
+.button-icon {
+  @apply text-lg;
+}
+
+/* Campaign List */
+.campaigns-list {
+  @apply space-y-4 mb-8;
+}
+
+.campaign-card {
+  @apply bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm transition-all duration-200 hover:shadow-lg;
+}
+
+.dark .campaign-card {
+  @apply bg-gray-800 border-gray-700 hover:shadow-xl hover:shadow-gray-900/50;
+}
+
+.campaign-header {
+  @apply flex justify-between items-center p-5 bg-gray-50 border-b border-gray-200 transition-colors duration-200 cursor-pointer hover:bg-gray-100;
+}
+
+.dark .campaign-header {
+  @apply bg-gray-900 border-gray-700 hover:bg-gray-800;
+}
+
+.campaign-title-section {
+  @apply flex items-center gap-3;
+}
+
+.campaign-name {
+  @apply text-xl font-semibold text-gray-900 transition-colors duration-200;
+}
+
+.dark .campaign-name {
+  @apply text-gray-100;
+}
+
+.visibility-badge {
+  @apply px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.visibility-badge.public {
+  @apply bg-green-100 text-green-800;
+}
+
+.dark .visibility-badge.public {
+  @apply bg-green-900 text-green-200;
+}
+
+.visibility-badge.private {
+  @apply bg-gray-100 text-gray-800;
+}
+
+.dark .visibility-badge.private {
+  @apply bg-gray-700 text-gray-300;
+}
+
+.campaign-meta {
+  @apply flex items-center gap-4;
+}
+
+.campaign-quick-actions {
+  @apply flex items-center gap-2;
+}
+
+.quick-view-button {
+  @apply p-2 bg-blue-100 text-blue-600 border border-blue-200 rounded-md text-sm cursor-pointer transition-all duration-200 hover:bg-blue-200 hover:border-blue-300 hover:transform hover:scale-105;
+}
+
+.dark .quick-view-button {
+  @apply bg-blue-900 text-blue-300 border-blue-700 hover:bg-blue-800 hover:border-blue-600;
+}
+
+.campaign-date {
+  @apply text-sm text-gray-600 transition-colors duration-200;
+}
+
+.dark .campaign-date {
+  @apply text-gray-400;
+}
+
+.expand-indicator {
+  @apply text-lg text-gray-500 transition-transform duration-200 select-none;
+}
+
+.dark .expand-indicator {
+  @apply text-gray-400;
+}
+
+/* Campaign Details */
+.campaign-details {
+  @apply p-5 bg-gray-50 transition-all duration-300;
+}
+
+.dark .campaign-details {
+  @apply bg-gray-800;
+}
+
+.campaign-description {
+  @apply text-gray-700 mb-4 leading-relaxed transition-colors duration-200;
+}
+
+.dark .campaign-description {
+  @apply text-gray-300;
+}
+
+.campaign-stats {
+  @apply grid grid-cols-2 md:grid-cols-3 gap-4 mb-4;
+}
+
+.stat-item {
+  @apply flex justify-between items-center p-3 bg-white rounded-md border border-gray-200;
+}
+
+.dark .stat-item {
+  @apply bg-gray-700 border-gray-600;
+}
+
+.stat-label {
+  @apply text-sm text-gray-600 font-medium transition-colors duration-200;
+}
+
+.dark .stat-label {
+  @apply text-gray-400;
+}
+
+.stat-value {
+  @apply text-lg font-semibold text-gray-900 transition-colors duration-200;
+}
+
+.dark .stat-value {
+  @apply text-gray-100;
+}
+
+.campaign-actions {
+  @apply flex justify-end gap-3;
+}
+
+.view-button.primary {
+  @apply px-4 py-2 bg-blue-600 text-white border-none rounded-md text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-blue-700 hover:transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30;
+}
+
+.edit-button.secondary {
+  @apply px-4 py-2 bg-gray-100 text-gray-700 border border-gray-300 rounded-md text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-gray-200 hover:border-gray-400 hover:transform hover:-translate-y-0.5;
+}
+
+.dark .edit-button.secondary {
+  @apply bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600 hover:border-gray-500;
+}
+
+.view-button {
+  @apply px-4 py-2 bg-blue-600 text-white border-none rounded-md text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-blue-700 hover:transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30;
+}
+
+/* Pagination */
+.pagination {
+  @apply flex justify-center items-center gap-4 mt-8;
+}
+
+.pagination-button {
+  @apply px-4 py-2 bg-gray-100 text-gray-700 border border-gray-300 rounded-md text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-gray-200 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.dark .pagination-button {
+  @apply bg-gray-800 text-gray-300 border-gray-600 hover:bg-gray-700 hover:border-gray-500;
+}
+
+.page-info {
+  @apply text-sm text-gray-600 font-medium;
+}
+
+.dark .page-info {
+  @apply text-gray-400;
+}
+
+/* Empty State */
+.empty-state {
+  @apply flex flex-col items-center justify-center p-16 text-center;
+}
+
+.empty-icon {
+  @apply text-6xl mb-4;
+}
+
+.empty-state h3 {
+  @apply text-2xl font-semibold text-gray-900 mb-2 transition-colors duration-200;
+}
+
+.dark .empty-state h3 {
+  @apply text-gray-100;
+}
+
+.empty-state p {
+  @apply text-gray-600 mb-6 transition-colors duration-200;
+}
+
+.dark .empty-state p {
+  @apply text-gray-400;
+}
+
+.empty-state-actions {
+  @apply flex justify-center items-center gap-3 mb-4;
+}
+
+.admin-note {
+  @apply text-center;
+}
+
+.admin-note p {
+  @apply text-sm text-gray-500 italic transition-colors duration-200;
+}
+
+.dark .admin-note p {
+  @apply text-gray-400;
+}
+
+/* Error State */
+.error {
+  @apply text-center p-8 text-red-600 bg-red-50 rounded-lg border border-red-200;
+}
+
+.dark .error {
+  @apply text-red-400 bg-red-900/20 border-red-800;
+}
+
+/* Loading State */
+.loading-state {
+  @apply flex flex-col items-center justify-center p-16 text-gray-500;
+}
+
+.dark .loading-state {
+  @apply text-gray-400;
+}
+
+.loading-spinner {
+  @apply w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4;
+}
+
+.dark .loading-spinner {
+  @apply border-gray-700 border-t-blue-500;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .campaigns-container {
+    @apply p-4;
+  }
+
+  .campaigns-header {
+    @apply flex-col gap-4 items-start;
+  }
+
+  .campaigns-title {
+    @apply text-3xl;
+  }
+
+  .campaign-header {
+    @apply flex-col gap-3 items-start p-4;
+  }
+
+  .campaign-title-section {
+    @apply w-full justify-between;
+  }
+
+  .campaign-meta {
+    @apply w-full justify-between;
+  }
+
+  .campaign-stats {
+    @apply grid-cols-1;
+  }
+
+  .pagination {
+    @apply flex-col gap-2;
+  }
+}
+
+/* Role badges */
+.campaign-badges {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.role-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-badge.dm {
+  background-color: #ffd700;
+  color: #000;
+}
+
+.role-badge.player {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.role-badge.admin {
+  background-color: #f44336;
+  color: white;
+}
+
+/* Action buttons */
+.delete-button.danger {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.delete-button.danger:hover {
+  background-color: #d32f2f;
+}
+
+/* Dark mode support for role badges */
+.dark .role-badge.dm {
+  background-color: #ffd700;
+  color: #000;
+}
+
+.dark .role-badge.player {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.dark .role-badge.admin {
+  background-color: #f44336;
+  color: white;
+} 

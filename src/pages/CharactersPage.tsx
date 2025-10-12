@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery } from 'convex/react'
+import { useQueryWithAuth } from '@/hooks/useConvexWithAuth'
 import { SignedIn, SignedOut } from '@clerk/clerk-react'
 import { CharacterCard } from '@/components/CharacterCard'
 import { CharacterModal } from '@/components/modals/CharacterModal'
@@ -12,15 +12,15 @@ import { Plus, Search, Users, User } from 'lucide-react'
 import { api } from '../../convex/_generated/api'
 
 export function CharactersPage() {
-  const playerCharacters = useQuery(api.characters.getPlayerCharacters)
-  const npcs = useQuery(api.characters.getNPCs)
-  const myCharacters = useQuery(api.characters.getMyCharacters)
+  const playerCharacters = useQueryWithAuth(api.characters.getPlayerCharacters)
+  const npcs = useQueryWithAuth(api.characters.getNPCs)
+  const myCharacters = useQueryWithAuth(api.characters.getMyCharacters)
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTab, setActiveTab] = useState<'my' | 'pcs' | 'npcs'>('my')
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create")
   const [selectedCharacter, setSelectedCharacter] = useState<any>(null)
-  const [characterType, setCharacterType] = useState<"PlayerCharacter" | "NonPlayerCharacter">("PlayerCharacter")
+  const [characterType, setCharacterType] = useState<"player" | "npc">("player")
 
   const filterCharacters = (characters: any[]) => {
     return characters?.filter(character => 
@@ -38,7 +38,7 @@ export function CharactersPage() {
     const character = [...(myCharacters || []), ...(playerCharacters || []), ...(npcs || [])].find(c => c._id === characterId)
     if (character) {
       setSelectedCharacter(character)
-      setCharacterType(character.characterType || "PlayerCharacter")
+      setCharacterType(character.characterType || "player")
       setModalMode("view")
       setModalOpen(true)
     }
@@ -48,7 +48,7 @@ export function CharactersPage() {
     const character = myCharacters?.find(c => c._id === characterId)
     if (character) {
       setSelectedCharacter(character)
-      setCharacterType(character.characterType || "PlayerCharacter")
+      setCharacterType(character.characterType || "player")
       setModalMode("edit")
       setModalOpen(true)
     }
@@ -56,14 +56,14 @@ export function CharactersPage() {
 
   const handleCreateCharacter = () => {
     setSelectedCharacter(null)
-    setCharacterType("PlayerCharacter")
+    setCharacterType("player")
     setModalMode("create")
     setModalOpen(true)
   }
 
   const handleCreateNPC = () => {
     setSelectedCharacter(null)
-    setCharacterType("NonPlayerCharacter")
+    setCharacterType("npc")
     setModalMode("create")
     setModalOpen(true)
   }

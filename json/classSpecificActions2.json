@@ -1,0 +1,775 @@
+{
+    "classActions": [
+      {
+        "className": "Barbarian",
+        "actions": [
+          {
+            "name": "Rage",
+            "actionCost": "Bonus Action",
+            "type": "CLASS_FEATURE",
+            "description": "Enter a furious state for 1 minute. Gain resistance to bludgeoning/piercing/slashing, advantage on Strength checks and Strength saving throws, and bonus to melee damage. Ends early if you fall unconscious or choose to end it.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Reckless Attack",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Gain advantage on melee weapon attack rolls using Strength during this turn, while granting attackers advantage against you until your next turn.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Fast Movement",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Gain a bonus to your speed while not wearing heavy armor.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Danger Sense",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Gain advantage on Dexterity saving throws against effects you can see.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Feral Instinct",
+            "actionCost": "Reaction/No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Advantage on initiative rolls. If surprised, you can act normally on first turn if you enter rage.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Brutal Critical (Improved Critical Damage)",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Roll additional weapon damage dice when you score a critical hit with a melee weapon.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Persistent Rage (Subclass/Path dependent)",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Subclass-specific endurance effects that prolong rage or grant resistances while raging.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Frenzy (Berserker)",
+            "actionCost": "Bonus Action",
+            "type": "CLASS_FEATURE",
+            "description": "When you rage you can go into a frenzy to make a single melee weapon attack as a bonus action on each of your turns, but you gain exhaustion when the frenzy ends.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Totem/Primal Path Feature",
+            "actionCost": "Varies",
+            "type": "CLASS_FEATURE",
+            "description": "Use subclass/granted features (Bear: resistances, Eagle: mobility, Wolf: ally advantage, etc.). Effects and costs depend on chosen path.",
+            "requiresConcentration": false
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Bard",
+        "actions": [
+          {
+            "name": "Bardic Inspiration",
+            "actionCost": "Bonus Action",
+            "type": "CLASS_FEATURE",
+            "description": "Give a creature an inspiration die (d6→d12 as you level) to add to ability checks, attack rolls, or saves. Usable a number of times equal to your Charisma modifier (or level-scaled).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Countercharm",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Perform to grant allies advantage on saving throws against being frightened or charmed for the duration.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Cutting Words",
+            "actionCost": "Reaction",
+            "type": "CLASS_FEATURE",
+            "description": "Use your reaction to subtract your Bardic Inspiration die from an enemy's attack roll, ability check, or damage roll.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Magical Secrets (Learn Spells)",
+            "actionCost": "No Action/Special",
+            "type": "CLASS_FEATURE",
+            "description": "Learn spells from any class list and cast them as a Bard (uses class features to define known spells).",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Vicious Mockery",
+            "actionCost": "Action",
+            "type": "SPELL",
+            "description": "Cantrip that deals psychic damage and imposes disadvantage on the target's next attack roll if it fails a Wisdom save.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Inspire Competence (Expertise/Jack of All Trades)",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Gain expertise in two skills and a bonus to ability checks from Jack of All Trades equal to half proficiency bonus.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Song of Rest",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "While taking a short rest, allies who hear your performance regain extra hit points when spending Hit Dice.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Spellcasting (Bard)",
+            "actionCost": "Action/Bonus Action/Reaction",
+            "type": "SPELL",
+            "description": "Cast bard spells using prepared/known spells. Casting time varies; some require concentration.",
+            "requiresConcentration": true
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Cleric",
+        "actions": [
+          {
+            "name": "Channel Divinity",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Consume Channel Divinity to fuel domain abilities (e.g., Turn Undead, Guided Strike, Preserve Life) with effects based on Divine Domain.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Turn Undead",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Force undead within range to make a Wisdom save or be turned (flee) for 1 minute.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Divine Strike / Potent Spellcasting",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Add extra radiant or spell-based damage to weapon attacks or spells once per turn (domain-specific).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Spellcasting (Cleric)",
+            "actionCost": "Action/Bonus Action/Reaction",
+            "type": "SPELL",
+            "description": "Cast prepared cleric spells. Many cleric spells require concentration (e.g., Bless, Spiritual Weapon [bonus action cast]).",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Divine Intervention",
+            "actionCost": "Action/Special",
+            "type": "CLASS_FEATURE",
+            "description": "Call your deity for aid. At higher levels, chance of success increases; on a successful roll the DM chooses effect.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Channel Divinity: Turn or Command (Domain Examples)",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Domain-specific uses of Channel Divinity (e.g., Command Undead, Invoke Duplicity, Radiance of Dawn).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Cure Wounds / Healing Word (Spells)",
+            "actionCost": "Action/Bonus Action",
+            "type": "SPELL",
+            "description": "Use cleric healing spells to restore hit points. Some are bonus-action (Healing Word).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Preserve Life (Life Domain)",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "As an action, restore hit points to multiple creatures up to a limit equal to five times your cleric level.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Sanctuary / Bless (Spells)",
+            "actionCost": "Bonus Action/Action",
+            "type": "SPELL",
+            "description": "Protect or buff allies using spells that may require concentration.",
+            "requiresConcentration": true
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Druid",
+        "actions": [
+          {
+            "name": "Wild Shape",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Transform into a beast form that you have seen, assuming the beast's physical stats while retaining mental stats and certain class features. Number and duration depend on level.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Combat Wild Shape (Moon Circle)",
+            "actionCost": "Bonus Action/No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Certain Circle features allow bonus actions in beast form (e.g., bonus attacks or temporary healing through hit dice).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Spellcasting (Druid)",
+            "actionCost": "Action/Bonus Action/Reaction",
+            "type": "SPELL",
+            "description": "Cast druid spells focusing on nature manipulation, healing, summoning, and control. Many druid spells require concentration.",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Wild Shape: Cast Spells While Shifted (Circle-specific)",
+            "actionCost": "Varies",
+            "type": "CLASS_FEATURE",
+            "description": "Certain subclass features allow you to cast some spells while in beast form or retain spellcasting uses.",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Speak with Animals / Beast Speech",
+            "actionCost": "Action",
+            "type": "COMMONLY_AVAILABLE_UTILITY",
+            "description": "Use spells or skills to communicate and influence animals; some druid features augment this ability.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Wild Companion / Summon Beast (Circle of the Shepherd)",
+            "actionCost": "Action/Bonus Action",
+            "type": "CLASS_FEATURE",
+            "description": "Summon or empower beasts and fey; subclass gives bonuses to summoned creatures.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Ritual Casting (Druid)",
+            "actionCost": "Special",
+            "type": "SPELL",
+            "description": "Cast spells with the ritual tag as rituals without expending a spell slot, taking additional time.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Land's Stride (Ranger-like; some Druid Circles)",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Move through nonmagical difficult terrain without penalty and resist certain nature effects.",
+            "requiresConcentration": false
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Fighter",
+        "actions": [
+          {
+            "name": "Attack (Extra Attacks)",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Make multiple weapon attacks on your Attack action as granted by Extra Attack (number scales with level).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Second Wind",
+            "actionCost": "Bonus Action",
+            "type": "CLASS_FEATURE",
+            "description": "Regain a small amount of hit points equal to 1d10 + fighter level (usable once per short rest).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Action Surge",
+            "actionCost": "Special (On Your Turn)",
+            "type": "CLASS_FEATURE",
+            "description": "Gain one additional Action on your turn. Usable once per short rest (scales to more uses at higher levels).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Indomitable",
+            "actionCost": "No Action/Feature Use",
+            "type": "CLASS_FEATURE",
+            "description": "Reroll a failed saving throw; usable limited times per long rest.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Maneuvers (Battle Master)",
+            "actionCost": "Action/Bonus Action/Reaction",
+            "type": "CLASS_FEATURE",
+            "description": "Spend superiority dice to perform maneuvers like Trip Attack, Riposte, Pushing Attack, and Precision Attack, affecting attack rolls and battlefield control.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Parry / Riposte (Subclass or Maneuver)",
+            "actionCost": "Reaction",
+            "type": "CLASS_FEATURE",
+            "description": "Use a reaction to reduce damage or make an attack in response to an enemy's action (feature-dependent).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Improved Critical / Superior Critical",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Increase the range on a natural critical roll (e.g., crit on 19-20).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Warding Maneuver / Protection (Eldritch Knight/Champion features)",
+            "actionCost": "Reaction/No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Use subclass features to impose resistance, reduce damage, or protect allies through reactions or passive auras.",
+            "requiresConcentration": false
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Monk",
+        "actions": [
+          {
+            "name": "Unarmed Strike (Martial Arts)",
+            "actionCost": "Action/Bonus Action (Flurry/Extra)",
+            "type": "CLASS_FEATURE",
+            "description": "Make unarmed strikes that use Dexterity or Strength for attack and damage depending on Monk features; damage die scales with level.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Flurry of Blows",
+            "actionCost": "Bonus Action",
+            "type": "CLASS_FEATURE",
+            "description": "Spend 1 ki point to make two unarmed strikes as a bonus action after taking the Attack action.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Step of the Wind",
+            "actionCost": "Bonus Action",
+            "type": "CLASS_FEATURE",
+            "description": "Spend 1 ki point to take the Disengage or Dash action as a bonus action and double jump distance for the turn.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Stunning Strike",
+            "actionCost": "On Hit (Spend Ki)",
+            "type": "CLASS_FEATURE",
+            "description": "Spend 1 ki point to force a target hit by a melee attack to make a Constitution save or be stunned until the end of your next turn.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Ki-Empowered Strikes",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Deflect Missiles",
+            "actionCost": "Reaction",
+            "type": "CLASS_FEATURE",
+            "description": "Use your reaction to reduce the damage from a ranged weapon attack; you can catch and throw it back.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Evasion (High-level Defensive)",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "When subjected to an effect requiring a Dexterity save for half damage, take no damage on a success and half on a failure.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Defensive Ki / Purity of Body (Higher-tier)",
+            "actionCost": "Varies",
+            "type": "CLASS_FEATURE",
+            "description": "Access defensive or restorative ki features depending on chosen monastic tradition.",
+            "requiresConcentration": false
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Paladin",
+        "actions": [
+          {
+            "name": "Lay on Hands",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Restore hit points from a pool equal to 5 × paladin level. Uses may cure diseases or neutralize poisons depending on pool and DM ruling.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Divine Smite",
+            "actionCost": "On Hit (Use Spell Slot)",
+            "type": "CLASS_FEATURE",
+            "description": "Expel a spell slot to deal extra radiant damage on a successful melee weapon hit. Extra damage scales with slot level; additional effects on undead/fiends.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Spellcasting (Paladin)",
+            "actionCost": "Action/Bonus Action/Reaction",
+            "type": "SPELL",
+            "description": "Paladin spells include buffs, heals, and smites. Some spells require concentration (e.g., Bless).",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Aura of Protection",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Add your Charisma modifier to saving throws for you and nearby allies while conscious and within aura range.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Cleansing Touch",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "End one spell on yourself or another creature. Usable limited times per long rest equal to Charisma modifier.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Channel Divinity: Sacred Weapon (Oath-specific)",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Add Charisma to attack rolls for a weapon for a short duration and make it luminous (Oath-specific examples).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Smite: Searing/Thunderous/etc. (Subclass spells/effects)",
+            "actionCost": "On Hit (Use Spell Slot)",
+            "type": "CLASS_FEATURE",
+            "description": "Spend spell slots to apply elemental or extra effects on a hit based on subclass or spell choice.",
+            "requiresConcentration": false
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Ranger",
+        "actions": [
+          {
+            "name": "Hunter's Mark",
+            "actionCost": "Bonus Action",
+            "type": "SPELL",
+            "description": "Mark a target to deal extra damage when you hit them and to track them more easily. Requires concentration.",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Favored Enemy",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Gain bonuses to intelligence checks to track and recall information about chosen creature types.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Natural Explorer / Favored Terrain benefits",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Gain benefits while traveling for chosen terrains (e.g., navigation, foraging, stealth advantages).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Primeval Awareness",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Spend a spell slot to sense certain creature types within a radius for a short time.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Colossus Slayer / Horde Breaker / Giant Killer",
+            "actionCost": "Action",
+            "type": "CLASS_FEATURE",
+            "description": "Archetype features that grant extra damage or extra attacks under certain conditions (once per turn rules vary by feature).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Spellcasting (Ranger)",
+            "actionCost": "Action/Bonus Action/Reaction",
+            "type": "SPELL",
+            "description": "Cast ranger spells for utility, control, and combat. Many require concentration (e.g., Pass without Trace).",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Ranger's Companion (Beast Master)",
+            "actionCost": "Action/Bonus Action",
+            "type": "CLASS_FEATURE",
+            "description": "Command your animal companion to take actions like Attack, Dash, or Help on its turn; newer UA/errata modify command mechanics.",
+            "requiresConcentration": false
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Rogue",
+        "actions": [
+          {
+            "name": "Sneak Attack",
+            "actionCost": "Action (Attack benefit)",
+            "type": "CLASS_FEATURE",
+            "description": "Deal extra precision damage once per turn when you hit with a finesse or ranged weapon and meet the attack qualification (advantage or ally within 5 feet of target).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Cunning Action",
+            "actionCost": "Bonus Action",
+            "type": "CLASS_FEATURE",
+            "description": "Use bonus action to Dash, Disengage, or Hide on each of your turns.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Uncanny Dodge",
+            "actionCost": "Reaction",
+            "type": "CLASS_FEATURE",
+            "description": "Use reaction to halve the damage from an attack you can see.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Evasion",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Take no damage on a successful Dexterity save against effects that normally allow half damage on success, and half on failure.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Assassinate (Assassin archetype)",
+            "actionCost": "No Action/Action",
+            "type": "CLASS_FEATURE",
+            "description": "Gain advantage on attack rolls against surprised creatures and score automatic critical hits on surprised creatures you attack if you hit.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Use Thieves' Tools",
+            "actionCost": "Action",
+            "type": "COMMONLY_AVAILABLE_UTILITY",
+            "description": "Pick locks and disable traps using thieves' tools and Dexterity checks with proficiency if applicable.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Hide / Stealth",
+            "actionCost": "Action/Bonus Action (Cunning Action)",
+            "type": "COMMONLY_AVAILABLE_UTILITY",
+            "description": "Attempt to hide or move stealthily using Dexterity (Stealth) checks; rogues excel at hiding and ambushes.",
+            "requiresConcentration": false
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Sorcerer",
+        "actions": [
+          {
+            "name": "Metamagic: Quickened Spell",
+            "actionCost": "Varies (modifies casting)",
+            "type": "CLASS_FEATURE",
+            "description": "Spend sorcery points to change a spell's casting time (e.g., change a spell from Action to Bonus Action).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Metamagic: Twinned Spell",
+            "actionCost": "Varies (modifies casting)",
+            "type": "CLASS_FEATURE",
+            "description": "Spend sorcery points to target a second creature with a single-target spell (when applicable).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Metamagic: Empowered Spell",
+            "actionCost": "Varies (modifies casting)",
+            "type": "CLASS_FEATURE",
+            "description": "Spend sorcery points to reroll some damage dice of a spell.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Font of Magic (Convert Points/Slots)",
+            "actionCost": "No Action",
+            "type": "CLASS_FEATURE",
+            "description": "Convert spell slots to sorcery points or sorcery points to spell slots, and spend sorcery points on Metamagic.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Spellcasting (Sorcerer)",
+            "actionCost": "Action/Bonus Action/Reaction",
+            "type": "SPELL",
+            "description": "Cast sorcerer spells using known spells and spell slots; many spells require concentration.",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Wild Magic Surge (Wild Magic Sorcerer)",
+            "actionCost": "Varies/Triggered",
+            "type": "CLASS_FEATURE",
+            "description": "On certain spell casts, roll on the Wild Magic Surge table to produce a random magical effect. Tied to a surge table and may recharge a feature.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Bend Luck (Favored Soul/Metamagic-like)",
+            "actionCost": "Reaction (Spend Sorcery Points)",
+            "type": "CLASS_FEATURE",
+            "description": "Spend sorcery points to add or subtract from another creature's attack roll, save, or check within range (feature-dependent).",
+            "requiresConcentration": false
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Warlock",
+        "actions": [
+          {
+            "name": "Eldritch Blast",
+            "actionCost": "Action",
+            "type": "SPELL",
+            "description": "A cantrip that makes a ranged spell attack dealing force damage. It scales to multiple beams as you level and is commonly augmented by invocations.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Hex",
+            "actionCost": "Bonus Action",
+            "type": "SPELL",
+            "description": "Curse a creature to deal extra necrotic damage on hits and impose disadvantage on ability checks of a chosen ability. Requires concentration.",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Pact Boon: Pact of the Blade",
+            "actionCost": "Action/Special",
+            "type": "CLASS_FEATURE",
+            "description": "Create a pact weapon you can summon; weapon may be used with Charisma and gain other features via invocations.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Pact Boon: Pact of the Chain/Blade/Tome features",
+            "actionCost": "Varies",
+            "type": "CLASS_FEATURE",
+            "description": "Use pact boon features like a familiar (Chain), a summoned pact weapon (Blade), or ritual/spell benefits (Tome).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Eldritch Invocations",
+            "actionCost": "Varies",
+            "type": "CLASS_FEATURE",
+            "description": "Permanent or activatable abilities (e.g., Agonizing Blast adds Cha to Eldritch Blast damage, Devil's Sight grants superior vision).",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Pact Magic (Spellcasting)",
+            "actionCost": "Action/Bonus Action/Reaction",
+            "type": "SPELL",
+            "description": "Cast warlock spells using a small number of spell slots that recharge on a short rest; some spells require concentration.",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Mystic Arcanum",
+            "actionCost": "Special (Once per Long Rest usage)",
+            "type": "CLASS_FEATURE",
+            "description": "Gain single-use high-level spells (6th+ level) that can be cast once per long rest without using spell slots.",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Hexblade Curse",
+            "actionCost": "Bonus Action",
+            "type": "CLASS_FEATURE",
+            "description": "Place a curse on a creature to add bonus damage, crit on 19-20 at later levels, and heal when it dies (Hexblade patron feature).",
+            "requiresConcentration": false
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Wizard",
+        "actions": [
+          {
+            "name": "Spellcasting (Wizard)",
+            "actionCost": "Action/Bonus Action/Reaction",
+            "type": "SPELL",
+            "description": "Cast prepared spells from your spellbook. Casting time varies; many spells require concentration.",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Arcane Recovery",
+            "actionCost": "Special (Short Rest Downtime)",
+            "type": "CLASS_FEATURE",
+            "description": "Once per day after a short rest, regain some expended spell slots with combined levels up to a limit based on wizard level.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Ritual Casting",
+            "actionCost": "Special (10+ minutes)",
+            "type": "SPELL",
+            "description": "Cast spells with the ritual tag as rituals without expending a spell slot, taking additional time.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Counterspell",
+            "actionCost": "Reaction",
+            "type": "SPELL",
+            "description": "Use a reaction to interrupt another creature's spellcasting, potentially negating it based on slot level and counterspell rules.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Shield (Reaction Spell)",
+            "actionCost": "Reaction",
+            "type": "SPELL",
+            "description": "Cast Shield as a reaction to increase your AC until the start of your next turn.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Spell Mastery / Signature Spell",
+            "actionCost": "No Action/Special",
+            "type": "CLASS_FEATURE",
+            "description": "Gain minor permanent spell benefits (Spell Mastery) or automatically cast known spells once per rest (Signature Spell).",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Arcane Tradition Features",
+            "actionCost": "Varies",
+            "type": "CLASS_FEATURE",
+            "description": "Use subclass features (e.g., School of Evocation's Sculpt Spells, Abjuration's Arcane Ward) that modify spells or provide protective/utility effects.",
+            "requiresConcentration": false
+          }
+        ],
+        "createdAt": 1700000000000
+      },
+      {
+        "className": "Artificer",
+        "actions": [
+          {
+            "name": "Infuse Item",
+            "actionCost": "Action/Special",
+            "type": "CLASS_FEATURE",
+            "description": "Imbue a nonmagical object with magical properties (infusions). Number and types of infusions are limited by level and known infusions.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Spellcasting (Artificer)",
+            "actionCost": "Action/Bonus Action/Reaction",
+            "type": "SPELL",
+            "description": "Cast artificer spells using prepared spells and spell slots. Many spells provide utility and require concentration.",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Tool Expertise / Tinker",
+            "actionCost": "Action",
+            "type": "COMMONLY_AVAILABLE_UTILITY",
+            "description": "Gain doubled proficiency bonus with tools and use tools to craft, repair, or activate magical/mechanical devices.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Spell-Storing Item",
+            "actionCost": "Action/Special",
+            "type": "CLASS_FEATURE",
+            "description": "Store a spell in an item for later use, allowing others to cast it from the item or you to expel it under conditions defined by the feature.",
+            "requiresConcentration": true
+          },
+          {
+            "name": "Flash of Genius",
+            "actionCost": "Reaction",
+            "type": "CLASS_FEATURE",
+            "description": "Add your Intelligence modifier to a creature's ability check or saving throw, representing a quick insight.",
+            "requiresConcentration": false
+          },
+          {
+            "name": "Arcane Jolt (Artillerist/Armorer features)",
+            "actionCost": "Action/On Hit",
+            "type": "CLASS_FEATURE",
+            "description": "Deal extra force damage or heal a creature when hitting with a magical weapon or item (feature-dependent).",
+            "requiresConcentration": false
+          }
+        ],
+        "createdAt": 1700000000000
+      }
+    ]
+  }

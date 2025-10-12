@@ -1,0 +1,56 @@
+.item-list {
+  padding: 20px;
+  @apply transition-colors duration-200;
+}
+
+.item-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.item-list h2 {
+  margin: 0;
+  @apply text-gray-800 transition-colors duration-200;
+}
+
+.dark .item-list h2 {
+  @apply text-gray-200;
+}
+
+.create-button {
+  @apply bg-blue-600 hover:bg-blue-700 text-white border-none px-5 py-2.5 rounded cursor-pointer text-base transition-colors duration-200;
+}
+
+.dark .create-button {
+  @apply bg-blue-500 hover:bg-blue-600;
+}
+
+.back-button {
+  @apply bg-gray-600 hover:bg-gray-700 text-white border-none px-4 py-2 rounded cursor-pointer text-sm transition-colors duration-200;
+}
+
+.dark .back-button {
+  @apply bg-gray-500 hover:bg-gray-600;
+}
+
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 10px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 1.2em;
+  @apply text-gray-600 transition-colors duration-200;
+}
+
+.dark .loading {
+  @apply text-gray-400;
+} 

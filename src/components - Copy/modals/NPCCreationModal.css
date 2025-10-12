@@ -1,0 +1,80 @@
+.npc-creation-modal {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.ability-scores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.ability-score-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ability-score-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  text-align: center;
+}
+
+.ability-score-group input {
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ability-score-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .npc-creation-modal {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+
+  .ability-score-group label {
+    color: #d1d5db;
+  }
+
+  .ability-score-group input {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+
+  .ability-score-group input:focus {
+    border-color: #60a5fa;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .npc-creation-modal {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .ability-scores-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+} 

@@ -601,7 +601,7 @@ export declare const TurnActionSchema: z.ZodObject<{
     actionId: z.ZodOptional<z.ZodString>;
     parameters: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
 }, "strip", z.ZodTypeAny, {
-    type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+    type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
     entityId: string;
     target?: string | undefined;
     position?: {
@@ -613,7 +613,7 @@ export declare const TurnActionSchema: z.ZodObject<{
     parameters?: Record<string, any> | undefined;
     actionId?: string | undefined;
 }, {
-    type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+    type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
     entityId: string;
     target?: string | undefined;
     position?: {
@@ -648,7 +648,7 @@ export declare const TurnRecordSchema: z.ZodObject<{
         actionId: z.ZodOptional<z.ZodString>;
         parameters: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
     }, "strip", z.ZodTypeAny, {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {
@@ -660,7 +660,7 @@ export declare const TurnRecordSchema: z.ZodObject<{
         parameters?: Record<string, any> | undefined;
         actionId?: string | undefined;
     }, {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {
@@ -680,7 +680,7 @@ export declare const TurnRecordSchema: z.ZodObject<{
     entityId: string;
     turnNumber: number;
     actions: {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {
@@ -700,7 +700,7 @@ export declare const TurnRecordSchema: z.ZodObject<{
     entityId: string;
     turnNumber: number;
     actions: {
-        type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+        type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
         entityId: string;
         target?: string | undefined;
         position?: {
@@ -1164,7 +1164,7 @@ export declare const GameStateSchema: z.ZodEffects<z.ZodObject<{
             actionId: z.ZodOptional<z.ZodString>;
             parameters: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodAny>>;
         }, "strip", z.ZodTypeAny, {
-            type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+            type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
             entityId: string;
             target?: string | undefined;
             position?: {
@@ -1176,7 +1176,7 @@ export declare const GameStateSchema: z.ZodEffects<z.ZodObject<{
             parameters?: Record<string, any> | undefined;
             actionId?: string | undefined;
         }, {
-            type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+            type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
             entityId: string;
             target?: string | undefined;
             position?: {
@@ -1196,7 +1196,7 @@ export declare const GameStateSchema: z.ZodEffects<z.ZodObject<{
         entityId: string;
         turnNumber: number;
         actions: {
-            type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+            type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
             entityId: string;
             target?: string | undefined;
             position?: {
@@ -1216,7 +1216,7 @@ export declare const GameStateSchema: z.ZodEffects<z.ZodObject<{
         entityId: string;
         turnNumber: number;
         actions: {
-            type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+            type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
             entityId: string;
             target?: string | undefined;
             position?: {
@@ -1338,7 +1338,7 @@ export declare const GameStateSchema: z.ZodEffects<z.ZodObject<{
         entityId: string;
         turnNumber: number;
         actions: {
-            type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+            type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
             entityId: string;
             target?: string | undefined;
             position?: {
@@ -1443,7 +1443,7 @@ export declare const GameStateSchema: z.ZodEffects<z.ZodObject<{
         entityId: string;
         turnNumber: number;
         actions: {
-            type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+            type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
             entityId: string;
             target?: string | undefined;
             position?: {
@@ -1548,7 +1548,7 @@ export declare const GameStateSchema: z.ZodEffects<z.ZodObject<{
         entityId: string;
         turnNumber: number;
         actions: {
-            type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+            type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
             entityId: string;
             target?: string | undefined;
             position?: {
@@ -1653,7 +1653,7 @@ export declare const GameStateSchema: z.ZodEffects<z.ZodObject<{
         entityId: string;
         turnNumber: number;
         actions: {
-            type: "end" | "move" | "attack" | "useItem" | "cast" | "interact";
+            type: "move" | "attack" | "useItem" | "cast" | "interact" | "end";
             entityId: string;
             target?: string | undefined;
             position?: {

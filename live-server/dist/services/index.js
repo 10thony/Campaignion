@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorRecovery = exports.ConnectionHandler = exports.ChatService = exports.EventBroadcaster = exports.GameStateEngine = exports.StatePersistence = exports.RoomManager = exports.InteractionRoom = void 0;
+exports.MemoryManagementSystem = exports.DataStructureOptimizer = exports.MemoryLeakDetector = exports.GarbageCollector = exports.MemoryManager = exports.ErrorRecovery = exports.ConnectionHandler = exports.ChatService = exports.EventBroadcaster = exports.GameStateEngine = exports.StatePersistence = exports.RoomManager = exports.InteractionRoom = void 0;
 var InteractionRoom_1 = require("./InteractionRoom");
 Object.defineProperty(exports, "InteractionRoom", { enumerable: true, get: function () { return InteractionRoom_1.InteractionRoom; } });
 var RoomManager_1 = require("./RoomManager");
@@ -17,4 +17,14 @@ var ConnectionHandler_1 = require("./ConnectionHandler");
 Object.defineProperty(exports, "ConnectionHandler", { enumerable: true, get: function () { return ConnectionHandler_1.ConnectionHandler; } });
 var ErrorRecovery_1 = require("./ErrorRecovery");
 Object.defineProperty(exports, "ErrorRecovery", { enumerable: true, get: function () { return ErrorRecovery_1.ErrorRecovery; } });
+var MemoryManager_1 = require("./MemoryManager");
+Object.defineProperty(exports, "MemoryManager", { enumerable: true, get: function () { return MemoryManager_1.MemoryManager; } });
+var GarbageCollector_1 = require("./GarbageCollector");
+Object.defineProperty(exports, "GarbageCollector", { enumerable: true, get: function () { return GarbageCollector_1.GarbageCollector; } });
+var MemoryLeakDetector_1 = require("./MemoryLeakDetector");
+Object.defineProperty(exports, "MemoryLeakDetector", { enumerable: true, get: function () { return MemoryLeakDetector_1.MemoryLeakDetector; } });
+var DataStructureOptimizer_1 = require("./DataStructureOptimizer");
+Object.defineProperty(exports, "DataStructureOptimizer", { enumerable: true, get: function () { return DataStructureOptimizer_1.DataStructureOptimizer; } });
+var MemoryManagementSystem_1 = require("./MemoryManagementSystem");
+Object.defineProperty(exports, "MemoryManagementSystem", { enumerable: true, get: function () { return MemoryManagementSystem_1.MemoryManagementSystem; } });
 //# sourceMappingURL=index.js.map

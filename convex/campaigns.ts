@@ -45,6 +45,7 @@ export const getMyCampaigns = query({
   args: {},
   handler: async (ctx) => {
     try {
+      const user = await getCurrentUser(ctx);
       const clerkId = await getCurrentUserId(ctx);
       
       // Get campaigns where user is DM
@@ -53,15 +54,21 @@ export const getMyCampaigns = query({
         .filter((q) => q.eq(q.field("dmId"), clerkId))
         .collect();
       
-      // Get campaigns where user is a player
+      // Get campaigns where user is a player (check both players array and participantUserIds)
       const playerCampaigns = await ctx.db
         .query("campaigns")
-        .filter((q) => q.neq(q.field("players"), undefined))
+        .filter((q) => 
+          q.or(
+            q.neq(q.field("players"), undefined),
+            q.neq(q.field("participantUserIds"), undefined)
+          )
+        )
         .collect();
       
-      // Filter player campaigns to only include those where the user is in the players array
+      // Filter player campaigns to only include those where the user is in the players array or participantUserIds
       const userPlayerCampaigns = playerCampaigns.filter(campaign => 
-        campaign.players && campaign.players.includes(clerkId)
+        (campaign.players && campaign.players.includes(clerkId)) ||
+        (campaign.participantUserIds && campaign.participantUserIds.includes(user._id))
       );
       
       // Combine and deduplicate

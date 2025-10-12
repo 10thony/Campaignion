@@ -1,6 +1,61 @@
 import { v } from "convex/values";
 import { mutation } from "./_generated/server";
 
+export const loadSampleMaps = mutation({
+  args: {
+    maps: v.array(v.object({
+      name: v.string(),
+      width: v.number(),
+      height: v.number(),
+      description: v.optional(v.string()),
+    })),
+    clerkId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Get user from database using Clerk ID
+    const user = await ctx.db
+      .query("users")
+      .filter((q: any) => q.eq(q.field("clerkId"), args.clerkId))
+      .first();
+
+    if (!user) {
+      throw new Error("User not found in database");
+    }
+
+    const mapIds = [];
+    for (const map of args.maps) {
+      // Generate cells for the map
+      const cells = [];
+      for (let y = 0; y < map.height; y++) {
+        for (let x = 0; x < map.width; x++) {
+          cells.push({
+            x,
+            y,
+            state: "inbounds" as const,
+            terrainType: "normal" as const,
+          });
+        }
+      }
+
+      const mapData = {
+        name: map.name,
+        width: map.width,
+        height: map.height,
+        cells: cells,
+        createdBy: user._id,
+        clerkId: args.clerkId,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      
+      const id = await ctx.db.insert("maps", mapData);
+      mapIds.push(id);
+    }
+
+    return { loaded: mapIds.length };
+  },
+});
+
 export const loadSampleCampaigns = mutation({
   args: {
     campaigns: v.array(v.object({
@@ -44,7 +99,7 @@ export const loadSampleCampaigns = mutation({
 
 export const loadSampleCharacters = mutation({
   args: {
-    playerCharacters: v.array(v.object({
+    characters: v.array(v.object({
       name: v.string(),
       race: v.string(),
       class: v.string(),
@@ -63,23 +118,6 @@ export const loadSampleCharacters = mutation({
       experiencePoints: v.optional(v.number()),
       proficiencyBonus: v.optional(v.number()),
     })),
-    npcs: v.array(v.object({
-      name: v.string(),
-      race: v.string(),
-      class: v.string(),
-      level: v.number(),
-      hitPoints: v.number(),
-      armorClass: v.number(),
-      characterType: v.string(),
-      abilityModifiers: v.object({
-        strength: v.number(),
-        dexterity: v.number(),
-        constitution: v.number(),
-        intelligence: v.number(),
-        wisdom: v.number(),
-        charisma: v.number(),
-      }),
-    })),
     clerkId: v.string(),
   },
   handler: async (ctx, args) => {
@@ -95,8 +133,8 @@ export const loadSampleCharacters = mutation({
 
     const characterIds = [];
     
-    // Insert player characters
-    for (const character of args.playerCharacters) {
+    // Insert characters
+    for (const character of args.characters) {
       const characterData = {
         name: character.name,
         race: character.race,
@@ -104,7 +142,7 @@ export const loadSampleCharacters = mutation({
         level: character.level,
         hitPoints: character.hitPoints,
         armorClass: character.armorClass,
-        characterType: character.characterType === "PlayerCharacter" ? "PlayerCharacter" as const : "NonPlayerCharacter" as const,
+        characterType: character.characterType === "PlayerCharacter" ? "player" as const : "npc" as const,
         background: "Sample Background",
         abilityScores: {
           strength: 10 + character.abilityModifiers.strength,
@@ -125,43 +163,10 @@ export const loadSampleCharacters = mutation({
         createdAt: Date.now(),
       };
       
-      const id = await ctx.db.insert("playerCharacters", characterData);
+              const id = await ctx.db.insert("characters", characterData);
       characterIds.push(id);
     }
-    
-    // Insert NPCs
-    for (const npc of args.npcs) {
-      const npcData = {
-        name: npc.name,
-        race: npc.race,
-        class: npc.class,
-        level: npc.level,
-        hitPoints: npc.hitPoints,
-        armorClass: npc.armorClass,
-        characterType: npc.characterType === "PlayerCharacter" ? "PlayerCharacter" as const : "NonPlayerCharacter" as const,
-        background: "Sample NPC Background",
-        abilityScores: {
-          strength: 10 + npc.abilityModifiers.strength,
-          dexterity: 10 + npc.abilityModifiers.dexterity,
-          constitution: 10 + npc.abilityModifiers.constitution,
-          intelligence: 10 + npc.abilityModifiers.intelligence,
-          wisdom: 10 + npc.abilityModifiers.wisdom,
-          charisma: 10 + npc.abilityModifiers.charisma,
-        },
-        skills: [],
-        savingThrows: [],
-        proficiencies: [],
-        experiencePoints: 0,
-        proficiencyBonus: 2,
-        speed: "30 ft.",
-        actions: [],
-        userId: user._id,
-        createdAt: Date.now(),
-      };
-      
-      const id = await ctx.db.insert("playerCharacters", npcData);
-      characterIds.push(id);
-    }
+
 
     return { loaded: characterIds.length };
   },
@@ -504,7 +509,7 @@ export const deleteAllSampleData = mutation({
       .collect();
     
     const characters = await ctx.db
-      .query("playerCharacters")
+      .query("characters")
       .filter((q) => q.eq(q.field("userId"), user._id))
       .collect();
     

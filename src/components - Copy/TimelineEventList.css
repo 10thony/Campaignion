@@ -1,0 +1,297 @@
+.timeline-events-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  @apply transition-colors duration-200;
+}
+
+.timeline-events-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 2rem;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.timeline-events-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  @apply text-gray-900 transition-colors duration-200;
+}
+
+.dark .timeline-events-title {
+  @apply text-gray-100;
+}
+
+.timeline-events-subtitle {
+  font-size: 1.1rem;
+  @apply text-gray-600 transition-colors duration-200;
+}
+
+.dark .timeline-events-subtitle {
+  @apply text-gray-400;
+}
+
+.create-button {
+  @apply bg-blue-600 hover:bg-blue-700 text-white border-none px-6 py-3 rounded-lg text-base font-semibold cursor-pointer transition-all duration-200 flex items-center gap-2 whitespace-nowrap;
+}
+
+.dark .create-button {
+  @apply bg-blue-500 hover:bg-blue-600;
+}
+
+.button-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.timeline-events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.timeline-event-card {
+  @apply bg-white border border-gray-200 rounded-lg p-6 shadow-sm transition-all duration-200 hover:shadow-lg;
+}
+
+.dark .timeline-event-card {
+  @apply bg-gray-800 border-gray-700 hover:shadow-xl hover:shadow-gray-900/50;
+}
+
+.timeline-event-header {
+  margin-bottom: 1rem;
+}
+
+.timeline-event-title-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.timeline-event-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  @apply text-gray-900 transition-colors duration-200;
+}
+
+.dark .timeline-event-name {
+  @apply text-gray-100;
+}
+
+.timeline-event-type-badge {
+  @apply bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs font-medium uppercase whitespace-nowrap;
+}
+
+.dark .timeline-event-type-badge {
+  @apply bg-purple-900 text-purple-200;
+}
+
+.timeline-event-description {
+  @apply text-gray-700 mb-4 leading-relaxed transition-colors duration-200;
+}
+
+.dark .timeline-event-description {
+  @apply text-gray-300;
+}
+
+.timeline-event-details {
+  margin-bottom: 1.5rem;
+}
+
+.timeline-event-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.event-date {
+  @apply text-blue-600 font-medium text-sm transition-colors duration-200;
+}
+
+.dark .event-date {
+  @apply text-blue-400;
+}
+
+.quest-link {
+  @apply text-green-600 font-medium text-sm transition-colors duration-200;
+}
+
+.dark .quest-link {
+  @apply text-green-400;
+}
+
+.related-entities-info {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.related-count {
+  @apply text-gray-600 text-sm transition-colors duration-200;
+}
+
+.dark .related-count {
+  @apply text-gray-400;
+}
+
+.timeline-event-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.edit-button {
+  @apply bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-blue-100 hover:border-blue-300;
+}
+
+.dark .edit-button {
+  @apply bg-blue-900/50 text-blue-400 border-blue-700 hover:bg-blue-900 hover:border-blue-600;
+}
+
+.delete-button {
+  @apply bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-red-100 hover:border-red-300 disabled:opacity-60 disabled:cursor-not-allowed;
+}
+
+.dark .delete-button {
+  @apply bg-red-900/50 text-red-400 border-red-700 hover:bg-red-900 hover:border-red-600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  @apply bg-white border border-gray-200 rounded-lg transition-colors duration-200;
+}
+
+.dark .empty-state {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  @apply text-gray-900 transition-colors duration-200;
+}
+
+.dark .empty-state h3 {
+  @apply text-gray-100;
+}
+
+.empty-state p {
+  @apply text-gray-600 mb-4 transition-colors duration-200;
+}
+
+.dark .empty-state p {
+  @apply text-gray-400;
+}
+
+.empty-state-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.populate-sample-button {
+  @apply bg-green-600 hover:bg-green-700 text-white border-none px-6 py-3 rounded-lg text-base font-semibold cursor-pointer transition-all duration-200 flex items-center gap-2 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed;
+}
+
+.dark .populate-sample-button {
+  @apply bg-green-500 hover:bg-green-600;
+}
+
+@media (min-width: 640px) {
+  .empty-state-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  @apply text-gray-500;
+}
+
+.dark .loading-state {
+  @apply text-gray-400;
+}
+
+.loading-spinner {
+  @apply w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4;
+}
+
+.dark .loading-spinner {
+  @apply border-gray-700 border-t-blue-500;
+}
+
+@media (max-width: 768px) {
+  .timeline-events-container {
+    padding: 1rem;
+  }
+
+  .timeline-events-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .timeline-events-title {
+    font-size: 2rem;
+  }
+
+  .create-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .timeline-events-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .timeline-event-title-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .timeline-event-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .related-entities-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .timeline-event-actions {
+    flex-direction: column;
+  }
+
+  .edit-button,
+  .delete-button {
+    width: 100%;
+    justify-content: center;
+  }
+} 

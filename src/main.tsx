@@ -3,10 +3,14 @@ import ReactDOM from 'react-dom/client'
 import { ClerkProvider, useAuth } from '@clerk/clerk-react'
 import { ConvexProviderWithClerk } from 'convex/react-clerk'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { RouterProvider } from '@tanstack/react-router'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import { convex } from './lib/convex'
-import { trpc, createTRPCClient } from './lib/trpc'
+// tRPC imports removed - migrated to Convex
 import { ThemeProvider } from './components/theme/ThemeProvider'
-import App from './App'
+import { AuthenticationProvider } from './components/providers/AuthenticationProvider'
+import { router } from './router'
 import './index.css'
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -15,7 +19,7 @@ if (!clerkPubKey) {
   throw new Error("Missing Publishable Key")
 }
 
-// Create query client for tRPC
+// Query client for any remaining React Query usage
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -24,35 +28,19 @@ const queryClient = new QueryClient({
   },
 });
 
-// Create tRPC client with auth
-function TRPCProvider({ children }: { children: React.ReactNode }) {
-  const { getToken } = useAuth();
-  
-  const trpcClient = React.useMemo(() => {
-    return createTRPCClient(async () => {
-      const token = await getToken();
-      return token ? `Bearer ${token}` : '';
-    });
-  }, [getToken]);
-
-  return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
-    </trpc.Provider>
-  );
-}
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ClerkProvider publishableKey={clerkPubKey}>
       <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-        <TRPCProvider>
-          <ThemeProvider defaultTheme="system" storageKey="campaignion-ui-theme">
-            <App />
-          </ThemeProvider>
-        </TRPCProvider>
+        <AuthenticationProvider>
+          <QueryClientProvider client={queryClient}>
+            <DndProvider backend={HTML5Backend}>
+              <ThemeProvider defaultTheme="system" storageKey="campaignion-ui-theme">
+                <RouterProvider router={router} />
+              </ThemeProvider>
+            </DndProvider>
+          </QueryClientProvider>
+        </AuthenticationProvider>
       </ConvexProviderWithClerk>
     </ClerkProvider>
   </React.StrictMode>,

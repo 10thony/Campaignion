@@ -5,7 +5,15 @@ import { getCurrentUser } from "./clerkService";
 export const getItems = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("items").collect();
+    try {
+      // Ensure user is authenticated
+      await getCurrentUser(ctx);
+      
+      return await ctx.db.query("items").collect();
+    } catch (error) {
+      // Return empty array if not authenticated
+      return [];
+    }
   },
 });
 

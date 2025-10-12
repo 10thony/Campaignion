@@ -106,6 +106,15 @@ export const createMonster = mutation({
     challengeRatingValue: v.optional(v.number()),
     legendaryActionCount: v.optional(v.number()),
     lairActionCount: v.optional(v.number()),
+    // Actions field for inline monster actions
+    actions: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          description: v.string(),
+        })
+      )
+    ),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
@@ -124,6 +133,7 @@ export const createMonster = mutation({
       abilityModifiers,
       experiencePoints,
       challengeRatingValue,
+      actions: args.actions || [],
       userId: user._id,
       createdAt: Date.now(),
     });
@@ -150,6 +160,14 @@ export const updateMonster = mutation({
     challengeRatingValue: v.optional(v.number()),
     legendaryActionCount: v.optional(v.number()),
     lairActionCount: v.optional(v.number()),
+    actions: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          description: v.string(),
+        })
+      )
+    ),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);

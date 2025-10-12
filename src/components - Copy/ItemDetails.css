@@ -1,0 +1,198 @@
+/* Item Details Container */
+.item-details-container {
+  @apply max-w-4xl mx-auto p-4;
+}
+
+.item-details-card {
+  @apply bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden transition-all duration-200;
+}
+
+.dark .item-details-card {
+  @apply bg-gray-800 border-gray-700 shadow-xl;
+}
+
+/* Header Section */
+.item-details-header {
+  @apply flex flex-col lg:flex-row lg:items-start lg:justify-between p-6 border-b border-gray-200 bg-gray-50;
+}
+
+.dark .item-details-header {
+  @apply border-gray-700 bg-gray-900;
+}
+
+.item-details-title-section {
+  @apply flex-1;
+}
+
+.item-details-name {
+  @apply text-3xl font-bold text-gray-900 mb-3 transition-colors duration-200;
+}
+
+.dark .item-details-name {
+  @apply text-gray-100;
+}
+
+.item-details-meta {
+  @apply flex flex-wrap items-center gap-3 text-sm;
+}
+
+.item-details-type {
+  @apply text-gray-600 font-medium transition-colors duration-200;
+}
+
+.dark .item-details-type {
+  @apply text-gray-400;
+}
+
+.item-details-rarity {
+  @apply px-3 py-1 rounded-full text-white font-semibold text-xs uppercase tracking-wide;
+}
+
+.item-details-attunement {
+  @apply flex items-center text-amber-600 font-medium text-sm transition-colors duration-200;
+}
+
+.dark .item-details-attunement {
+  @apply text-amber-400;
+}
+
+/* Action Buttons */
+.item-details-actions {
+  @apply flex gap-3 mt-4 lg:mt-0;
+}
+
+.item-details-actions .btn {
+  @apply flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-md;
+}
+
+.item-details-actions .btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white;
+}
+
+.item-details-actions .btn-danger {
+  @apply bg-red-600 hover:bg-red-700 text-white;
+}
+
+/* Properties Grid */
+.item-details-properties {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-6 border-b border-gray-200;
+}
+
+.dark .item-details-properties {
+  @apply border-gray-700;
+}
+
+.property-item {
+  @apply flex flex-col space-y-1;
+}
+
+.property-label {
+  @apply text-sm font-medium text-gray-500 uppercase tracking-wide transition-colors duration-200;
+}
+
+.dark .property-label {
+  @apply text-gray-400;
+}
+
+.property-value {
+  @apply text-lg font-semibold text-gray-900 transition-colors duration-200;
+}
+
+.dark .property-value {
+  @apply text-gray-200;
+}
+
+/* Content Sections */
+.item-details-section {
+  @apply p-6 border-b border-gray-200 last:border-b-0;
+}
+
+.dark .item-details-section {
+  @apply border-gray-700;
+}
+
+.section-title {
+  @apply flex items-center text-xl font-semibold text-gray-900 mb-4 transition-colors duration-200;
+}
+
+.dark .section-title {
+  @apply text-gray-100;
+}
+
+.item-details-description,
+.item-details-effects {
+  @apply text-gray-700 leading-relaxed text-base transition-colors duration-200;
+}
+
+.dark .item-details-description,
+.dark .item-details-effects {
+  @apply text-gray-300;
+}
+
+/* Property Tags (for future use) */
+.item-details-properties-list {
+  @apply flex flex-wrap gap-2;
+}
+
+.property-tag {
+  @apply px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium transition-colors duration-200;
+}
+
+.dark .property-tag {
+  @apply bg-blue-900 text-blue-200;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .item-details-header {
+    @apply p-4;
+  }
+  
+  .item-details-name {
+    @apply text-2xl;
+  }
+  
+  .item-details-properties {
+    @apply p-4 grid-cols-1;
+  }
+  
+  .item-details-section {
+    @apply p-4;
+  }
+  
+  .item-details-actions {
+    @apply flex-col;
+  }
+  
+  .item-details-actions .btn {
+    @apply justify-center;
+  }
+}
+
+/* Hover Effects */
+.item-details-card:hover {
+  @apply shadow-xl;
+}
+
+.dark .item-details-card:hover {
+  @apply shadow-2xl shadow-gray-900/50;
+}
+
+/* Focus States */
+.item-details-actions .btn:focus {
+  @apply outline-none ring-2 ring-offset-2;
+}
+
+.item-details-actions .btn-primary:focus {
+  @apply ring-blue-500;
+}
+
+.item-details-actions .btn-danger:focus {
+  @apply ring-red-500;
+}
+
+/* Animation for smooth transitions */
+.item-details-container {
+  @apply transition-all duration-300 ease-in-out;
+}
+  

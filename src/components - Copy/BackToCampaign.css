@@ -1,0 +1,20 @@
+/* Back to Campaign Button */
+.back-to-campaign-button {
+  @apply px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700 text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-gray-200 hover:border-gray-400 no-underline inline-flex items-center;
+}
+
+.dark .back-to-campaign-button {
+  @apply bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-gray-500;
+}
+
+.back-to-campaign-button:hover {
+  @apply transform -translate-y-0.5 shadow-md;
+}
+
+.back-to-campaign-button:focus {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+}
+
+.dark .back-to-campaign-button:focus {
+  @apply ring-blue-400;
+} 

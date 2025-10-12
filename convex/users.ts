@@ -89,5 +89,32 @@ export const getCurrentUser = query({
   },
 });
 
+// Function to check if current user should be admin and upgrade if needed
+export const ensureAdminRole = mutation({
+  args: {},
+  handler: async (ctx) => {
+    try {
+      const user = await getCurrentUserFromClerk(ctx);
+      
+      // Check if this is the first user (app creator) and make them admin
+      const allUsers = await ctx.db.query("users").collect();
+      
+      if (allUsers.length === 1 && user.role === "user") {
+        // This is the first user, make them admin
+        await ctx.db.patch(user._id, {
+          role: "admin" as const,
+        });
+        
+        return await ctx.db.get(user._id);
+      }
+      
+      return user;
+    } catch (error) {
+      console.error('ensureAdminRole error:', error);
+      return null;
+    }
+  },
+});
+
 
 

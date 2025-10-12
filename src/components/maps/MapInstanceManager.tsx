@@ -9,7 +9,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Alert, AlertDescription } from '../ui/alert';
-import { Undo2, RotateCcw, Users, Sword, Skull } from 'lucide-react';
+import { Undo, RotateCcw, Users, Sword, Skull } from 'lucide-react';
 import { useUser } from '@clerk/clerk-react';
 
 interface MapInstanceManagerProps {
@@ -248,7 +248,7 @@ export const MapInstanceManager: React.FC<MapInstanceManagerProps> = ({
             onClick={handleUndoMove}
             disabled={instance.movementHistory.length === 0}
           >
-            <Undo2 className="w-4 h-4 mr-2" />
+                            <Undo className="w-4 h-4 mr-2" />
             Undo
           </Button>
           <Button
