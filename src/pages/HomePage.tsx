@@ -35,6 +35,23 @@ export function HomePage() {
     <>
       <SignedOut>
         <div className="flex flex-col">
+          {/* Demo Mode Indicator */}
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border-b border-blue-200 dark:border-blue-800">
+            <div className="max-w-7xl mx-auto px-4 py-4">
+              <div className="flex items-center justify-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900">
+                  <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="text-center">
+                  <h3 className="font-semibold text-blue-900 dark:text-blue-100">Demo Mode</h3>
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    The data you see below is for demonstration purposes only. Sign in to create your own campaigns and content!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Hero Section */}
           <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10 border-b">
             <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(white,transparent_70%)]" />
@@ -363,130 +380,162 @@ export function HomePage() {
 
       <SignedIn>
         <div className="px-4 py-6 sm:px-0">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Welcome back, Adventurer!</h1>
-            <p className="text-muted-foreground">
+          <div className="mb-8 animate-fade-in">
+            <h1 className="text-4xl font-bold mb-2 text-gradient">Welcome back, Adventurer!</h1>
+            <p className="text-muted-foreground text-lg">
               Choose where to continue your journey
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Link to="/campaigns">
-              <Card className="hover:shadow-md transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary/50">
+              <Card className="hover-lift cursor-pointer border-2 hover:border-primary/50 group">
                 <CardHeader>
-                  <Map className="w-10 h-10 text-primary mb-2" />
-                  <CardTitle>Campaigns</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                      <Map className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle>Campaigns</CardTitle>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4">
                     Manage your D&D campaigns and adventures.
                   </p>
-                  <Button className="w-full">View Campaigns</Button>
+                  <Button variant="gradient" className="w-full">View Campaigns</Button>
                 </CardContent>
               </Card>
             </Link>
 
             <Link to="/characters">
-              <Card className="hover:shadow-md transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary/50">
+              <Card className="hover-lift cursor-pointer border-2 hover:border-primary/50 group">
                 <CardHeader>
-                  <Users className="w-10 h-10 text-primary mb-2" />
-                  <CardTitle>Characters</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                      <Users className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle>Characters</CardTitle>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4">
                     Create and manage player characters and NPCs.
                   </p>
-                  <Button className="w-full">View Characters</Button>
+                  <Button variant="gradient" className="w-full">View Characters</Button>
                 </CardContent>
               </Card>
             </Link>
 
             <Link to="/monsters">
-              <Card className="hover:shadow-md transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary/50">
+              <Card className="hover-lift cursor-pointer border-2 hover:border-primary/50 group">
                 <CardHeader>
-                  <Sword className="w-10 h-10 text-primary mb-2" />
-                  <CardTitle>Monsters</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                      <Sword className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle>Monsters</CardTitle>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4">
                     Browse and create monsters for your encounters.
                   </p>
-                  <Button className="w-full">View Monsters</Button>
+                  <Button variant="gradient" className="w-full">View Monsters</Button>
                 </CardContent>
               </Card>
             </Link>
 
             <Link to="/quests">
-              <Card className="hover:shadow-md transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary/50">
+              <Card className="hover-lift cursor-pointer border-2 hover:border-primary/50 group">
                 <CardHeader>
-                  <Scroll className="w-10 h-10 text-primary mb-2" />
-                  <CardTitle>Quests</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                      <Scroll className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle>Quests</CardTitle>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4">
                     Track your party's adventures and objectives.
                   </p>
-                  <Button className="w-full">View Quests</Button>
+                  <Button variant="gradient" className="w-full">View Quests</Button>
                 </CardContent>
               </Card>
             </Link>
 
             <Link to="/items">
-              <Card className="hover:shadow-md transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary/50">
+              <Card className="hover-lift cursor-pointer border-2 hover:border-primary/50 group">
                 <CardHeader>
-                  <Sparkles className="w-10 h-10 text-primary mb-2" />
-                  <CardTitle>Items</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                      <Sparkles className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle>Items</CardTitle>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4">
                     Manage weapons, armor, and magical items.
                   </p>
-                  <Button className="w-full">View Items</Button>
+                  <Button variant="gradient" className="w-full">View Items</Button>
                 </CardContent>
               </Card>
             </Link>
 
             <Link to="/maps">
-              <Card className="hover:shadow-md transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary/50">
+              <Card className="hover-lift cursor-pointer border-2 hover:border-primary/50 group">
                 <CardHeader>
-                  <Target className="w-10 h-10 text-primary mb-2" />
-                  <CardTitle>Battle Maps</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                      <Target className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle>Battle Maps</CardTitle>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4">
                     Create and edit battle maps and world maps.
                   </p>
-                  <Button className="w-full">View Maps</Button>
+                  <Button variant="gradient" className="w-full">View Maps</Button>
                 </CardContent>
               </Card>
             </Link>
 
             <Link to="/interactions">
-              <Card className="hover:shadow-md transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary/50">
+              <Card className="hover-lift cursor-pointer border-2 hover:border-primary/50 group">
                 <CardHeader>
-                  <Zap className="w-10 h-10 text-primary mb-2" />
-                  <CardTitle>Interactions</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                      <Zap className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle>Interactions</CardTitle>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4">
                     Manage live gameplay interactions and encounters.
                   </p>
-                  <Button className="w-full">View Interactions</Button>
+                  <Button variant="gradient" className="w-full">View Interactions</Button>
                 </CardContent>
               </Card>
             </Link>
 
             <Link to="/live-demo">
-              <Card className="hover:shadow-md transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary/50">
+              <Card className="hover-lift cursor-pointer border-2 hover:border-primary/50 group">
                 <CardHeader>
-                  <Dices className="w-10 h-10 text-primary mb-2" />
-                  <CardTitle>Live Demo</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                      <Dices className="w-6 h-6 text-primary" />
+                    </div>
+                    <CardTitle>Live Demo</CardTitle>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4">
                     Try out the live interaction system.
                   </p>
-                  <Button className="w-full">Try Demo</Button>
+                  <Button variant="gradient" className="w-full">Try Demo</Button>
                 </CardContent>
               </Card>
             </Link>
