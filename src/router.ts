@@ -11,6 +11,7 @@ import { HomePage } from './pages/HomePage'
 import { ImportDebugPage } from './pages/ImportDebugPage'
 import { LocationsPage } from './pages/LocationsPage'
 import { BattleMapPage } from './pages/BattleMapPage'
+import { ActionsPage } from './pages/ActionsPage'
 import { RootErrorComponent } from './components/ErrorBoundary'
 import App from './App'
 
@@ -93,6 +94,12 @@ const battleMapRoute = createRoute({
   component: BattleMapPage,
 })
 
+const actionsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/actions',
+  component: ActionsPage,
+})
+
 // Create the route tree
 const routeTree = rootRoute.addChildren([
   homeRoute,
@@ -107,6 +114,7 @@ const routeTree = rootRoute.addChildren([
   importDebugRoute,
   locationsRoute,
   battleMapRoute,
+  actionsRoute,
 ])
 
 // Create the router

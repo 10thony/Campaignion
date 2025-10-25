@@ -7,6 +7,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from ".
 import { NPCTokenSelector } from "./NPCTokenSelector";
 import { useState } from "react";
 import { Id } from "../../../convex/_generated/dataModel";
+import { useUser } from "@clerk/clerk-react";
 
 const terrainOptions = [
   { value: "normal", label: "Normal", color: "#ffffff" },
@@ -34,37 +35,30 @@ export function BattleMapToolbar() {
     clearMeasurePoints,
     aoeTemplate,
     setAoeTemplate,
+    // Multi-select functionality
+    selectedCells,
+    clearSelectedCells,
+    isMultiSelectMode,
+    setIsMultiSelectMode,
   } = useBattleMapUI();
   
   const [npcSelectorOpen, setNpcSelectorOpen] = useState(false);
-  const [npcSelectorType, setNpcSelectorType] = useState<"npc_friendly" | "npc_foe">("npc_friendly");
+  const [npcSelectorType, setNpcSelectorType] = useState<"pc" | "npc_friendly" | "npc_foe">("npc_friendly");
   
   const tokens = useQuery(
     api.battleTokens.listByMap,
     selectedMapId ? { mapId: selectedMapId } : "skip"
   );
   const createToken = useMutation(api.battleTokens.create);
+  const updateCell = useMutation(api.battleMaps.updateCell);
+  const { user } = useUser();
 
   const addToken = async (type: "pc" | "npc_friendly" | "npc_foe") => {
     if (!selectedMapId) return;
     
-    // For NPCs, open the selector dialog
-    if (type === "npc_friendly" || type === "npc_foe") {
-      setNpcSelectorType(type);
-      setNpcSelectorOpen(true);
-      return;
-    }
-    
-    // For PCs, create a generic token
-    await createToken({
-      mapId: selectedMapId as any,
-      x: 0,
-      y: 0,
-      label: "PC",
-      type,
-      color: "#2563eb",
-      size: 1,
-    });
+    // For all token types, open the selector dialog to allow entity selection
+    setNpcSelectorType(type);
+    setNpcSelectorOpen(true);
   };
 
   const handleCreateNPCToken = async (data: {
@@ -101,9 +95,9 @@ export function BattleMapToolbar() {
       mapId: selectedMapId as any,
       x: 0,
       y: 0,
-      label: npcSelectorType === "npc_friendly" ? "Ally" : "Foe",
+      label: npcSelectorType === "pc" ? "PC" : npcSelectorType === "npc_friendly" ? "Ally" : "Foe",
       type: npcSelectorType,
-      color: npcSelectorType === "npc_friendly" ? "#059669" : "#dc2626",
+      color: npcSelectorType === "pc" ? "#2563eb" : npcSelectorType === "npc_friendly" ? "#059669" : "#dc2626",
       size: 1,
     });
   };
@@ -143,34 +137,58 @@ export function BattleMapToolbar() {
         )}
       </div>
 
-      {/* Terrain controls */}
+      {/* Multi-select controls */}
       <div className="flex items-center gap-2 border-r pr-2">
         <Button 
-          variant={editingMode === "terrain" ? "default" : "outline"} 
+          variant={editingMode === "multiselect" ? "default" : "outline"} 
           size="sm"
-          onClick={() => setEditingMode(editingMode === "terrain" ? null : "terrain")}
+          onClick={() => {
+            if (editingMode === "multiselect") {
+              setEditingMode(null);
+              clearSelectedCells();
+            } else {
+              setEditingMode("multiselect");
+              clearSelectedCells();
+            }
+          }}
         >
-          Terrain Mode
+          🎯 Multi-Select
         </Button>
-        {editingMode === "terrain" && (
-          <Select value={selectedTerrain} onValueChange={(v: any) => setSelectedTerrain(v)}>
-            <SelectTrigger className="w-36 h-8">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {terrainOptions.map(opt => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-4 h-4 rounded border" 
-                      style={{ backgroundColor: opt.color }}
-                    />
-                    {opt.label}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {editingMode === "multiselect" && selectedCells.size > 0 && (
+          <>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={async () => {
+                if (!selectedMapId || !user) return;
+                const updatePromises = Array.from(selectedCells).map(cellKey => {
+                  const [x, y] = cellKey.split(',').map(Number);
+                  return updateCell({
+                    mapId: selectedMapId as any,
+                    x,
+                    y,
+                    terrainType: selectedTerrain as any,
+                    clerkId: user.id,
+                  });
+                });
+                try {
+                  await Promise.all(updatePromises);
+                  clearSelectedCells();
+                } catch (e) {
+                  console.error("Failed to update cells:", e);
+                }
+              }}
+            >
+              Paint Terrain ({selectedCells.size})
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={clearSelectedCells}
+            >
+              Clear Selection
+            </Button>
+          </>
         )}
       </div>
 
@@ -272,7 +290,7 @@ export function BattleMapToolbar() {
         </span>
       </div>
 
-      {/* NPC Token Selector Dialog */}
+      {/* Entity Token Selector Dialog */}
       <NPCTokenSelector
         open={npcSelectorOpen}
         onOpenChange={setNpcSelectorOpen}

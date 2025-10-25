@@ -226,8 +226,7 @@ export function QuestsPage() {
         <SampleDataPanel 
           entityType="quests" 
           onDataLoaded={() => {
-            // Refresh the page data
-            window.location.reload()
+            // Data will automatically refresh via Convex queries
           }} 
         />
 

@@ -4,10 +4,13 @@ import { Id } from "../../../convex/_generated/dataModel";
 import { useDrop } from "react-dnd";
 import { ItemTypes, DragItem } from "../../lib/dndTypes";
 import { BattleToken } from "./BattleToken";
+import { TerrainKey } from "./TerrainKey";
+import { CombatActionSelector } from "./CombatActionSelector";
 import { useBattleMapUI } from "../../lib/battleMapStore";
 import { useRef, useState, useCallback } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { Button } from "../ui/button";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 // Terrain color mapping
 const terrainColors: Record<string, string> = {
@@ -38,6 +41,14 @@ export function MapBoard({ mapId }: { mapId: string }) {
     setMeasurePoints,
     aoeTemplate,
     selectedTokenForMovement,
+    setSelectedTokenForMovement,
+    // Multi-select functionality
+    selectedCells,
+    addSelectedCell,
+    removeSelectedCell,
+    // Combat functionality
+    combatState,
+    clearCombatState,
   } = useBattleMapUI();
   const { user } = useUser();
   const dropRef = useRef<HTMLDivElement>(null);
@@ -50,6 +61,11 @@ export function MapBoard({ mapId }: { mapId: string }) {
   const [zoom, setZoom] = useState(1);
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+  const [lastPanTime, setLastPanTime] = useState(0);
+  const [, setPanVelocity] = useState({ x: 0, y: 0 });
+  
+  // Controls dialog state
+  const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
 
   const [{ isOver }, drop] = useDrop(
     () => ({
@@ -84,45 +100,134 @@ export function MapBoard({ mapId }: { mapId: string }) {
 
   // Combine the drop ref with our dropRef for calculations
   const setRefs = useCallback((node: HTMLDivElement | null) => {
-    dropRef.current = node;
+    if (node) {
+      (dropRef as any).current = node;
+    }
     drop(node);
   }, [drop]);
 
-  // Pan and zoom handlers
+  // Enhanced pan and zoom handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (e.button === 1 || (e.button === 0 && e.ctrlKey)) {
-      // Middle mouse or Ctrl+Left for panning
+    // Allow panning with left mouse button
+    if (e.button === 0) {
       setIsPanning(true);
       setPanStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
+      setLastPanTime(Date.now());
+      setPanVelocity({ x: 0, y: 0 });
       e.preventDefault();
+      e.stopPropagation();
     }
   }, [panOffset]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (isPanning) {
-      setPanOffset({
-        x: e.clientX - panStart.x,
-        y: e.clientY - panStart.y
-      });
+      const currentTime = Date.now();
+      const deltaTime = currentTime - lastPanTime;
+      
+      if (deltaTime > 0) {
+        const newOffset = {
+          x: e.clientX - panStart.x,
+          y: e.clientY - panStart.y
+        };
+        
+        // Calculate velocity for momentum
+        const velocity = {
+          x: (newOffset.x - panOffset.x) / deltaTime,
+          y: (newOffset.y - panOffset.y) / deltaTime
+        };
+        
+        setPanOffset(newOffset);
+        setPanVelocity(velocity);
+        setLastPanTime(currentTime);
+      }
+      
+      e.preventDefault();
+      e.stopPropagation();
     }
-  }, [isPanning, panStart]);
+  }, [isPanning, panStart, panOffset, lastPanTime]);
 
-  const handleMouseUp = useCallback(() => {
-    setIsPanning(false);
-  }, []);
+  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+    if (isPanning) {
+      setIsPanning(false);
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, [isPanning]);
+
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    // Prevent context menu when panning
+    if (isPanning) {
+      e.preventDefault();
+    }
+  }, [isPanning]);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
-    if (e.ctrlKey) {
+    // Zoom with Ctrl+Scroll or just scroll
+    if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
       const delta = e.deltaY > 0 ? 0.9 : 1.1;
-      setZoom(prev => Math.max(0.5, Math.min(3, prev * delta)));
+      setZoom(prev => Math.max(0.25, Math.min(4, prev * delta)));
+    } else if (!isPanning) {
+      // Pan with scroll wheel when not in panning mode
+      e.preventDefault();
+      const panSpeed = 50;
+      setPanOffset(prev => ({
+        x: prev.x - e.deltaX * panSpeed,
+        y: prev.y - e.deltaY * panSpeed
+      }));
     }
-  }, []);
+  }, [isPanning]);
 
   const resetView = useCallback(() => {
     setZoom(1);
     setPanOffset({ x: 0, y: 0 });
+    setPanVelocity({ x: 0, y: 0 });
   }, []);
+
+  // Touch support for mobile devices
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      setIsPanning(true);
+      setPanStart({ x: touch.clientX - panOffset.x, y: touch.clientY - panOffset.y });
+      setLastPanTime(Date.now());
+      setPanVelocity({ x: 0, y: 0 });
+      e.preventDefault();
+    }
+  }, [panOffset]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (isPanning && e.touches.length === 1) {
+      const touch = e.touches[0];
+      const currentTime = Date.now();
+      const deltaTime = currentTime - lastPanTime;
+      
+      if (deltaTime > 0) {
+        const newOffset = {
+          x: touch.clientX - panStart.x,
+          y: touch.clientY - panStart.y
+        };
+        
+        const velocity = {
+          x: (newOffset.x - panOffset.x) / deltaTime,
+          y: (newOffset.y - panOffset.y) / deltaTime
+        };
+        
+        setPanOffset(newOffset);
+        setPanVelocity(velocity);
+        setLastPanTime(currentTime);
+      }
+      
+      e.preventDefault();
+    }
+  }, [isPanning, panStart, panOffset, lastPanTime]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (isPanning) {
+      setIsPanning(false);
+      e.preventDefault();
+    }
+  }, [isPanning]);
 
   // Calculate movement range for selected token
   const getMovementRange = useCallback(() => {
@@ -210,6 +315,45 @@ export function MapBoard({ mapId }: { mapId: string }) {
   const handleCellClick = async (x: number, y: number) => {
     if (isPanning) return; // Don't handle clicks while panning
 
+    // Handle token movement if a token is selected for movement
+    if (selectedTokenForMovement && tokens && map) {
+      const selectedToken = tokens.find(t => t._id === selectedTokenForMovement);
+      if (selectedToken && selectedToken.speed) {
+        const movementData = getMovementRange();
+        
+        // Check if the clicked cell is within movement range
+        const cellKey = `${x},${y}`;
+        if (movementData.cells.has(cellKey)) {
+          // Check for collision with other tokens (if single occupancy is enforced)
+          if (enforceSingleOccupancy) {
+            const isOccupied = tokens.some(token => 
+              token._id !== selectedToken._id && 
+              token.x === x && token.y === y
+            );
+            if (isOccupied) {
+              console.log("Cannot move to occupied cell");
+              return;
+            }
+          }
+          
+          // Move the token
+          try {
+            await move({
+              id: selectedToken._id,
+              x,
+              y,
+            });
+            
+            // Clear movement selection after successful move
+            setSelectedTokenForMovement(null);
+          } catch (e) {
+            console.error("Failed to move token:", e);
+          }
+        }
+        return; // Don't process other editing modes when moving
+      }
+    }
+
     switch (editingMode) {
       case "terrain":
         if (selectedTerrain && user) {
@@ -240,6 +384,15 @@ export function MapBoard({ mapId }: { mapId: string }) {
 
       case "aoe":
         setAoeCenter({ x, y });
+        break;
+
+      case "multiselect":
+        const cellKey = `${x},${y}`;
+        if (selectedCells.has(cellKey)) {
+          removeSelectedCell(x, y);
+        } else {
+          addSelectedCell(x, y);
+        }
         break;
     }
   };
@@ -273,6 +426,7 @@ export function MapBoard({ mapId }: { mapId: string }) {
         const isMeasurePoint = measurePoints.some(p => p.x === x && p.y === y);
         const isMovementRange = movementCells.has(`${x},${y}`);
         const isHovered = hoveredCell?.x === x && hoveredCell?.y === y;
+        const isSelected = selectedCells.has(`${x},${y}`);
         
         // Determine if this cell needs rendering
         const needsRendering = 
@@ -280,10 +434,12 @@ export function MapBoard({ mapId }: { mapId: string }) {
           editingMode === "terrain" || 
           editingMode === "measure" ||
           editingMode === "aoe" ||
+          editingMode === "multiselect" ||
           isAoeCell ||
           isMeasurePoint ||
           isMovementRange ||
-          isHovered;
+          isHovered ||
+          isSelected;
 
         if (needsRendering) {
           let cellStyle: React.CSSProperties = {
@@ -295,7 +451,11 @@ export function MapBoard({ mapId }: { mapId: string }) {
 
           let cellClass = "absolute pointer-events-auto cursor-pointer transition-all";
 
-          if (isAoeCell) {
+          if (isSelected) {
+            cellStyle.backgroundColor = "rgba(34, 197, 94, 0.3)";
+            cellStyle.border = "2px solid rgba(34, 197, 94, 0.8)";
+            cellClass += " ring-2 ring-green-400";
+          } else if (isAoeCell) {
             cellStyle.backgroundColor = "rgba(255, 0, 0, 0.3)";
             cellStyle.border = "2px solid rgba(255, 0, 0, 0.6)";
             cellClass += " animate-pulse";
@@ -303,16 +463,26 @@ export function MapBoard({ mapId }: { mapId: string }) {
             cellStyle.backgroundColor = "rgba(59, 130, 246, 0.4)";
             cellStyle.border = "2px solid rgba(59, 130, 246, 0.8)";
           } else if (isMovementRange && !isHovered) {
-            cellStyle.backgroundColor = "rgba(250, 204, 21, 0.2)";
-            cellStyle.border = "1px solid rgba(250, 204, 21, 0.4)";
+            // Terrain color takes precedence as background, movement range shown as yellow border
+            if (color !== terrainColors.normal) {
+              cellStyle.backgroundColor = color;
+            } else {
+              cellStyle.backgroundColor = "rgba(250, 204, 21, 0.2)";
+            }
+            cellStyle.border = "2px solid rgba(250, 204, 21, 0.6)";
           } else if (isMovementRange && isHovered) {
-            cellStyle.backgroundColor = "rgba(250, 204, 21, 0.4)";
-            cellStyle.border = "2px solid rgba(250, 204, 21, 0.8)";
+            // Terrain color takes precedence as background, movement range shown as yellow border
+            if (color !== terrainColors.normal) {
+              cellStyle.backgroundColor = color;
+            } else {
+              cellStyle.backgroundColor = "rgba(250, 204, 21, 0.4)";
+            }
+            cellStyle.border = "3px solid rgba(250, 204, 21, 0.8)";
             cellClass += " ring-2 ring-yellow-400";
           } else if (color !== terrainColors.normal) {
             cellStyle.backgroundColor = color;
             cellClass += " hover:brightness-110";
-          } else if (editingMode === "terrain" || editingMode === "measure" || editingMode === "aoe") {
+          } else if (editingMode === "terrain" || editingMode === "measure" || editingMode === "aoe" || editingMode === "multiselect") {
             cellClass += " hover:bg-neutral-200 hover:bg-opacity-30";
           }
 
@@ -341,13 +511,24 @@ export function MapBoard({ mapId }: { mapId: string }) {
   return (
     <div 
       ref={containerRef}
-      className="w-full h-full overflow-hidden relative"
+      className="w-full h-full overflow-hidden relative select-none"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onContextMenu={handleContextMenu}
       onWheel={handleWheel}
-      style={{ cursor: isPanning ? 'grabbing' : editingMode === 'terrain' ? 'crosshair' : 'default' }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{ 
+        cursor: isPanning ? 'grabbing' : 
+                editingMode === 'terrain' ? 'crosshair' : 
+                editingMode === 'multiselect' ? 'crosshair' :
+                editingMode === 'measure' ? 'crosshair' :
+                editingMode === 'aoe' ? 'crosshair' :
+                'grab'
+      }}
     >
       <div
         className="absolute"
@@ -358,7 +539,7 @@ export function MapBoard({ mapId }: { mapId: string }) {
       >
         <div
           ref={setRefs}
-          className="relative bg-gray-100 dark:bg-gray-800 shadow-inner"
+          className="relative bg-gray-100 dark:bg-gray-300 shadow-inner"
           style={gridStyle}
         >
           {renderCells()}
@@ -394,7 +575,7 @@ export function MapBoard({ mapId }: { mapId: string }) {
           )}
           
           {tokens?.map((t) => (
-            <BattleToken key={t._id} token={t} cellSize={map.cellSize} />
+            <BattleToken key={t._id} token={t} cellSize={map.cellSize} allTokens={tokens} />
           ))}
           {isOver && (
             <div className="absolute inset-0 pointer-events-none ring-2 ring-blue-400" />
@@ -436,35 +617,86 @@ export function MapBoard({ mapId }: { mapId: string }) {
         </div>
       </div>
 
-      {/* Instructions */}
-      <div className="absolute top-4 left-4 bg-card/95 border backdrop-blur-sm px-3 py-2 rounded-lg text-sm pointer-events-none shadow-lg">
-        <div className="font-semibold mb-1 text-foreground">Controls:</div>
-        <div className="text-muted-foreground">• Click token to show range</div>
-        <div className="text-muted-foreground">• Drag tokens to move</div>
-        <div className="text-muted-foreground">• Ctrl+Scroll: Zoom</div>
-        <div className="text-muted-foreground">• Ctrl+Drag: Pan</div>
-        {selectedTokenForMovement && (
-          <div className="font-bold mt-2 text-yellow-600 dark:text-yellow-400">
-            ⭐ Token selected - movement range shown
-            {tokens?.find(t => t._id === selectedTokenForMovement)?.speed && (
-              <div className="text-xs">Speed: {tokens?.find(t => t._id === selectedTokenForMovement)?.speed}ft</div>
+      {/* Collapsible Controls Dialog */}
+      <div className="absolute top-4 right-4 bg-card/95 border backdrop-blur-sm rounded-lg shadow-lg pointer-events-auto max-w-xs">
+        <button
+          onClick={() => setIsControlsCollapsed(!isControlsCollapsed)}
+          className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors rounded-t-lg"
+        >
+          <div className="font-semibold text-foreground text-sm">Controls</div>
+          {isControlsCollapsed ? (
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
+        </button>
+        
+        {!isControlsCollapsed && (
+          <div className="px-3 pb-3 text-sm">
+            <div className="text-muted-foreground mb-2">• Click token to show range</div>
+            <div className="text-muted-foreground mb-2">• Drag tokens to move</div>
+            <div className="text-muted-foreground mb-2">• Middle/Right mouse: Pan</div>
+            <div className="text-muted-foreground mb-2">• Scroll wheel: Pan</div>
+            <div className="text-muted-foreground mb-2">• Ctrl+Scroll: Zoom</div>
+            {selectedTokenForMovement && (
+              <div className="font-bold mt-2 text-yellow-600 dark:text-yellow-400">
+                ⭐ Token selected - movement range shown
+                {tokens?.find(t => t._id === selectedTokenForMovement)?.speed && (
+                  <div className="text-xs">Speed: {tokens?.find(t => t._id === selectedTokenForMovement)?.speed}ft</div>
+                )}
+              </div>
+            )}
+            {editingMode === "terrain" && <div className="font-bold mt-2 text-yellow-600 dark:text-yellow-400">📐 Click cells to paint terrain</div>}
+            {editingMode === "measure" && (
+              <div className="font-bold mt-2 text-blue-600 dark:text-blue-400">
+                📏 Click two points to measure
+                {measurePoints.length === 1 && <div className="text-xs">Click end point</div>}
+              </div>
+            )}
+            {editingMode === "aoe" && (
+              <div className="font-bold mt-2 text-red-600 dark:text-red-400">
+                🎯 Click to place {aoeTemplate?.type} AoE
+                <div className="text-xs">Size: {(aoeTemplate?.size || 0) * 5}ft</div>
+              </div>
+            )}
+            {editingMode === "multiselect" && (
+              <div className="font-bold mt-2 text-green-600 dark:text-green-400">
+                🎯 Multi-Select Mode
+                <div className="text-xs">Click cells to select ({selectedCells.size} selected)</div>
+                <div className="text-xs">Use toolbar to apply terrain or AoE</div>
+              </div>
             )}
           </div>
         )}
-        {editingMode === "terrain" && <div className="font-bold mt-2 text-yellow-600 dark:text-yellow-400">📐 Click cells to paint terrain</div>}
-        {editingMode === "measure" && (
-          <div className="font-bold mt-2 text-blue-600 dark:text-blue-400">
-            📏 Click two points to measure
-            {measurePoints.length === 1 && <div className="text-xs">Click end point</div>}
-          </div>
-        )}
-        {editingMode === "aoe" && (
-          <div className="font-bold mt-2 text-red-600 dark:text-red-400">
-            🎯 Click to place {aoeTemplate?.type} AoE
-            <div className="text-xs">Size: {(aoeTemplate?.size || 0) * 5}ft</div>
-          </div>
-        )}
       </div>
+
+      {/* Terrain Key - positioned dynamically based on controls state */}
+      <div 
+        className="absolute right-4" 
+        style={{ 
+          top: isControlsCollapsed ? '4rem' : '20rem' // When collapsed, position below the controls header
+        }}
+      >
+        <TerrainKey />
+      </div>
+      
+      {/* Combat Action Selector */}
+      {combatState.isCombatMode && combatState.attackerTokenId && combatState.targetTokenId && tokens && (
+        <div className="absolute top-4 left-4 z-20">
+          <CombatActionSelector
+            attacker={tokens.find(t => t._id === combatState.attackerTokenId)!}
+            target={tokens.find(t => t._id === combatState.targetTokenId)!}
+            attackerEntity={null} // Will be populated by the component
+            availableActions={combatState.availableActions}
+            onActionSelected={() => {
+              clearCombatState();
+            }}
+            onCancel={() => {
+              clearCombatState();
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

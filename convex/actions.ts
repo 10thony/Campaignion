@@ -191,6 +191,7 @@ export const createAction = mutation({
     isBaseAction: v.optional(v.boolean()),
     tags: v.optional(v.array(v.string())),
     prerequisites: v.optional(v.array(v.string())),
+    targetClass: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
@@ -325,6 +326,7 @@ export const updateAction = mutation({
     isBaseAction: v.optional(v.boolean()),
     tags: v.optional(v.array(v.string())),
     prerequisites: v.optional(v.array(v.string())),
+    targetClass: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);

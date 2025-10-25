@@ -85,6 +85,22 @@ interface Monster {
     name: string
     description: string
   }>
+  traits?: Array<{
+    name: string
+    description: string
+  }>
+  reactions?: Array<{
+    name: string
+    description: string
+  }>
+  legendaryActions?: Array<{
+    name: string
+    description: string
+  }>
+  lairActions?: Array<{
+    name: string
+    description: string
+  }>
   createdAt?: number
   creatorId?: string
 }
@@ -110,6 +126,20 @@ export function MonsterModal({
   // State for managing inline actions
   const [inlineActions, setInlineActions] = React.useState<Array<{ name: string; description: string }>>(
     monster?.actions || []
+  )
+  
+  // State for managing special abilities
+  const [inlineTraits, setInlineTraits] = React.useState<Array<{ name: string; description: string }>>(
+    monster?.traits || []
+  )
+  const [inlineReactions, setInlineReactions] = React.useState<Array<{ name: string; description: string }>>(
+    monster?.reactions || []
+  )
+  const [inlineLegendaryActions, setInlineLegendaryActions] = React.useState<Array<{ name: string; description: string }>>(
+    monster?.legendaryActions || []
+  )
+  const [inlineLairActions, setInlineLairActions] = React.useState<Array<{ name: string; description: string }>>(
+    monster?.lairActions || []
   )
   
   const form = useForm<MonsterFormData>({
@@ -194,6 +224,10 @@ export function MonsterModal({
         actions: monster.actions || [],
       })
       setInlineActions(monster.actions || [])
+      setInlineTraits(monster.traits || [])
+      setInlineReactions(monster.reactions || [])
+      setInlineLegendaryActions(monster.legendaryActions || [])
+      setInlineLairActions(monster.lairActions || [])
     } else if (mode === "create") {
       form.reset({
         name: "",
@@ -228,6 +262,10 @@ export function MonsterModal({
         actions: [],
       })
       setInlineActions([])
+      setInlineTraits([])
+      setInlineReactions([])
+      setInlineLegendaryActions([])
+      setInlineLairActions([])
     }
   }, [monster, mode, form])
 
@@ -255,6 +293,10 @@ export function MonsterModal({
         legendaryActionCount: data.legendaryActionCount || undefined,
         lairActionCount: data.lairActionCount || undefined,
         actions: inlineActions.length > 0 ? inlineActions : undefined,
+        traits: inlineTraits.length > 0 ? inlineTraits : undefined,
+        reactions: inlineReactions.length > 0 ? inlineReactions : undefined,
+        legendaryActions: inlineLegendaryActions.length > 0 ? inlineLegendaryActions : undefined,
+        lairActions: inlineLairActions.length > 0 ? inlineLairActions : undefined,
       }
 
       if (mode === "create") {
@@ -335,8 +377,12 @@ export function MonsterModal({
           actions: result.data.actions || [],
         })
         
-        // Update inline actions
+        // Update inline actions and special abilities
         setInlineActions(result.data.actions || [])
+        setInlineTraits(result.data.traits || [])
+        setInlineReactions(result.data.reactions || [])
+        setInlineLegendaryActions(result.data.legendaryActions || [])
+        setInlineLairActions(result.data.lairActions || [])
         
         toast.success("Monster generated successfully! Review and adjust as needed.", {
           duration: 3000,
@@ -386,11 +432,13 @@ export function MonsterModal({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="basic">Basic Info</TabsTrigger>
                 <TabsTrigger value="stats">Stats</TabsTrigger>
-                <TabsTrigger value="abilities">Special Abilities</TabsTrigger>
+                <TabsTrigger value="traits">Traits</TabsTrigger>
                 <TabsTrigger value="actions">Actions</TabsTrigger>
+                <TabsTrigger value="reactions">Reactions</TabsTrigger>
+                <TabsTrigger value="legendary">Legendary</TabsTrigger>
               </TabsList>
 
               {/* Basic Info Tab */}
@@ -802,10 +850,10 @@ export function MonsterModal({
                 </div>
               </TabsContent>
 
-              {/* Special Abilities Tab */}
-              <TabsContent value="abilities" className="space-y-6">
+              {/* Traits Tab */}
+              <TabsContent value="traits" className="space-y-6">
                 <div className="space-y-4">
-                  <h4 className="text-sm font-medium">Special Abilities</h4>
+                  <h4 className="text-sm font-medium">Traits</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* Challenge Rating Field */}
                     <FormField
@@ -882,6 +930,14 @@ export function MonsterModal({
                     />
                   </div>
                 </div>
+                
+                {/* Traits Management */}
+                <ActionManager
+                  mode="monster"
+                  inlineActions={inlineTraits}
+                  onInlineActionsChange={setInlineTraits}
+                  disabled={isReadOnly}
+                />
               </TabsContent>
 
               {/* Actions Tab */}
@@ -892,6 +948,43 @@ export function MonsterModal({
                   onInlineActionsChange={setInlineActions}
                   disabled={isReadOnly}
                 />
+              </TabsContent>
+
+              {/* Reactions Tab */}
+              <TabsContent value="reactions" className="space-y-6">
+                <ActionManager
+                  mode="monster"
+                  inlineActions={inlineReactions}
+                  onInlineActionsChange={setInlineReactions}
+                  disabled={isReadOnly}
+                />
+              </TabsContent>
+
+              {/* Legendary Tab */}
+              <TabsContent value="legendary" className="space-y-6">
+                <div className="space-y-6">
+                  {/* Legendary Actions */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-medium">Legendary Actions</h4>
+                    <ActionManager
+                      mode="monster"
+                      inlineActions={inlineLegendaryActions}
+                      onInlineActionsChange={setInlineLegendaryActions}
+                      disabled={isReadOnly}
+                    />
+                  </div>
+                  
+                  {/* Lair Actions */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-medium">Lair Actions</h4>
+                    <ActionManager
+                      mode="monster"
+                      inlineActions={inlineLairActions}
+                      onInlineActionsChange={setInlineLairActions}
+                      disabled={isReadOnly}
+                    />
+                  </div>
+                </div>
               </TabsContent>
             </Tabs>
 

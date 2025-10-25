@@ -13,14 +13,14 @@ export const getGameConstants = query({
           q.eq(q.field("category"), args.category),
           q.eq(q.field("isActive"), true)
         ))
-        .order("sortOrder")
+        .order("asc")
         .collect();
     }
     
     return await ctx.db
       .query("gameConstants")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });
@@ -31,7 +31,7 @@ export const getEquipmentSlots = query({
     return await ctx.db
       .query("equipmentSlots")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });
@@ -42,7 +42,7 @@ export const getDndClasses = query({
     return await ctx.db
       .query("dndClasses")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("name")
+      .order("asc")
       .collect();
   },
 });
@@ -54,7 +54,7 @@ export const getAbilityScores = query({
       return await ctx.db
         .query("abilityScores")
         .filter((q) => q.eq(q.field("isActive"), true))
-        .order("sortOrder")
+        .order("asc")
         .collect();
     } catch (error) {
       console.error("Error fetching ability scores:", error);
@@ -71,7 +71,7 @@ export const getPointBuyCosts = query({
       return await ctx.db
         .query("pointBuyCosts")
         .filter((q) => q.eq(q.field("isActive"), true))
-        .order("score")
+        .order("asc")
         .collect();
     } catch (error) {
       console.error("Error fetching point buy costs:", error);
@@ -88,7 +88,7 @@ export const getActionCosts = query({
       return await ctx.db
         .query("actionCosts")
         .filter((q) => q.eq(q.field("isActive"), true))
-        .order("sortOrder")
+        .order("asc")
         .collect();
     } catch (error) {
       console.error("Error fetching action costs:", error);
@@ -104,7 +104,7 @@ export const getActionTypes = query({
     return await ctx.db
       .query("actionTypes")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });
@@ -115,7 +115,7 @@ export const getDamageTypes = query({
     return await ctx.db
       .query("damageTypes")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });
@@ -126,7 +126,7 @@ export const getDiceTypes = query({
     return await ctx.db
       .query("diceTypes")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sides")
+      .order("asc")
       .collect();
   },
 });
@@ -137,7 +137,7 @@ export const getItemTypes = query({
     return await ctx.db
       .query("itemTypes")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });
@@ -148,7 +148,7 @@ export const getItemRarities = query({
     return await ctx.db
       .query("itemRarities")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });
@@ -159,7 +159,7 @@ export const getArmorCategories = query({
     return await ctx.db
       .query("armorCategories")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });
@@ -170,7 +170,7 @@ export const getSpellLevels = query({
     return await ctx.db
       .query("spellLevels")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("level")
+      .order("asc")
       .collect();
   },
 });
@@ -181,7 +181,7 @@ export const getRestTypes = query({
     return await ctx.db
       .query("restTypes")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });
@@ -192,7 +192,7 @@ export const getCharacterTypes = query({
     return await ctx.db
       .query("characterTypes")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });
@@ -203,7 +203,7 @@ export const getUserRoles = query({
     return await ctx.db
       .query("userRoles")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });
@@ -214,7 +214,7 @@ export const getMapCellStates = query({
     return await ctx.db
       .query("mapCellStates")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });
@@ -225,7 +225,7 @@ export const getTerrainTypes = query({
     return await ctx.db
       .query("terrainTypes")
       .filter((q) => q.eq(q.field("isActive"), true))
-      .order("sortOrder")
+      .order("asc")
       .collect();
   },
 });

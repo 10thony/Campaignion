@@ -414,6 +414,7 @@ export const actionSchema = z.object({
   }).optional(),
   spellEffectDescription: z.string().max(1000).optional(),
   requiredClass: z.string().max(50).optional(),
+  targetClass: z.string().max(50).optional(),
   requiredLevel: z.number().min(1).max(20).optional(),
   requiredSubclass: z.string().max(50).optional(),
   usesPer: z.enum(["Short Rest", "Long Rest", "Day", "Special"]).optional(),

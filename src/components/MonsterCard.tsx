@@ -1,8 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
-import { Heart, Shield, Zap } from 'lucide-react'
+import { Heart, Shield, Zap, Copy } from 'lucide-react'
 import { formatModifier } from '@/lib/utils'
+import { useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
+import { toast } from 'sonner'
 
 interface Monster {
   _id: string
@@ -26,6 +29,8 @@ interface Monster {
     wisdom: number
     charisma: number
   }
+  traits?: Array<{ name: string; description: string }>
+  reactions?: Array<{ name: string; description: string }>
   legendaryActions?: Array<{ name: string; description: string }>
   lairActions?: Array<{ name: string; description: string }>
 }
@@ -34,15 +39,31 @@ interface MonsterCardProps {
   monster: Monster
   onView?: (monsterId: string) => void
   onEdit?: (monsterId: string) => void
+  onClone?: () => void
   canEdit?: boolean
+  canClone?: boolean
 }
 
 export function MonsterCard({ 
   monster, 
   onView, 
   onEdit, 
-  canEdit = false 
+  onClone,
+  canEdit = false,
+  canClone = false
 }: MonsterCardProps) {
+  const cloneMonster = useMutation(api.monsters.cloneMonster)
+  
+  const handleClone = async () => {
+    try {
+      await cloneMonster({ monsterId: monster._id })
+      toast.success(`${monster.name} cloned successfully!`)
+      onClone?.()
+    } catch (error) {
+      console.error('Failed to clone monster:', error)
+      toast.error('Failed to clone monster')
+    }
+  }
   const primarySpeed = monster.speed.walk || 
     monster.speed.fly || 
     monster.speed.swim || 
@@ -128,14 +149,24 @@ export function MonsterCard({
         )}
 
         {/* Special Actions */}
-        {(monster.legendaryActions || monster.lairActions) && (
-          <div className="flex gap-2">
-            {monster.legendaryActions && (
+        {(monster.traits || monster.reactions || monster.legendaryActions || monster.lairActions) && (
+          <div className="flex gap-2 flex-wrap">
+            {monster.traits && monster.traits.length > 0 && (
+              <Badge variant="secondary" className="text-xs">
+                {monster.traits.length} Traits
+              </Badge>
+            )}
+            {monster.reactions && monster.reactions.length > 0 && (
+              <Badge variant="secondary" className="text-xs">
+                {monster.reactions.length} Reactions
+              </Badge>
+            )}
+            {monster.legendaryActions && monster.legendaryActions.length > 0 && (
               <Badge variant="secondary" className="text-xs">
                 {monster.legendaryActions.length} Legendary
               </Badge>
             )}
-            {monster.lairActions && (
+            {monster.lairActions && monster.lairActions.length > 0 && (
               <Badge variant="secondary" className="text-xs">
                 {monster.lairActions.length} Lair
               </Badge>
@@ -159,6 +190,16 @@ export function MonsterCard({
               onClick={() => onEdit?.(monster._id)}
             >
               Edit
+            </Button>
+          )}
+          {canClone && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleClone}
+              className="px-3"
+            >
+              <Copy className="h-4 w-4" />
             </Button>
           )}
         </div>

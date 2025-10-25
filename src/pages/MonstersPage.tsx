@@ -58,6 +58,11 @@ export function MonstersPage() {
     // The queries will automatically refetch due to Convex reactivity
   }
 
+  const handleCloneSuccess = () => {
+    // Refresh the data after cloning
+    // The queries will automatically refetch due to Convex reactivity
+  }
+
   return (
     <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-6">
@@ -94,8 +99,7 @@ export function MonstersPage() {
         <SampleDataPanel 
           entityType="monsters" 
           onDataLoaded={() => {
-            // Refresh the page data
-            window.location.reload()
+            // Data will automatically refresh via Convex queries
           }} 
         />
 
@@ -163,7 +167,9 @@ export function MonstersPage() {
                 monster={monster}
                 onView={handleViewMonster}
                 onEdit={handleEditMonster}
+                onClone={handleCloneSuccess}
                 canEdit={true} // TODO: Check actual permissions
+                canClone={true}
               />
             ))}
           </div>

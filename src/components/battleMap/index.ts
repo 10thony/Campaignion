@@ -5,3 +5,4 @@ export { BattleMapToolbar } from './BattleMapToolbar';
 export { BattleMapSelector } from './BattleMapSelector';
 export { NewBattleMapDialog } from './NewBattleMapDialog';
 export { BattleTokenDialog } from './BattleTokenDialog';
+export { TerrainKey } from './TerrainKey';

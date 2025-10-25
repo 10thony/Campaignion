@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Search, Package, Sword, Shield, Star } from 'lucide-react'
 import { api } from '../../convex/_generated/api'
+import { useAuthenticatedUser } from '@/hooks/useAuthenticationGuard'
 
 type ItemType = "Weapon" | "Armor" | "Potion" | "Scroll" | "Wondrous Item" | "Ring" | 
                "Rod" | "Staff" | "Wand" | "Ammunition" | "Adventuring Gear" | "Tool" | 
@@ -18,8 +19,9 @@ type ItemType = "Weapon" | "Armor" | "Potion" | "Scroll" | "Wondrous Item" | "Ri
 type ItemRarity = "Common" | "Uncommon" | "Rare" | "Very Rare" | "Legendary" | "Artifact" | "Unique"
 
 export function ItemsPage() {
-  const items = useQuery(api.items.getItems)
-  const myItems = useQuery(api.items.getMyItems)
+  const { databaseUser, isLoading, isSignedIn } = useAuthenticatedUser()
+  const items = useQuery(api.items.getItems, isSignedIn ? {} : "skip")
+  const myItems = useQuery(api.items.getMyItems, isSignedIn ? {} : "skip")
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState<ItemType | ''>('')
   const [selectedRarity, setSelectedRarity] = useState<ItemRarity | ''>('')
@@ -27,6 +29,38 @@ export function ItemsPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create")
   const [selectedItem, setSelectedItem] = useState<any>(null)
+
+  // Show loading state while authentication is being determined
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="flex items-center space-x-2">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+            <span>Loading...</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show authentication required message if not authenticated
+  if (!isSignedIn) {
+    return (
+      <div className="container mx-auto py-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Authentication Required</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Please sign in to access the item management system.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   const filterItems = (itemList: any[]) => {
     return itemList?.filter(item => {
@@ -46,7 +80,9 @@ export function ItemsPage() {
     const item = [...(myItems || []), ...(items || [])].find(i => i._id === itemId)
     if (item) {
       setSelectedItem(item)
-      setModalMode("view")
+      // Determine modal mode based on whether current user is the creator
+      const isCreator = databaseUser && item.userId === databaseUser._id
+      setModalMode(isCreator ? "edit" : "view")
       setModalOpen(true)
     }
   }
@@ -136,15 +172,19 @@ export function ItemsPage() {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {itemList.map((item) => (
-          <ItemCard
-            key={item._id}
-            item={item}
-            onView={handleViewItem}
-            onEdit={handleEditItem}
-            canEdit={canEdit}
-          />
-        ))}
+        {itemList.map((item) => {
+          // Determine if current user can edit this specific item
+          const canEditThisItem = databaseUser && item.userId === databaseUser._id
+          return (
+            <ItemCard
+              key={item._id}
+              item={item}
+              onView={handleViewItem}
+              onEdit={handleEditItem}
+              canEdit={canEditThisItem}
+            />
+          )
+        })}
       </div>
     )
   }
@@ -188,8 +228,7 @@ export function ItemsPage() {
         <SampleDataPanel 
           entityType="items" 
           onDataLoaded={() => {
-            // Refresh the page data
-            window.location.reload()
+            // Data will automatically refresh via Convex queries
           }} 
         />
 

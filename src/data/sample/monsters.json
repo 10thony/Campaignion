@@ -19,7 +19,33 @@
         "intelligence": 0,
         "wisdom": 0,
         "charisma": -1
-      }
+      },
+      "traits": [
+        {
+          "name": "Nimble Escape",
+          "description": "The goblin can take the Disengage or Hide action as a bonus action on each of its turns."
+        },
+        {
+          "name": "Pack Tactics",
+          "description": "The goblin has advantage on attack rolls against a creature if at least one of the goblin's allies is within 5 feet of the creature and the ally isn't incapacitated."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Scimitar",
+          "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage."
+        },
+        {
+          "name": "Shortbow",
+          "description": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Opportunistic Strike",
+          "description": "When an ally within 5 feet hits a creature with a melee attack, the goblin can make a scimitar attack against the same creature as a reaction."
+        }
+      ]
     },
     {
       "name": "Orc",
@@ -38,7 +64,33 @@
         "intelligence": -2,
         "wisdom": 1,
         "charisma": 0
-      }
+      },
+      "traits": [
+        {
+          "name": "Aggressive",
+          "description": "As a bonus action, the orc can move up to its speed toward a hostile creature that it can see."
+        },
+        {
+          "name": "Relentless Endurance",
+          "description": "When the orc is reduced to 0 hit points but not killed outright, it can drop to 1 hit point instead. Once this trait is used, it can't be used again until the orc finishes a long rest."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Greataxe",
+          "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 9 (1d12 + 3) slashing damage."
+        },
+        {
+          "name": "Javelin",
+          "description": "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 6 (1d6 + 3) piercing damage."
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Battle Fury",
+          "description": "When the orc takes damage, it can make a greataxe attack against the source of the damage as a reaction."
+        }
+      ]
     },
     {
       "name": "Owlbear",
@@ -57,7 +109,37 @@
         "intelligence": -4,
         "wisdom": 1,
         "charisma": -2
-      }
+      },
+      "traits": [
+        {
+          "name": "Keen Sight and Smell",
+          "description": "The owlbear has advantage on Wisdom (Perception) checks that rely on sight or smell."
+        },
+        {
+          "name": "Pack Tactics",
+          "description": "The owlbear has advantage on attack rolls against a creature if at least one of the owlbear's allies is within 5 feet of the creature and the ally isn't incapacitated."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Multiattack",
+          "description": "The owlbear makes two attacks: one with its beak and one with its claws."
+        },
+        {
+          "name": "Beak",
+          "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 10 (1d10 + 5) piercing damage."
+        },
+        {
+          "name": "Claws",
+          "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 14 (2d8 + 5) slashing damage."
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Frenzied Retaliation",
+          "description": "When the owlbear takes damage from a melee attack, it can immediately make a beak attack against the attacker as a reaction."
+        }
+      ]
     },
     {
       "name": "Troll",
@@ -77,6 +159,36 @@
         "wisdom": 0,
         "charisma": -2
       },
+      "traits": [
+        {
+          "name": "Keen Smell",
+          "description": "The troll has advantage on Wisdom (Perception) checks that rely on smell."
+        },
+        {
+          "name": "Regeneration",
+          "description": "The troll regains 10 hit points at the start of its turn. If the troll takes acid or fire damage, this trait doesn't function at the start of the troll's next turn. The troll dies only if it starts its turn with 0 hit points and doesn't regenerate."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Multiattack",
+          "description": "The troll makes three attacks: one with its bite and two with its claws."
+        },
+        {
+          "name": "Bite",
+          "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 7 (1d6 + 4) piercing damage."
+        },
+        {
+          "name": "Claw",
+          "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) slashing damage."
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Regenerative Surge",
+          "description": "When the troll takes damage that would reduce it to 0 hit points, it can choose to regenerate 20 hit points instead. This trait can only be used once per long rest."
+        }
+      ],
       "legendaryActions": [
         {
           "name": "Regeneration",
@@ -103,6 +215,44 @@
         "wisdom": 1,
         "charisma": 3
       },
+      "traits": [
+        {
+          "name": "Damage Immunities",
+          "description": "Fire"
+        },
+        {
+          "name": "Senses",
+          "description": "Blindsight 30 ft., Darkvision 120 ft., Passive Perception 13"
+        },
+        {
+          "name": "Languages",
+          "description": "Common, Draconic"
+        }
+      ],
+      "actions": [
+        {
+          "name": "Multiattack",
+          "description": "The dragon makes three attacks: one with its bite and two with its claws."
+        },
+        {
+          "name": "Bite",
+          "description": "Melee Weapon Attack: +10 to hit, reach 10 ft., one target. Hit: 17 (2d10 + 6) piercing damage plus 3 (1d6) fire damage."
+        },
+        {
+          "name": "Claw",
+          "description": "Melee Weapon Attack: +10 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) slashing damage."
+        },
+        {
+          "name": "Fire Breath",
+          "description": "The dragon exhales fire in a 30-foot cone. Each creature in that area must make a DC 17 Dexterity saving throw, taking 56 (16d6) fire damage on a failed save, or half as much damage on a successful one."
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Tail Swipe",
+          "description": "When a creature moves into a space within 10 feet of the dragon, the dragon can make a tail attack against that creature as a reaction."
+        }
+      ],
       "legendaryActions": [
         {
           "name": "Detect",
@@ -114,7 +264,7 @@
         },
         {
           "name": "Wing Attack",
-          "description": "The dragon beats its wings."
+          "description": "The dragon beats its wings. Each creature within 10 feet of the dragon must succeed on a DC 18 Dexterity saving throw or take 11 (2d6 + 4) bludgeoning damage and be knocked prone."
         }
       ]
     },
@@ -137,6 +287,56 @@
         "wisdom": 1,
         "charisma": 4
       },
+      "traits": [
+        {
+          "name": "Damage Immunities",
+          "description": "Fire"
+        },
+        {
+          "name": "Senses",
+          "description": "Blindsight 60 ft., Darkvision 120 ft., Passive Perception 21"
+        },
+        {
+          "name": "Languages",
+          "description": "Common, Draconic"
+        },
+        {
+          "name": "Legendary Resistance",
+          "description": "If the dragon fails a saving throw, it can choose to succeed instead."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Multiattack",
+          "description": "The dragon can use its Frightful Presence. It then makes three attacks: one with its bite and two with its claws."
+        },
+        {
+          "name": "Bite",
+          "description": "Melee Weapon Attack: +17 to hit, reach 15 ft., one target. Hit: 21 (2d10 + 10) piercing damage plus 14 (4d6) fire damage."
+        },
+        {
+          "name": "Claw",
+          "description": "Melee Weapon Attack: +17 to hit, reach 10 ft., one target. Hit: 17 (2d6 + 10) slashing damage."
+        },
+        {
+          "name": "Tail",
+          "description": "Melee Weapon Attack: +17 to hit, reach 20 ft., one target. Hit: 19 (2d8 + 10) bludgeoning damage."
+        },
+        {
+          "name": "Frightful Presence",
+          "description": "Each creature of the dragon's choice that is within 120 feet of the dragon and aware of it must succeed on a DC 21 Wisdom saving throw or become frightened for 1 minute."
+        },
+        {
+          "name": "Fire Breath",
+          "description": "The dragon exhales fire in a 90-foot cone. Each creature in that area must make a DC 24 Dexterity saving throw, taking 91 (26d6) fire damage on a failed save, or half as much damage on a successful one."
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Tail Swipe",
+          "description": "When a creature moves into a space within 20 feet of the dragon, the dragon can make a tail attack against that creature as a reaction."
+        }
+      ],
       "legendaryActions": [
         {
           "name": "Detect",
@@ -148,7 +348,17 @@
         },
         {
           "name": "Wing Attack",
-          "description": "The dragon beats its wings."
+          "description": "The dragon beats its wings. Each creature within 15 feet of the dragon must succeed on a DC 25 Dexterity saving throw or take 17 (2d6 + 10) bludgeoning damage and be knocked prone."
+        }
+      ],
+      "lairActions": [
+        {
+          "name": "Magma Eruption",
+          "description": "Magma erupts from a point on the ground the dragon can see within 120 feet of it, creating a 20-foot-high, 10-foot-radius geyser. Each creature in the geyser's area must make a DC 15 Dexterity saving throw, taking 21 (6d6) fire damage on a failed save, or half as much damage on a successful one."
+        },
+        {
+          "name": "Volcanic Gases",
+          "description": "A cloud of hot, toxic gas fills a 20-foot-radius sphere centered on a point the dragon can see within 120 feet of it. The gas spreads around corners and remains until the initiative count 20 on the next round. Each creature that starts its turn in the gas must succeed on a DC 13 Constitution saving throw or be poisoned until the end of its turn."
         }
       ]
     },
@@ -169,7 +379,45 @@
         "intelligence": -4,
         "wisdom": 0,
         "charisma": -3
-      }
+      },
+      "traits": [
+        {
+          "name": "Damage Vulnerabilities",
+          "description": "Bludgeoning"
+        },
+        {
+          "name": "Damage Immunities",
+          "description": "Poison"
+        },
+        {
+          "name": "Condition Immunities",
+          "description": "Exhaustion, Poisoned"
+        },
+        {
+          "name": "Senses",
+          "description": "Darkvision 60 ft., Passive Perception 9"
+        },
+        {
+          "name": "Languages",
+          "description": "Understands all languages it knew in life but can't speak"
+        }
+      ],
+      "actions": [
+        {
+          "name": "Shortsword",
+          "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
+        },
+        {
+          "name": "Shortbow",
+          "description": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Bone Rattle",
+          "description": "When the skeleton takes damage, it can make a shortsword attack against the nearest enemy as a reaction."
+        }
+      ]
     },
     {
       "name": "Beholder",
@@ -189,6 +437,76 @@
         "wisdom": 2,
         "charisma": 3
       },
+      "traits": [
+        {
+          "name": "Senses",
+          "description": "Darkvision 120 ft., Passive Perception 12"
+        },
+        {
+          "name": "Languages",
+          "description": "Deep Speech, Undercommon"
+        },
+        {
+          "name": "Challenge Rating",
+          "description": "13 (10,000 XP)"
+        }
+      ],
+      "actions": [
+        {
+          "name": "Eye Rays",
+          "description": "The beholder shoots three of the following magical eye rays at random (reroll duplicates), choosing one to three targets it can see within 120 feet of it:"
+        },
+        {
+          "name": "1. Charm Ray",
+          "description": "The targeted creature must succeed on a DC 16 Wisdom saving throw or be charmed by the beholder for 1 hour, or until the beholder harms the creature."
+        },
+        {
+          "name": "2. Paralyzing Ray",
+          "description": "The targeted creature must succeed on a DC 16 Constitution saving throw or be paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+        },
+        {
+          "name": "3. Fear Ray",
+          "description": "The targeted creature must succeed on a DC 16 Wisdom saving throw or be frightened for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+        },
+        {
+          "name": "4. Slowing Ray",
+          "description": "The targeted creature must succeed on a DC 16 Dexterity saving throw. On a failed save, the target's speed is halved for 1 minute. In addition, the creature can't take reactions, and it can take either an action or a bonus action on its turn, not both."
+        },
+        {
+          "name": "5. Enervation Ray",
+          "description": "The targeted creature must make a DC 16 Constitution saving throw, taking 36 (8d8) necrotic damage on a failed save, or half as much damage on a successful one."
+        },
+        {
+          "name": "6. Telekinetic Ray",
+          "description": "The targeted creature must succeed on a DC 16 Strength saving throw or be moved up to 30 feet in any direction. It is restrained by the ray's telekinetic grip until the end of the beholder's next turn or until the beholder is incapacitated."
+        },
+        {
+          "name": "7. Sleep Ray",
+          "description": "The targeted creature must succeed on a DC 16 Wisdom saving throw or fall asleep and remain unconscious for 1 minute. The target awakens if it takes damage or another creature takes an action to wake it. This ray has no effect on constructs and undead."
+        },
+        {
+          "name": "8. Petrification Ray",
+          "description": "The targeted creature must make a DC 16 Dexterity saving throw. On a failed save, the creature begins to turn to stone and is restrained. It must repeat the saving throw at the end of its next turn. On a success, the effect ends. On a failure, the creature is petrified until freed by the greater restoration spell or other magic."
+        },
+        {
+          "name": "9. Disintegration Ray",
+          "description": "If the target is a creature, it must succeed on a DC 16 Dexterity saving throw or take 45 (10d8) force damage. If this damage reduces the target to 0 hit points, its body becomes a pile of fine gray dust."
+        },
+        {
+          "name": "10. Death Ray",
+          "description": "The targeted creature must succeed on a DC 16 Dexterity saving throw or take 55 (10d10) necrotic damage. The target dies if the ray reduces it to 0 hit points."
+        },
+        {
+          "name": "Bite",
+          "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 14 (4d6) piercing damage."
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Eye Ray",
+          "description": "The beholder shoots one of its eye rays at a random target."
+        }
+      ],
       "legendaryActions": [
         {
           "name": "Eye Ray",

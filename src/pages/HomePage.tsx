@@ -298,7 +298,7 @@ export function HomePage() {
                       <CardHeader>
                         <CardTitle className="text-lg">{quest.name}</CardTitle>
                         <CardDescription>
-                          <p className="text-sm mb-3">{quest.description.slice(0, 100)}...</p>
+                          <div className="text-sm mb-3">{quest.description.slice(0, 100)}...</div>
                           <div className="flex justify-between items-center">
                             <Badge variant="secondary">{quest.rewards.xp} XP</Badge>
                             <span className="text-xs text-muted-foreground">
@@ -336,7 +336,7 @@ export function HomePage() {
                           </Badge>
                         </div>
                         <CardDescription>
-                          <p className="text-xs mb-2">{item.description.slice(0, 80)}...</p>
+                          <div className="text-xs mb-2">{item.description.slice(0, 80)}...</div>
                           <div className="text-xs text-muted-foreground">
                             💰 {item.cost} gp
                           </div>

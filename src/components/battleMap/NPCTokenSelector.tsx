@@ -12,7 +12,7 @@ import { Badge } from "../ui/badge";
 type NPCTokenSelectorProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  tokenType: "npc_friendly" | "npc_foe";
+  tokenType: "pc" | "npc_friendly" | "npc_foe";
   onSelectNPC: (data: {
     label: string;
     characterId?: Id<"characters">;
@@ -50,23 +50,48 @@ export function NPCTokenSelector({
   onCreateGeneric,
 }: NPCTokenSelectorProps) {
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("npcs");
+  const [activeTab, setActiveTab] = useState(tokenType === "pc" ? "pcs" : "npcs");
 
-  // Query all NPCs (characters with characterType = "npc")
+  // Query all characters (both PCs and NPCs)
   const allCharacters = useQuery(api.characters.getCharacters);
+  const pcs = allCharacters?.filter(c => c.characterType === "player") ?? [];
   const npcs = allCharacters?.filter(c => c.characterType === "npc") ?? [];
 
   // Query all monsters
   const allMonsters = useQuery(api.monsters.getMonsters) ?? [];
 
   // Filter by search
+  const filteredPCs = pcs.filter(pc =>
+    pc.name.toLowerCase().includes(search.toLowerCase())
+  );
   const filteredNPCs = npcs.filter(npc =>
     npc.name.toLowerCase().includes(search.toLowerCase())
   );
-
   const filteredMonsters = allMonsters.filter(monster =>
     monster.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleSelectPC = (pc: typeof pcs[0]) => {
+    const constitutionMod = pc.abilityModifiers?.constitution ?? 
+      Math.floor((pc.abilityScores.constitution - 10) / 2);
+    
+    // Calculate HP from level and con modifier
+    const totalLevel = pc.classes?.[0]?.level ?? pc.level ?? 1;
+    const estimatedHP = Math.floor(totalLevel * (6 + constitutionMod)); // Rough estimate
+    
+    // Get speed (default to 30ft if not specified)
+    const speed = 30; // PCs typically use standard 30ft unless specified otherwise
+
+    onSelectNPC({
+      label: pc.name,
+      characterId: pc._id,
+      hp: estimatedHP,
+      maxHp: estimatedHP,
+      speed: speed,
+      size: 1, // PCs are typically medium
+    });
+    onOpenChange(false);
+  };
 
   const handleSelectNPC = (npc: typeof npcs[0]) => {
     const constitutionMod = npc.abilityModifiers?.constitution ?? 
@@ -117,10 +142,10 @@ export function NPCTokenSelector({
       <DialogContent className="max-w-2xl max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>
-            Add {tokenType === "npc_friendly" ? "Ally" : "Enemy"} Token
+            Add {tokenType === "pc" ? "PC" : tokenType === "npc_friendly" ? "Ally" : "Enemy"} Token
           </DialogTitle>
           <DialogDescription>
-            Select an existing NPC or monster, or create a generic token
+            Select an existing character or monster, or create a generic token
           </DialogDescription>
         </DialogHeader>
 
@@ -133,7 +158,12 @@ export function NPCTokenSelector({
           />
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className={`grid w-full ${tokenType === "pc" ? "grid-cols-4" : "grid-cols-3"}`}>
+              {tokenType === "pc" && (
+                <TabsTrigger value="pcs">
+                  PCs ({filteredPCs.length})
+                </TabsTrigger>
+              )}
               <TabsTrigger value="npcs">
                 NPCs ({filteredNPCs.length})
               </TabsTrigger>
@@ -142,6 +172,42 @@ export function NPCTokenSelector({
               </TabsTrigger>
               <TabsTrigger value="generic">Generic</TabsTrigger>
             </TabsList>
+
+            {tokenType === "pc" && (
+              <TabsContent value="pcs" className="mt-4">
+                <ScrollArea className="h-[400px] pr-4">
+                  {filteredPCs.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No PCs found. {search && "Try adjusting your search."}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {filteredPCs.map((pc) => (
+                        <div
+                          key={pc._id}
+                          className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent cursor-pointer transition-colors"
+                          onClick={() => handleSelectPC(pc)}
+                        >
+                          <div className="flex-1">
+                            <div className="font-medium">{pc.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {pc.race} {pc.class}
+                              {pc.level && ` • Level ${Math.floor(pc.level)}`}
+                            </div>
+                          </div>
+                          <Button size="sm" variant="outline" onClick={(e) => {
+                            e.stopPropagation();
+                            handleSelectPC(pc);
+                          }}>
+                            Add
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+              </TabsContent>
+            )}
 
             <TabsContent value="npcs" className="mt-4">
               <ScrollArea className="h-[400px] pr-4">
@@ -222,9 +288,9 @@ export function NPCTokenSelector({
             <TabsContent value="generic" className="mt-4">
               <div className="flex flex-col items-center justify-center py-12 gap-4">
                 <p className="text-muted-foreground text-center">
-                  Create a generic {tokenType === "npc_friendly" ? "ally" : "enemy"} token
+                  Create a generic {tokenType === "pc" ? "PC" : tokenType === "npc_friendly" ? "ally" : "enemy"} token
                   <br />
-                  without linking to an existing NPC or monster.
+                  without linking to an existing character or monster.
                 </p>
                 <Button onClick={handleGeneric} size="lg">
                   Create Generic Token

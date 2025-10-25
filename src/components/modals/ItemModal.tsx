@@ -579,29 +579,37 @@ export function ItemModal({
                     { name: "intelligence", label: "Intelligence" },
                     { name: "wisdom", label: "Wisdom" },
                     { name: "charisma", label: "Charisma" },
-                  ].map(({ name, label }) => (
-                    <FormField
-                      key={name}
-                      control={form.control}
-                      name={`abilityModifiers.${name}` as any}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{label}</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="+/-"
-                              {...field}
-                              onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                              value={field.value || ""}
-                              disabled={isReadOnly}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  ))}
+                  ].map(({ name, label }) => {
+                    const value = form.getValues(`abilityModifiers.${name}` as any)
+                    return (
+                      <FormField
+                        key={name}
+                        control={form.control}
+                        name={`abilityModifiers.${name}` as any}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{label}</FormLabel>
+                            <FormControl>
+                              {isReadOnly ? (
+                                <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm items-center">
+                                  {value ? (value > 0 ? `+${value}` : `${value}`) : "—"}
+                                </div>
+                              ) : (
+                                <Input
+                                  type="number"
+                                  placeholder="+/-"
+                                  {...field}
+                                  onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                                  value={field.value || ""}
+                                />
+                              )}
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )
+                  })}
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Bonuses or penalties this item applies to ability scores (-5 to +10)

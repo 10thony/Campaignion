@@ -58,10 +58,41 @@ export const getNPCs = query({
   },
 });
 
+export const getAllCharacters = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("characters").collect();
+  },
+});
+
 export const getCharacterById = query({
   args: { characterId: v.id("characters") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.characterId);
+  },
+});
+
+export const getCharacterWithActions = query({
+  args: { characterId: v.id("characters") },
+  handler: async (ctx, args) => {
+    const character = await ctx.db.get(args.characterId);
+    if (!character) return null;
+
+    // Resolve action IDs to actual action objects
+    const resolvedActions = [];
+    if (character.actions && character.actions.length > 0) {
+      for (const actionId of character.actions) {
+        const action = await ctx.db.get(actionId);
+        if (action) {
+          resolvedActions.push(action);
+        }
+      }
+    }
+
+    return {
+      ...character,
+      resolvedActions
+    };
   },
 });
 
@@ -657,5 +688,63 @@ export const deleteNPC = mutation({
     }
 
     await ctx.db.delete(args.npcId);
+  },
+});
+
+export const cloneCharacter = mutation({
+  args: { characterId: v.id("characters") },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+
+    const originalCharacter = await ctx.db.get(args.characterId);
+    if (!originalCharacter) {
+      throw new Error("Character not found");
+    }
+
+    // Create a copy of the character with the current user as the creator
+    const clonedCharacterData = {
+      ...originalCharacter,
+      name: `${originalCharacter.name} (Copy)`,
+      userId: user._id,
+      createdAt: Date.now(),
+      // Reset any dynamic fields that shouldn't be copied
+      currentHitPoints: originalCharacter.maxHitPoints || originalCharacter.hitPoints,
+      tempHitPoints: 0,
+      experiencePoints: 0,
+      // Reset any usage-based fields
+      ...(originalCharacter.features && {
+        features: originalCharacter.features.map(feature => ({
+          ...feature,
+          uses: feature.uses ? {
+            ...feature.uses,
+            current: feature.uses.max
+          } : undefined
+        }))
+      }),
+      // Reset spell slots if they exist
+      ...(originalCharacter.spellSlots && {
+        spellSlots: originalCharacter.spellSlots.map(slot => ({
+          ...slot,
+          used: 0
+        }))
+      }),
+      // Reset death saves
+      deathSaves: {
+        successes: 0,
+        failures: 0
+      },
+      // Reset inspiration
+      inspiration: false,
+      // Mark as cloned
+      clonedFrom: args.characterId,
+      clonedAt: Date.now()
+    };
+
+    // Remove the _id field so a new one is generated
+    delete clonedCharacterData._id;
+
+    const clonedCharacterId = await ctx.db.insert("characters", clonedCharacterData);
+
+    return clonedCharacterId;
   },
 }); 

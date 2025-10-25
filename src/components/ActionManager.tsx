@@ -65,6 +65,7 @@ export function ActionManager({
     sourceBook: 'Homebrew'
   })
   const [newInlineAction, setNewInlineAction] = useState({ name: '', description: '' })
+  const [showAddActions, setShowAddActions] = useState(false)
 
   // Query all available actions
   const actions = useQueryWithAuth(api.actions.getAllActions) || []
@@ -101,6 +102,10 @@ export function ActionManager({
     console.warn('ActionManager: Actions is not an array:', actions)
     return <div>Loading actions...</div>
   }
+
+  // Filter actions to show only character's current actions
+  const characterActions = actions.filter(action => selectedActionIds.includes(action._id))
+  const availableActions = actions.filter(action => !selectedActionIds.includes(action._id))
 
   const handleSelectAction = (actionId: string, selected: boolean) => {
     if (!onActionIdsChange) return
@@ -167,58 +172,137 @@ export function ActionManager({
   if (mode === 'character') {
     return (
       <div className="space-y-4">
-        <Tabs defaultValue="available" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="available">Available Actions</TabsTrigger>
+        <Tabs defaultValue="current" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="current">Current Actions</TabsTrigger>
+            <TabsTrigger value="available">Add Actions</TabsTrigger>
             <TabsTrigger value="homebrew">Create Homebrew</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="available" className="space-y-4">
-            <div className="grid gap-3 max-h-96 overflow-y-auto">
-              {actions.map((action: Action) => (
-                <Card key={action._id} className={`cursor-pointer transition-colors ${
-                  selectedActionIds.includes(action._id) ? 'ring-2 ring-primary' : ''
-                }`}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Checkbox
-                            checked={selectedActionIds.includes(action._id)}
-                            onCheckedChange={(checked) => 
-                              handleSelectAction(action._id, checked as boolean)
-                            }
-                            disabled={disabled}
-                          />
-                          <h4 className="font-medium">{action.name}</h4>
-                          <Badge 
-                            variant="secondary" 
-                            className={getActionCostColor(action.actionCost)}
-                          >
-                            {getActionIcon(action.actionCost)}
-                            <span className="ml-1">{action.actionCost}</span>
-                          </Badge>
+          <TabsContent value="current" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium">Character Actions ({characterActions.length})</h4>
+              {characterActions.length === 0 && (
+                <p className="text-sm text-muted-foreground">No actions assigned yet</p>
+              )}
+            </div>
+            
+            {characterActions.length > 0 ? (
+              <div className="grid gap-3 max-h-96 overflow-y-auto">
+                {characterActions.map((action: Action) => (
+                  <Card key={action._id} className="cursor-pointer transition-colors ring-2 ring-primary">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h4 className="font-medium">{action.name}</h4>
+                            <Badge 
+                              variant="secondary" 
+                              className={getActionCostColor(action.actionCost)}
+                            >
+                              {getActionIcon(action.actionCost)}
+                              <span className="ml-1">{action.actionCost}</span>
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {action.description}
+                          </p>
+                          <div className="flex gap-2 text-xs text-muted-foreground">
+                            <span>Type: {action.type}</span>
+                            <span>•</span>
+                            <span>Source: {action.sourceBook}</span>
+                            {action.requiresConcentration && (
+                              <>
+                                <span>•</span>
+                                <span>Concentration</span>
+                              </>
+                            )}
+                          </div>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          {action.description}
-                        </p>
-                        <div className="flex gap-2 text-xs text-muted-foreground">
-                          <span>Type: {action.type}</span>
-                          <span>•</span>
-                          <span>Source: {action.sourceBook}</span>
-                          {action.requiresConcentration && (
-                            <>
-                              <span>•</span>
-                              <span>Concentration</span>
-                            </>
-                          )}
+                        <Button
+                          onClick={() => handleSelectAction(action._id, false)}
+                          size="sm"
+                          variant="ghost"
+                          disabled={disabled}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="p-6 text-center">
+                <p className="text-muted-foreground mb-4">This character doesn't have any actions yet.</p>
+                <Button 
+                  onClick={() => setShowAddActions(true)}
+                  variant="outline"
+                  disabled={disabled}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Actions
+                </Button>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="available" className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium">Available Actions ({availableActions.length})</h4>
+              <p className="text-sm text-muted-foreground">Select actions to add to this character</p>
+            </div>
+            
+            {availableActions.length > 0 ? (
+              <div className="grid gap-3 max-h-96 overflow-y-auto">
+                {availableActions.map((action: Action) => (
+                  <Card key={action._id} className="cursor-pointer transition-colors hover:ring-2 hover:ring-primary">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Checkbox
+                              checked={false}
+                              onCheckedChange={(checked) => 
+                                handleSelectAction(action._id, checked as boolean)
+                              }
+                              disabled={disabled}
+                            />
+                            <h4 className="font-medium">{action.name}</h4>
+                            <Badge 
+                              variant="secondary" 
+                              className={getActionCostColor(action.actionCost)}
+                            >
+                              {getActionIcon(action.actionCost)}
+                              <span className="ml-1">{action.actionCost}</span>
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {action.description}
+                          </p>
+                          <div className="flex gap-2 text-xs text-muted-foreground">
+                            <span>Type: {action.type}</span>
+                            <span>•</span>
+                            <span>Source: {action.sourceBook}</span>
+                            {action.requiresConcentration && (
+                              <>
+                                <span>•</span>
+                                <span>Concentration</span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="p-6 text-center">
+                <p className="text-muted-foreground">All available actions have been added to this character.</p>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="homebrew" className="space-y-4">

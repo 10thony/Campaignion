@@ -106,19 +106,34 @@ export function CampaignModal({
   const [error, setError] = useState<string | null>(null)
   
   // CRITICAL: Authentication guard - ALL modals must include this
-  let user
-  try {
-    user = useAuthenticationGuard().user
-  } catch (authError) {
-    setError(`Authentication error: ${authError instanceof Error ? authError.message : 'Unknown error'}`)
+  const { user, isLoading: authLoading } = useAuthenticationGuard()
+  
+  // Show loading state while authentication is being determined
+  if (authLoading) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <div className="flex items-center justify-center py-8">
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+              <span>Loading...</span>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+  
+  // If not authenticated, show error
+  if (!user) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Authentication Error</DialogTitle>
+            <DialogTitle>Authentication Required</DialogTitle>
           </DialogHeader>
           <div className="p-4">
-            <p className="text-red-600">{error}</p>
+            <p className="text-red-600">You must be signed in to access this feature.</p>
             <Button onClick={() => onOpenChange(false)} className="mt-4">
               Close
             </Button>

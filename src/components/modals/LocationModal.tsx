@@ -119,7 +119,28 @@ export function LocationModal({
   defaultTab = "basic",
 }: LocationModalProps) {
   // CRITICAL: Authentication guard - ALL modals must include this
-  const { user } = useAuthenticationGuard()
+  const { user, isLoading: authLoading } = useAuthenticationGuard()
+  
+  // Show loading state while authentication is being determined
+  if (authLoading) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <div className="flex items-center justify-center py-8">
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+              <span>Loading...</span>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+  
+  // If not authenticated, don't render the modal
+  if (!user) {
+    return null
+  }
   
   // Authorization check with campaign-specific permissions
   const { canAccess, isCampaignMaster, isAdmin } = useModalAccess(

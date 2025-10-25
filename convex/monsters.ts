@@ -219,4 +219,34 @@ export const deleteMonster = mutation({
 
     await ctx.db.delete(args.monsterId);
   },
+});
+
+export const cloneMonster = mutation({
+  args: { monsterId: v.id("monsters") },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+
+    const originalMonster = await ctx.db.get(args.monsterId);
+    if (!originalMonster) {
+      throw new Error("Monster not found");
+    }
+
+    // Create a copy of the monster with the current user as the creator
+    const clonedMonsterData = {
+      ...originalMonster,
+      name: `${originalMonster.name} (Copy)`,
+      userId: user._id,
+      createdAt: Date.now(),
+      // Mark as cloned
+      clonedFrom: args.monsterId,
+      clonedAt: Date.now()
+    };
+
+    // Remove the _id field so a new one is generated
+    delete clonedMonsterData._id;
+
+    const clonedMonsterId = await ctx.db.insert("monsters", clonedMonsterData);
+
+    return clonedMonsterId;
+  },
 }); 

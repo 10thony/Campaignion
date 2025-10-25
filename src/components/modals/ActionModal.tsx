@@ -73,6 +73,7 @@ interface Action {
   }
   spellEffectDescription?: string
   requiredClass?: string
+  targetClass?: string
   requiredLevel?: number
   requiredSubclass?: string
   usesPer?: "Short Rest" | "Long Rest" | "Day" | "Special"
@@ -144,6 +145,7 @@ export function ActionModal({
       savingThrow: action?.savingThrow,
       spellEffectDescription: action?.spellEffectDescription || "",
       requiredClass: action?.requiredClass || "",
+      targetClass: action?.targetClass || "",
       requiredLevel: action?.requiredLevel,
       requiredSubclass: action?.requiredSubclass || "",
       usesPer: action?.usesPer,
@@ -179,6 +181,7 @@ export function ActionModal({
         savingThrow: action.savingThrow,
         spellEffectDescription: action.spellEffectDescription || "",
         requiredClass: action.requiredClass || "",
+        targetClass: action.targetClass || "",
         requiredLevel: action.requiredLevel,
         requiredSubclass: action.requiredSubclass || "",
         usesPer: action.usesPer,
@@ -211,6 +214,7 @@ export function ActionModal({
         savingThrow: undefined,
         spellEffectDescription: "",
         requiredClass: "",
+        targetClass: "",
         requiredLevel: undefined,
         requiredSubclass: "",
         usesPer: undefined,
@@ -233,6 +237,7 @@ export function ActionModal({
         duration: data.duration || undefined,
         spellEffectDescription: data.spellEffectDescription || undefined,
         requiredClass: data.requiredClass || undefined,
+        targetClass: data.targetClass || undefined,
         requiredSubclass: data.requiredSubclass || undefined,
         components: data.components && (data.components.verbal || data.components.somatic || data.components.material)
           ? {
@@ -308,6 +313,7 @@ export function ActionModal({
           savingThrow: result.data.savingThrow,
           spellEffectDescription: result.data.spellEffectDescription || "",
           requiredClass: result.data.requiredClass || "",
+          targetClass: result.data.targetClass || "",
           requiredLevel: result.data.requiredLevel,
           requiredSubclass: result.data.requiredSubclass || "",
           usesPer: result.data.usesPer,
@@ -783,20 +789,14 @@ export function ActionModal({
 
                     <FormField
                       control={form.control}
-                      name="requiredLevel"
+                      name="targetClass"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Required Level</FormLabel>
+                          <FormLabel>Target Class</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              disabled={isReadOnly}
-                              placeholder="1-20"
-                              value={field.value || ""}
-                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                            />
+                            <Input {...field} disabled={isReadOnly} placeholder="e.g., Wizard, Fighter" />
                           </FormControl>
+                          <FormDescription>The class this action is specifically for</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -811,6 +811,27 @@ export function ActionModal({
                         <FormLabel>Required Subclass</FormLabel>
                         <FormControl>
                           <Input {...field} disabled={isReadOnly} placeholder="e.g., Evocation, Champion" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="requiredLevel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Required Level</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            disabled={isReadOnly}
+                            placeholder="1-20"
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

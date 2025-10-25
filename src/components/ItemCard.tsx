@@ -82,7 +82,10 @@ export function ItemCard({
   const totalWeight = (item.weight || 0) * quantity
 
   return (
-    <Card className="hover:shadow-md transition-shadow cursor-pointer">
+    <Card 
+      className="hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => onView?.(item._id)}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -131,15 +134,15 @@ export function ItemCard({
       
       <CardContent className="space-y-3">
         {/* Description */}
-        <p className="text-sm text-muted-foreground line-clamp-2">
+        <p className="text-sm text-muted-foreground line-clamp-3">
           {item.description}
         </p>
 
         {/* Effects */}
         {item.effects && (
-          <div className="bg-blue-50 p-2 rounded text-xs">
-            <span className="font-medium text-blue-800">Effects: </span>
-            <span className="text-blue-700">{item.effects}</span>
+          <div className="bg-muted/50 p-2 rounded border text-xs">
+            <span className="font-medium text-muted-foreground">Effects: </span>
+            <span className="text-foreground">{item.effects}</span>
           </div>
         )}
 
@@ -191,13 +194,13 @@ export function ItemCard({
 
         {/* Ability Modifiers */}
         {item.abilityModifiers && Object.values(item.abilityModifiers).some(mod => mod !== undefined && mod !== 0) && (
-          <div className="bg-purple-50 p-2 rounded">
-            <div className="text-xs font-medium text-purple-800 mb-1">Ability Modifiers:</div>
+          <div className="bg-muted/50 p-2 rounded border">
+            <div className="text-xs font-medium text-muted-foreground mb-1">Ability Modifiers:</div>
             <div className="flex flex-wrap gap-1">
               {Object.entries(item.abilityModifiers).map(([ability, modifier]) => {
                 if (!modifier || modifier === 0) return null
                 return (
-                  <Badge key={ability} variant="outline" className="text-xs">
+                  <Badge key={ability} variant="secondary" className="text-xs">
                     {ability.slice(0, 3).toUpperCase()} {modifier > 0 ? '+' : ''}{modifier}
                   </Badge>
                 )
@@ -211,7 +214,10 @@ export function ItemCard({
             variant="outline" 
             size="sm" 
             className="flex-1"
-            onClick={() => onView?.(item._id)}
+            onClick={(e) => {
+              e.stopPropagation()
+              onView?.(item._id)
+            }}
           >
             View Details
           </Button>
@@ -219,7 +225,10 @@ export function ItemCard({
             <Button 
               size="sm" 
               className="flex-1"
-              onClick={() => onEdit?.(item._id)}
+              onClick={(e) => {
+                e.stopPropagation()
+                onEdit?.(item._id)
+              }}
             >
               Edit
             </Button>

@@ -112,19 +112,22 @@ export default defineSchema({
     inventory: v.optional(
       v.object({
         capacity: v.number(),
-        items: v.array(v.id("items")),
+        items: v.array(v.object({
+          itemId: v.union(v.id("items"), v.string()),
+          quantity: v.number(),
+        })),
       })
     ),
     equipment: v.optional(
       v.object({
-        headgear: v.optional(v.id("items")),
-        armwear: v.optional(v.id("items")),
-        chestwear: v.optional(v.id("items")),
-        legwear: v.optional(v.id("items")),
-        footwear: v.optional(v.id("items")),
-        mainHand: v.optional(v.id("items")),
-        offHand: v.optional(v.id("items")),
-        accessories: v.array(v.id("items")),
+        headgear: v.optional(v.union(v.id("items"), v.string())),
+        armwear: v.optional(v.union(v.id("items"), v.string())),
+        chestwear: v.optional(v.union(v.id("items"), v.string())),
+        legwear: v.optional(v.union(v.id("items"), v.string())),
+        footwear: v.optional(v.union(v.id("items"), v.string())),
+        mainHand: v.optional(v.union(v.id("items"), v.string())),
+        offHand: v.optional(v.union(v.id("items"), v.string())),
+        accessories: v.array(v.union(v.id("items"), v.string())),
       })
     ),
     equipmentBonuses: v.optional(
@@ -181,6 +184,10 @@ export default defineSchema({
     importedFrom: v.optional(v.string()), // "manual", "dnd_beyond", "json", "pdf"
     importData: v.optional(v.any()), // Raw import data for reference
     importedAt: v.optional(v.number()),
+    
+    // Clone metadata
+    clonedFrom: v.optional(v.id("characters")), // Reference to original character if this is a clone
+    clonedAt: v.optional(v.number()),
     
     // Temporarily capture any parsed fields we don't yet model
     uncapturedData: v.optional(v.any()),
@@ -349,6 +356,7 @@ export default defineSchema({
     isBaseAction: v.optional(v.boolean()), // True for core D&D actions like Attack, Dodge, etc.
     tags: v.optional(v.array(v.string())), // For categorization and filtering
     prerequisites: v.optional(v.array(v.string())), // Requirements to use this action
+    targetClass: v.optional(v.string()), // The class this action is specifically for (e.g., "Barbarian", "Wizard")
     
     createdAt: v.number(),
   }),
@@ -943,19 +951,22 @@ export default defineSchema({
     inventory: v.optional(
       v.object({
         capacity: v.number(),
-        items: v.array(v.id("items")),
+        items: v.array(v.object({
+          itemId: v.union(v.id("items"), v.string()),
+          quantity: v.number(),
+        })),
       })
     ),
     equipment: v.optional(
       v.object({
-        headgear: v.optional(v.id("items")),
-        armwear: v.optional(v.id("items")),
-        chestwear: v.optional(v.id("items")),
-        legwear: v.optional(v.id("items")),
-        footwear: v.optional(v.id("items")),
-        mainHand: v.optional(v.id("items")),
-        offHand: v.optional(v.id("items")),
-        accessories: v.array(v.id("items")),
+        headgear: v.optional(v.union(v.id("items"), v.string())),
+        armwear: v.optional(v.union(v.id("items"), v.string())),
+        chestwear: v.optional(v.union(v.id("items"), v.string())),
+        legwear: v.optional(v.union(v.id("items"), v.string())),
+        footwear: v.optional(v.union(v.id("items"), v.string())),
+        mainHand: v.optional(v.union(v.id("items"), v.string())),
+        offHand: v.optional(v.union(v.id("items"), v.string())),
+        accessories: v.array(v.union(v.id("items"), v.string())),
       })
     ),
     equipmentBonuses: v.optional(
@@ -975,6 +986,10 @@ export default defineSchema({
     userId: v.id("users"),
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),
+    
+    // Clone metadata
+    clonedFrom: v.optional(v.id("monsters")), // Reference to original monster if this is a clone
+    clonedAt: v.optional(v.number()),
   }),
 
   spells: defineTable({

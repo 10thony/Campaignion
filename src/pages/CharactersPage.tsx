@@ -15,8 +15,9 @@ export function CharactersPage() {
   const playerCharacters = useQueryWithAuth(api.characters.getPlayerCharacters)
   const npcs = useQueryWithAuth(api.characters.getNPCs)
   const myCharacters = useQueryWithAuth(api.characters.getMyCharacters)
+  const allCharacters = useQueryWithAuth(api.characters.getAllCharacters)
   const [searchTerm, setSearchTerm] = useState('')
-  const [activeTab, setActiveTab] = useState<'my' | 'pcs' | 'npcs'>('my')
+  const [activeTab, setActiveTab] = useState<'all' | 'my' | 'pcs' | 'npcs'>('all')
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">("create")
   const [selectedCharacter, setSelectedCharacter] = useState<any>(null)
@@ -33,9 +34,10 @@ export function CharactersPage() {
   const filteredMyCharacters = filterCharacters(myCharacters || [])
   const filteredPCs = filterCharacters(playerCharacters || [])
   const filteredNPCs = filterCharacters(npcs || [])
+  const filteredAllCharacters = filterCharacters(allCharacters || [])
 
   const handleViewCharacter = (characterId: string) => {
-    const character = [...(myCharacters || []), ...(playerCharacters || []), ...(npcs || [])].find(c => c._id === characterId)
+    const character = [...(allCharacters || [])].find(c => c._id === characterId)
     if (character) {
       setSelectedCharacter(character)
       setCharacterType(character.characterType || "player")
@@ -73,6 +75,11 @@ export function CharactersPage() {
     // The queries will automatically refetch due to Convex reactivity
   }
 
+  const handleCloneSuccess = () => {
+    // Refresh the data after cloning
+    // The queries will automatically refetch due to Convex reactivity
+  }
+
   const renderCharacterGrid = (characters: any[], canEdit = false) => {
     if (!characters) {
       return (
@@ -93,7 +100,7 @@ export function CharactersPage() {
                 ? 'No characters match your search criteria.' 
                 : 'No characters found.'}
             </p>
-            {!searchTerm && activeTab === 'my' && (
+            {!searchTerm && (activeTab === 'my' || activeTab === 'all') && (
               <Button onClick={handleCreateCharacter}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Character
@@ -112,7 +119,9 @@ export function CharactersPage() {
             character={character}
             onView={handleViewCharacter}
             onEdit={handleEditCharacter}
+            onClone={handleCloneSuccess}
             canEdit={canEdit}
+            canClone={true}
           />
         ))}
       </div>
@@ -161,14 +170,27 @@ export function CharactersPage() {
         <SampleDataPanel 
           entityType="characters" 
           onDataLoaded={() => {
-            // Refresh the page data
-            window.location.reload()
+            // Data will automatically refresh via Convex queries
           }} 
         />
 
         {/* Tab Navigation */}
         <div className="flex items-center gap-4 mb-6">
           <div className="flex gap-1 bg-muted p-1 rounded-lg">
+            <Button
+              variant={activeTab === 'all' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setActiveTab('all')}
+              className="gap-2"
+            >
+              <Users className="h-4 w-4" />
+              All Characters
+              {allCharacters && (
+                <Badge variant="secondary" className="ml-1">
+                  {allCharacters.length}
+                </Badge>
+              )}
+            </Button>
             <Button
               variant={activeTab === 'my' ? 'default' : 'ghost'}
               size="sm"
@@ -227,6 +249,13 @@ export function CharactersPage() {
 
         {/* Character Content */}
         <div className="space-y-6">
+          {activeTab === 'all' && (
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">All Characters</h2>
+              {renderCharacterGrid(filteredAllCharacters, false)}
+            </div>
+          )}
+
           {activeTab === 'my' && (
             <div>
               <h2 className="text-2xl font-semibold mb-4">My Characters</h2>

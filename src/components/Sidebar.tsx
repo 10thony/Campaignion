@@ -15,7 +15,8 @@ import {
   Map, 
   MapPin,
   Sparkles,
-  FlaskConical
+  FlaskConical,
+  Zap
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -25,6 +26,7 @@ const navigationItems = [
   { path: '/monsters', label: 'Monsters', icon: Swords },
   { path: '/quests', label: 'Quests', icon: BookOpen },
   { path: '/items', label: 'Items', icon: Package },
+  { path: '/actions', label: 'Actions', icon: Zap },
   { path: '/battle-map', label: 'Battle Map', icon: Map, badge: 'Enhanced' },
   { path: '/maps', label: 'Maps', icon: MapPin, badge: 'Legacy' },
   { path: '/interactions', label: 'Interactions', icon: Sparkles },

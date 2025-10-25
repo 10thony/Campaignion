@@ -85,8 +85,7 @@ export function CampaignsPage() {
         <SampleDataPanel 
           entityType="campaigns" 
           onDataLoaded={() => {
-            // Refresh the page data
-            window.location.reload()
+            // Data will automatically refresh via Convex queries
           }} 
         />
 

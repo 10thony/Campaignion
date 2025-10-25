@@ -1,8 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
-import { Heart, Shield, Zap, User } from 'lucide-react'
+import { Heart, Shield, Zap, User, Copy } from 'lucide-react'
 import { formatModifier } from '@/lib/utils'
+import { useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
+import { toast } from 'sonner'
 
 interface Character {
   _id: string
@@ -30,15 +33,31 @@ interface CharacterCardProps {
   character: Character
   onView?: (characterId: string) => void
   onEdit?: (characterId: string) => void
+  onClone?: () => void
   canEdit?: boolean
+  canClone?: boolean
 }
 
 export function CharacterCard({ 
   character, 
   onView, 
   onEdit, 
-  canEdit = false 
+  onClone,
+  canEdit = false,
+  canClone = false
 }: CharacterCardProps) {
+  const cloneCharacter = useMutation(api.characters.cloneCharacter)
+  
+  const handleClone = async () => {
+    try {
+      await cloneCharacter({ characterId: character._id })
+      toast.success(`${character.name} cloned successfully!`)
+      onClone?.()
+    } catch (error) {
+      console.error('Failed to clone character:', error)
+      toast.error('Failed to clone character')
+    }
+  }
   const isPC = character.characterType === "player"
   const speed = character.speed || "30 ft."
 
@@ -155,6 +174,16 @@ export function CharacterCard({
               onClick={() => onEdit?.(character._id)}
             >
               Edit
+            </Button>
+          )}
+          {canClone && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleClone}
+              className="px-3"
+            >
+              <Copy className="h-4 w-4" />
             </Button>
           )}
         </div>

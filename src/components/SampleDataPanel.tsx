@@ -27,7 +27,14 @@ export function SampleDataPanel({ entityType, onDataLoaded }: SampleDataPanelPro
   const loadSampleItems = useMutation(api.sampleData.loadSampleItems)
   const loadSampleQuests = useMutation(api.sampleData.loadSampleQuests)
   const loadSampleActions = useMutation(api.sampleData.loadSampleActions)
-  const deleteAllData = useMutation(api.sampleData.deleteAllSampleData)
+  
+  // Specific delete mutations
+  const deleteAllCampaigns = useMutation(api.sampleData.deleteAllSampleCampaigns)
+  const deleteAllCharacters = useMutation(api.sampleData.deleteAllSampleCharacters)
+  const deleteAllMonsters = useMutation(api.sampleData.deleteAllSampleMonsters)
+  const deleteAllItems = useMutation(api.sampleData.deleteAllSampleItems)
+  const deleteAllQuests = useMutation(api.sampleData.deleteAllSampleQuests)
+  const deleteAllActions = useMutation(api.sampleData.deleteAllSampleActions)
 
   const sampleDataInfo = SampleDataService.getSampleDataInfo()
   const entityInfo = sampleDataInfo[entityType]
@@ -94,8 +101,33 @@ export function SampleDataPanel({ entityType, onDataLoaded }: SampleDataPanelPro
     setSuccess(null)
 
     try {
-      await deleteAllData({ clerkId: clerkUser.id })
-      setSuccess(`All ${entityType} deleted successfully!`)
+      // Get the appropriate delete function based on entity type
+      let deleteFn
+      switch (entityType) {
+        case 'campaigns':
+          deleteFn = deleteAllCampaigns
+          break
+        case 'characters':
+          deleteFn = deleteAllCharacters
+          break
+        case 'monsters':
+          deleteFn = deleteAllMonsters
+          break
+        case 'items':
+          deleteFn = deleteAllItems
+          break
+        case 'quests':
+          deleteFn = deleteAllQuests
+          break
+        case 'actions':
+          deleteFn = deleteAllActions
+          break
+        default:
+          throw new Error(`Unknown entity type: ${entityType}`)
+      }
+
+      const result = await deleteFn({ clerkId: clerkUser.id })
+      setSuccess(`All ${entityType} deleted successfully! (${result.deleted} items)`)
       onDataLoaded?.()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete data')

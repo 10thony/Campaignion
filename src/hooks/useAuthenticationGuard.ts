@@ -1,4 +1,4 @@
-import { useUser } from '@clerk/clerk-react'
+import { useUser, useAuth } from '@clerk/clerk-react'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { DatabaseUser } from '../lib/clerkService'
@@ -6,19 +6,30 @@ import React from 'react'
 
 /**
  * Critical authentication guard hook that ALL modals must use
- * Throws an error if user is not authenticated - no exceptions
+ * Returns loading state and user data - components should handle loading gracefully
  * 
  * As a DM, I know that access control is paramount for campaign management.
  * This hook ensures only authenticated users can access any modal functionality.
  */
-export function useAuthenticationGuard() {
+export function useAuthenticationGuard(): {
+  user: NonNullable<ReturnType<typeof useUser>['user']> | null
+  isSignedIn: boolean
+  isLoading: boolean
+} {
   const { user, isSignedIn } = useUser()
+  const { isLoaded } = useAuth()
   
-  if (!isSignedIn || !user) {
-    throw new Error("Authentication required: Modals can only be accessed by authenticated users")
+  // Return loading state while Clerk is still loading
+  if (!isLoaded) {
+    return { user: null, isSignedIn: false, isLoading: true }
   }
   
-  return { user, isSignedIn: true as const }
+  // Return authentication state once loaded
+  if (!isSignedIn || !user) {
+    return { user: null, isSignedIn: false, isLoading: false }
+  }
+  
+  return { user, isSignedIn: true, isLoading: false }
 }
 
 /**
@@ -26,14 +37,15 @@ export function useAuthenticationGuard() {
  * Provides full user data including role and permissions
  */
 export function useAuthenticatedUser(): {
-  user: NonNullable<ReturnType<typeof useUser>['user']>
+  user: NonNullable<ReturnType<typeof useUser>['user']> | null
   databaseUser: DatabaseUser | null
   isLoading: boolean
+  isSignedIn: boolean
 } {
-  const { user } = useAuthenticationGuard()
+  const { user, isSignedIn, isLoading: authLoading } = useAuthenticationGuard()
   
   // Get database user record with role information
-  const databaseUser = useQuery(api.users.getCurrentUser)
+  const databaseUser = useQuery(api.users.getCurrentUser, isSignedIn ? {} : "skip")
   
   // Ensure admin role for app creator
   const ensureAdminRole = useMutation(api.users.ensureAdminRole)
@@ -48,7 +60,8 @@ export function useAuthenticatedUser(): {
   return {
     user,
     databaseUser: databaseUser || null,
-    isLoading: databaseUser === undefined
+    isLoading: authLoading || (isSignedIn && databaseUser === undefined),
+    isSignedIn
   }
 }
 
@@ -61,7 +74,7 @@ export function useModalAccess(
   entityType: string,
   entity?: { _id?: string; campaignId?: string; dmId?: string }
 ) {
-  const { user, databaseUser, isLoading } = useAuthenticatedUser()
+  const { user, databaseUser, isLoading, isSignedIn } = useAuthenticatedUser()
   
   // Get user's campaigns for permission checking
   const userCampaigns = useQuery(api.campaigns.getMyCampaigns)

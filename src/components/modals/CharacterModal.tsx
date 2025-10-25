@@ -80,6 +80,31 @@ interface Character {
   characterType?: "player" | "npc"
   createdAt?: number
   creatorId?: string
+  inventory?: {
+    capacity: number
+    items: Array<{ itemId: string; quantity: number }>
+  }
+  equipment?: {
+    headgear?: string
+    armwear?: string
+    chestwear?: string
+    legwear?: string
+    footwear?: string
+    mainHand?: string
+    offHand?: string
+    accessories: string[]
+  }
+  equipmentBonuses?: {
+    armorClass: number
+    abilityScores: {
+      strength: number
+      dexterity: number
+      constitution: number
+      intelligence: number
+      wisdom: number
+      charisma: number
+    }
+  }
 }
 
 interface CharacterModalProps {
@@ -211,6 +236,23 @@ export function CharacterModal({
         savingThrows: character.savingThrows,
         proficiencies: character.proficiencies,
       })
+      
+      // Load existing character data for view/edit mode
+      if (character.inventory) {
+        setInventory(character.inventory)
+      }
+      
+      if (character.equipment) {
+        setEquipment(character.equipment)
+      }
+      
+      if (character.equipmentBonuses) {
+        setEquipmentBonuses(character.equipmentBonuses)
+      }
+      
+      if (character.actions) {
+        setSelectedActionIds(character.actions)
+      }
     } else if (mode === "create") {
       form.reset({
         name: "",
@@ -234,6 +276,34 @@ export function CharacterModal({
         savingThrows: [],
         proficiencies: [],
       })
+      
+      // Reset state for create mode
+      setInventory({
+        capacity: 150,
+        items: []
+      })
+      setEquipment({
+        headgear: undefined,
+        armwear: undefined,
+        chestwear: undefined,
+        legwear: undefined,
+        footwear: undefined,
+        mainHand: undefined,
+        offHand: undefined,
+        accessories: []
+      })
+      setEquipmentBonuses({
+        armorClass: 0,
+        abilityScores: {
+          strength: 0,
+          dexterity: 0,
+          constitution: 0,
+          intelligence: 0,
+          wisdom: 0,
+          charisma: 0
+        }
+      })
+      setSelectedActionIds([])
     }
   }, [character, mode, form])
 
