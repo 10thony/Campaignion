@@ -1,13 +1,118 @@
 import { v } from "convex/values";
 import { mutation } from "./_generated/server";
 
+// Helper function to calculate ability modifiers
+function calculateAbilityModifiers(abilityScores: any) {
+  return {
+    strength: Math.floor((abilityScores.strength - 10) / 2),
+    dexterity: Math.floor((abilityScores.dexterity - 10) / 2),
+    constitution: Math.floor((abilityScores.constitution - 10) / 2),
+    intelligence: Math.floor((abilityScores.intelligence - 10) / 2),
+    wisdom: Math.floor((abilityScores.wisdom - 10) / 2),
+    charisma: Math.floor((abilityScores.charisma - 10) / 2),
+  };
+}
+
+// Helper function to calculate initiative modifier for characters
+function calculateCharacterInitiativeModifier(entity: {
+  abilityModifiers?: { dexterity: number; charisma?: number };
+  abilityScores?: { dexterity: number };
+  equipmentBonuses?: { 
+    abilityScores?: { dexterity: number };
+    initiative?: number; // Direct initiative bonus from equipped items
+  };
+  classes?: Array<{ name: string; level: number; subclass?: string }>;
+  feats?: Array<{ name: string }>;
+  features?: Array<{ name: string; source: string }>;
+}): number {
+  // Get Dexterity modifier
+  let dexModifier = 0;
+  if (entity.abilityModifiers?.dexterity !== undefined) {
+    dexModifier = entity.abilityModifiers.dexterity;
+  } else if (entity.abilityScores?.dexterity !== undefined) {
+    dexModifier = Math.floor((entity.abilityScores.dexterity - 10) / 2);
+  }
+  
+  // Add equipment bonuses to dexterity (which affects the modifier)
+  if (entity.equipmentBonuses?.abilityScores?.dexterity) {
+    const equipmentDexBonus = entity.equipmentBonuses.abilityScores.dexterity;
+    if (entity.abilityScores?.dexterity !== undefined) {
+      const totalDex = entity.abilityScores.dexterity + equipmentDexBonus;
+      dexModifier = Math.floor((totalDex - 10) / 2);
+    }
+  }
+  
+  let totalModifier = dexModifier;
+  
+  // Check for Alert feat (+5 bonus)
+  const hasAlertFeat = entity.feats?.some(f => 
+    f.name.toLowerCase().includes("alert")
+  ) || false;
+  
+  if (hasAlertFeat) {
+    totalModifier += 5;
+  }
+  
+  // Check for Swashbuckler Rogue (adds Charisma modifier at 3rd level)
+  const swashbucklerClass = entity.classes?.find(
+    c => c.name === "Rogue" && c.subclass === "Swashbuckler" && c.level >= 3
+  );
+  
+  if (swashbucklerClass && entity.abilityModifiers?.charisma !== undefined) {
+    totalModifier += entity.abilityModifiers.charisma;
+  }
+  
+  // Check for Harengon race (add proficiency bonus)
+  const hasHarengonTrait = entity.features?.some(f =>
+    f.name.toLowerCase().includes("hare-trigger") ||
+    f.name.toLowerCase().includes("harengon")
+  );
+  
+  if (hasHarengonTrait && entity.classes && entity.classes.length > 0) {
+    const totalLevel = entity.classes.reduce((sum, c) => sum + c.level, 0);
+    const proficiencyBonus = Math.ceil(totalLevel / 4) + 1;
+    totalModifier += proficiencyBonus;
+  }
+  
+  // Add direct initiative bonus from equipped items
+  if (entity.equipmentBonuses?.initiative) {
+    totalModifier += entity.equipmentBonuses.initiative;
+  }
+  
+  return totalModifier;
+}
+
+// Helper function to calculate initiative modifier for monsters
+function calculateMonsterInitiativeModifier(abilityModifiers: { dexterity: number }): number {
+  return abilityModifiers.dexterity;
+}
+
+// Helper function to roll initiative (d20 + modifier)
+function rollInitiative(modifier: number): number {
+  const roll = Math.floor(Math.random() * 20) + 1;
+  return roll + modifier;
+}
+
 export const loadSampleMaps = mutation({
   args: {
     maps: v.array(v.object({
       name: v.string(),
-      width: v.number(),
-      height: v.number(),
-      description: v.optional(v.string()),
+      cols: v.number(),
+      rows: v.number(),
+      cellSize: v.optional(v.number()),
+      scenario: v.optional(v.string()),
+      difficulty: v.optional(v.string()),
+      encounterLevel: v.optional(v.number()),
+      terrain: v.optional(v.any()),
+      enemies: v.optional(v.array(v.object({
+        monsterName: v.string(),
+        count: v.number(),
+        defaultPosition: v.array(v.array(v.number())),
+      }))),
+      allies: v.optional(v.array(v.object({
+        characterName: v.string(),
+        defaultPosition: v.array(v.number()),
+      }))),
     })),
     clerkId: v.string(),
   },
@@ -24,23 +129,71 @@ export const loadSampleMaps = mutation({
 
     const mapIds = [];
     for (const map of args.maps) {
-      // Generate cells for the map
+      const cols = map.cols;
+      const rows = map.rows;
+      const cellSize = map.cellSize || 40;
+
+      // Generate cells for the map with terrain
       const cells = [];
-      for (let y = 0; y < map.height; y++) {
-        for (let x = 0; x < map.width; x++) {
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          let terrainType: "normal" | "difficult" | "hazardous" | "magical" | "water" | "ice" | "fire" | "acid" | "poison" | "unstable" = "normal";
+          let state: "inbounds" | "outbounds" | "occupied" = "inbounds";
+
+          // Apply terrain based on map.terrain data
+          if (map.terrain) {
+            // Check if this cell is in any terrain type
+            const terrain = map.terrain as any;
+            
+            // Check for water (rivers, pools)
+            if (terrain.river) {
+              const isInWater = terrain.river.some((pos: number[]) => pos[0] === x && pos[1] === y);
+              if (isInWater) terrainType = "water";
+            }
+            if (terrain.acidPool) {
+              const isInAcid = terrain.acidPool.some((pos: number[]) => pos[0] === x && pos[1] === y);
+              if (isInAcid) terrainType = "acid";
+            }
+
+            // Check for hazardous terrain
+            if (terrain.hazardousTerrain) {
+              const isHazardous = terrain.hazardousTerrain.some((pos: number[]) => pos[0] === x && pos[1] === y);
+              if (isHazardous) terrainType = "hazardous";
+            }
+
+            // Check for difficult terrain
+            if (terrain.difficultTerrain) {
+              const isDifficult = terrain.difficultTerrain.some((pos: number[]) => pos[0] === x && pos[1] === y);
+              if (isDifficult) terrainType = "difficult";
+            }
+
+            // Check for unstable terrain
+            if (terrain.unstable) {
+              const isUnstable = terrain.unstable.some((pos: number[]) => pos[0] === x && pos[1] === y);
+              if (isUnstable) terrainType = "unstable";
+            }
+
+            // Check for magical darkness
+            if (terrain.magicalDarkness) {
+              const isMagical = terrain.magicalDarkness.some((pos: number[]) => pos[0] === x && pos[1] === y);
+              if (isMagical) terrainType = "magical";
+            }
+          }
+
           cells.push({
             x,
             y,
-            state: "inbounds" as const,
-            terrainType: "normal" as const,
+            state,
+            terrainType,
           });
         }
       }
 
       const mapData = {
         name: map.name,
-        width: map.width,
-        height: map.height,
+        cols,
+        rows,
+        cellSize,
         cells: cells,
         createdBy: user._id,
         clerkId: args.clerkId,
@@ -48,8 +201,78 @@ export const loadSampleMaps = mutation({
         updatedAt: Date.now(),
       };
       
-      const id = await ctx.db.insert("maps", mapData);
-      mapIds.push(id);
+      const mapId = await ctx.db.insert("battleMaps", mapData);
+      mapIds.push(mapId);
+
+      // Create tokens for enemies (monsters)
+      if (map.enemies) {
+        for (const enemy of map.enemies) {
+          // Look up the monster in the database
+          const monsters = await ctx.db
+            .query("monsters")
+            .filter((q: any) => q.eq(q.field("name"), enemy.monsterName))
+            .collect();
+
+          if (monsters.length > 0) {
+            const monster = monsters[0];
+            const positions = enemy.defaultPosition.slice(0, Math.min(enemy.count, enemy.defaultPosition.length));
+            
+            for (let i = 0; i < positions.length; i++) {
+              const pos = positions[i];
+              const tokenData = {
+                mapId,
+                x: pos[0],
+                y: pos[1],
+                label: `${enemy.monsterName} ${i + 1}`,
+                type: "npc_foe" as const,
+                color: "#dc2626", // Red for enemies
+                size: 1,
+                monsterId: monster._id,
+                speed: parseInt(monster.speed.walk || "30"),
+                hp: monster.hitPoints,
+                maxHp: monster.hitPoints,
+                conditions: [],
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+              };
+              await ctx.db.insert("battleTokens", tokenData);
+            }
+          }
+        }
+      }
+
+      // Create tokens for allies (characters)
+      if (map.allies) {
+        for (const ally of map.allies) {
+          // Look up the character in the database
+          const characters = await ctx.db
+            .query("characters")
+            .filter((q: any) => q.eq(q.field("name"), ally.characterName))
+            .collect();
+
+          if (characters.length > 0) {
+            const character = characters[0];
+            const pos = ally.defaultPosition;
+            const tokenData = {
+              mapId,
+              x: pos[0],
+              y: pos[1],
+              label: ally.characterName,
+              type: "pc" as const,
+              color: "#2563eb", // Blue for PCs
+              size: 1,
+              characterId: character._id,
+              speed: 30, // Default speed
+              hp: character.hitPoints,
+              maxHp: character.hitPoints,
+              conditions: [],
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
+            };
+            await ctx.db.insert("battleTokens", tokenData);
+          }
+        }
+      }
     }
 
     return { loaded: mapIds.length };
@@ -159,6 +382,22 @@ export const loadSampleCharacters = mutation({
           charisma: v.number(),
         }),
       })),
+      classes: v.optional(v.array(v.object({
+        name: v.string(),
+        level: v.number(),
+        hitDie: v.string(),
+        subclass: v.optional(v.union(v.string(), v.null())), // Accept null from JSON, convert to undefined before insert
+        features: v.optional(v.array(v.string())),
+      }))),
+      feats: v.optional(v.array(v.object({
+        name: v.string(),
+        description: v.string(),
+      }))),
+      features: v.optional(v.array(v.object({
+        name: v.string(),
+        description: v.string(),
+        source: v.optional(v.string()),
+      }))),
     })),
     clerkId: v.string(),
   },
@@ -322,9 +561,26 @@ export const loadSampleCharacters = mutation({
             charisma: 0
           }
         },
+        classes: (character.classes || []).map((cls: any) => ({
+          ...cls,
+          subclass: cls.subclass === null || cls.subclass === undefined ? undefined : cls.subclass,
+        })),
+        feats: character.feats || [],
+        features: character.features || [],
         userId: user._id,
         createdAt: Date.now(),
       };
+
+      // Calculate and roll initiative
+      const initiativeModifier = calculateCharacterInitiativeModifier({
+        abilityModifiers: characterData.abilityModifiers,
+        abilityScores: characterData.abilityScores,
+        equipmentBonuses: characterData.equipmentBonuses,
+        classes: characterData.classes,
+        feats: characterData.feats,
+        features: characterData.features,
+      });
+      characterData.initiative = rollInitiative(initiativeModifier);
       
       const id = await ctx.db.insert("characters", characterData);
       characterIds.push(id);
@@ -413,26 +669,14 @@ export const loadSampleMonsters = mutation({
           charisma: v.number(),
         }),
       })),
-      actions: v.optional(v.array(v.object({
-        name: v.string(),
-        description: v.string(),
-      }))),
+      actions: v.optional(v.array(v.string())), // Monster action names to be resolved to IDs
       traits: v.optional(v.array(v.object({
         name: v.string(),
         description: v.string(),
       }))),
-      reactions: v.optional(v.array(v.object({
-        name: v.string(),
-        description: v.string(),
-      }))),
-      legendaryActions: v.optional(v.array(v.object({
-        name: v.string(),
-        description: v.string(),
-      }))),
-      lairActions: v.optional(v.array(v.object({
-        name: v.string(),
-        description: v.string(),
-      }))),
+      reactions: v.optional(v.array(v.string())), // Action names to be resolved to IDs
+      legendaryActions: v.optional(v.array(v.string())), // Action names to be resolved to IDs
+      lairActions: v.optional(v.array(v.string())), // Action names to be resolved to IDs
     })),
     clerkId: v.string(),
   },
@@ -538,6 +782,101 @@ export const loadSampleMonsters = mutation({
         }
       }
 
+      // Calculate equipment bonuses from resolved equipment
+      // Import the calculateEquipmentBonuses function from equipment.ts
+      const calculateEquipmentBonuses = async (equipment: any) => {
+        const bonuses = {
+          armorClass: 0,
+          abilityScores: {
+            strength: 0,
+            dexterity: 0,
+            constitution: 0,
+            intelligence: 0,
+            wisdom: 0,
+            charisma: 0,
+          },
+        };
+
+        // Get all equipped item IDs
+        const equippedItemIds = [
+          equipment.headgear,
+          equipment.armwear,
+          equipment.chestwear,
+          equipment.legwear,
+          equipment.footwear,
+          equipment.mainHand,
+          equipment.offHand,
+          ...(equipment.accessories || [])
+        ].filter(Boolean);
+
+        // Fetch all equipped items
+        const items = await Promise.all(
+          equippedItemIds.map(itemId => ctx.db.get(itemId))
+        );
+
+        // Calculate total bonuses
+        for (const item of items) {
+          if (!item) continue;
+
+          // Add armor class bonus
+          if (item.armorClass) {
+            bonuses.armorClass += item.armorClass;
+          }
+
+          // Add ability score bonuses
+          if (item.abilityModifiers) {
+            Object.keys(bonuses.abilityScores).forEach(ability => {
+              const modifier = item.abilityModifiers[ability] || 0;
+              bonuses.abilityScores[ability] += modifier;
+            });
+          }
+        }
+
+        return bonuses;
+      };
+
+      // Calculate equipment bonuses from resolved equipment
+      const calculatedEquipmentBonuses = await calculateEquipmentBonuses(resolvedMonsterEquipment);
+
+      // Resolve monster action names to action IDs
+      const resolvedActionIds = [];
+      if (monster.actions && monster.actions.length > 0) {
+        for (const actionName of monster.actions) {
+          const action = await ctx.db
+            .query("actions")
+            .filter((q: any) => q.eq(q.field("name"), actionName))
+            .first();
+          
+          if (action) {
+            resolvedActionIds.push(action._id);
+          } else {
+            console.warn(`Monster action not found: ${actionName}`);
+          }
+        }
+      }
+
+      // Resolve reactions, legendary actions, and lair actions
+      const resolveActionNames = async (actionNames: string[]) => {
+        const resolved = [];
+        for (const actionName of actionNames) {
+          const action = await ctx.db
+            .query("actions")
+            .filter((q: any) => q.eq(q.field("name"), actionName))
+            .first();
+          
+          if (action) {
+            resolved.push(action._id);
+          } else {
+            console.warn(`Monster action not found: ${actionName}`);
+          }
+        }
+        return resolved;
+      };
+
+      const resolvedReactionIds = await resolveActionNames(monster.reactions || []);
+      const resolvedLegendaryActionIds = await resolveActionNames(monster.legendaryActions || []);
+      const resolvedLairActionIds = await resolveActionNames(monster.lairActions || []);
+
       const monsterData = {
         name: monster.name,
         type: monster.type,
@@ -560,25 +899,24 @@ export const loadSampleMonsters = mutation({
           items: resolvedMonsterInventoryItems
         },
         equipment: resolvedMonsterEquipment,
-        equipmentBonuses: monster.equipmentBonuses || {
-          armorClass: 0,
-          abilityScores: {
-            strength: 0,
-            dexterity: 0,
-            constitution: 0,
-            intelligence: 0,
-            wisdom: 0,
-            charisma: 0
-          }
-        },
-        actions: monster.actions || [],
+        equipmentBonuses: calculatedEquipmentBonuses,
+        actions: resolvedActionIds, // Use resolved action IDs
         traits: monster.traits || [],
-        reactions: monster.reactions || [],
-        legendaryActions: monster.legendaryActions || [],
-        lairActions: monster.lairActions || [],
+        reactions: resolvedReactionIds,
+        legendaryActions: resolvedLegendaryActionIds,
+        lairActions: resolvedLairActionIds,
         userId: user._id,
         createdAt: Date.now(),
       };
+
+      // Calculate and roll initiative (including equipment bonuses to dexterity)
+      const totalDexterity = monsterData.abilityScores.dexterity + (monsterData.equipmentBonuses?.abilityScores?.dexterity || 0);
+      const effectiveAbilityModifiers = {
+        ...monsterData.abilityModifiers,
+        dexterity: Math.floor((totalDexterity - 10) / 2)
+      };
+      const initiativeModifier = calculateMonsterInitiativeModifier(effectiveAbilityModifiers);
+      monsterData.initiative = rollInitiative(initiativeModifier);
       
       const id = await ctx.db.insert("monsters", monsterData);
       monsterIds.push(id);
@@ -614,6 +952,7 @@ export const loadSampleItems = mutation({
         intelligence: v.optional(v.number()),
         wisdom: v.optional(v.number()),
         charisma: v.optional(v.number()),
+        initiative: v.optional(v.number()), // Direct initiative bonus from items
       })),
       armorClass: v.optional(v.number()),
       scope: v.string(),
@@ -1014,6 +1353,49 @@ export const deleteAllSampleActions = mutation({
     }
 
     return { deleted: actions.length };
+  },
+});
+
+export const deleteAllSampleMaps = mutation({
+  args: {
+    clerkId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .filter((q: any) => q.eq(q.field("clerkId"), args.clerkId))
+      .first();
+
+    if (!user) {
+      throw new Error("User not found in database");
+    }
+
+    // Get all battle maps created by this user
+    const maps = await ctx.db
+      .query("battleMaps")
+      .filter((q: any) => q.eq(q.field("clerkId"), args.clerkId))
+      .collect();
+
+    // Get all battle tokens for these maps
+    const tokens = await ctx.db
+      .query("battleTokens")
+      .collect();
+
+    const tokensToDelete = tokens.filter(token => 
+      maps.some(map => map._id === token.mapId)
+    );
+
+    // Delete all tokens first
+    for (const token of tokensToDelete) {
+      await ctx.db.delete(token._id);
+    }
+
+    // Delete all maps
+    for (const map of maps) {
+      await ctx.db.delete(map._id);
+    }
+
+    return { deleted: maps.length };
   },
 });
 

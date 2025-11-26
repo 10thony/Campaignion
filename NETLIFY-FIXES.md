@@ -52,9 +52,9 @@ If you have these in Netlify, you can remove them from the frontend site's envir
 Currently using `build:skip-check` to bypass TypeScript errors during build.
 
 To re-enable type checking:
-1. Run `npm run build` locally to see TypeScript errors
+1. Run `bun run build` locally to see TypeScript errors
 2. Fix any type errors
-3. Update `netlify.toml` to use `npm run build` instead of `npm run build:skip-check`
+3. Update `netlify.toml` to use `bun run build` instead of `bun run build:skip-check`
 
 ## Next Steps
 

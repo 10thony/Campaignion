@@ -13,13 +13,13 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background/50 backdrop-blur-sm hover:bg-accent hover:text-accent-foreground hover:shadow-modern",
+          "border border-input bg-background/50 backdrop-blur-sm hover:bg-royal-plum-100 dark:hover:bg-royal-plum-900/50 hover:text-royal-plum-700 dark:hover:text-royal-plum-200 hover:border-royal-plum-300 dark:hover:border-royal-plum-600 hover:shadow-modern",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-modern",
-        ghost: "hover:bg-accent hover:text-accent-foreground hover:shadow-modern",
+        ghost: "hover:bg-royal-plum-100 dark:hover:bg-royal-plum-900/50 hover:text-royal-plum-700 dark:hover:text-royal-plum-200 hover:shadow-modern",
         link: "text-primary underline-offset-4 hover:underline",
         gradient: "gradient-primary text-white hover:shadow-glow hover:scale-105",
-        glass: "glass text-foreground hover:bg-accent/50 hover:shadow-modern-lg",
+        glass: "glass text-foreground hover:bg-royal-plum-100/50 dark:hover:bg-royal-plum-900/30 hover:shadow-modern-lg",
         glow: "bg-primary text-primary-foreground hover:shadow-glow hover:scale-105 animate-pulse-glow",
       },
       size: {

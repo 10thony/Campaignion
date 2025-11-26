@@ -36,15 +36,15 @@ export function HomePage() {
       <SignedOut>
         <div className="flex flex-col">
           {/* Demo Mode Indicator */}
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 border-b border-blue-200 dark:border-blue-800">
+          <div className="bg-gradient-to-r from-cherry-rose-50 via-royal-plum-50 to-pacific-cyan-50 dark:from-cherry-rose-900/20 dark:via-royal-plum-900/20 dark:to-pacific-cyan-900/20 border-b border-royal-plum-200 dark:border-royal-plum-800">
             <div className="max-w-7xl mx-auto px-4 py-4">
               <div className="flex items-center justify-center gap-3">
-                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900">
-                  <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <div className="p-2 rounded-lg bg-royal-plum-100 dark:bg-royal-plum-900/50">
+                  <Sparkles className="w-5 h-5 text-royal-plum-600 dark:text-royal-plum-300" />
                 </div>
                 <div className="text-center">
-                  <h3 className="font-semibold text-blue-900 dark:text-blue-100">Demo Mode</h3>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                  <h3 className="font-semibold text-royal-plum-900 dark:text-royal-plum-100">Demo Mode</h3>
+                  <p className="text-sm text-royal-plum-700 dark:text-royal-plum-300">
                     The data you see below is for demonstration purposes only. Sign in to create your own campaigns and content!
                   </p>
                 </div>

@@ -53,6 +53,8 @@ import { useQueryWithAuth, useMutationWithAuth } from "@/hooks/useConvexWithAuth
 import { mapEquipmentToForm } from "@/lib/characterImport"
 import { useGPTGeneration } from "@/lib/gptGeneration"
 import { toast } from "sonner"
+import { calculateInitiativeBreakdown, formatInitiativeBreakdown } from "@/lib/initiativeUtils"
+import { Target } from "lucide-react"
 
 interface Character {
   _id: string
@@ -80,6 +82,23 @@ interface Character {
   characterType?: "player" | "npc"
   createdAt?: number
   creatorId?: string
+  initiative?: number
+  classes?: Array<{
+    name: string
+    level: number
+    hitDie?: string
+    features?: string[]
+    subclass?: string
+  }>
+  feats?: Array<{
+    name: string
+    description?: string
+  }>
+  features?: Array<{
+    name: string
+    description?: string
+    source?: string
+  }>
   inventory?: {
     capacity: number
     items: Array<{ itemId: string; quantity: number }>
@@ -654,40 +673,43 @@ export function CharacterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <DialogTitle>{getTitle()}</DialogTitle>
-              <DialogDescription>{getDescription()}</DialogDescription>
+      <DialogContent className="max-w-7xl w-[95vw] max-h-[95vh] flex flex-col p-0">
+        <div className="flex-shrink-0 px-6 pt-6 pb-4">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <DialogTitle>{getTitle()}</DialogTitle>
+                <DialogDescription>{getDescription()}</DialogDescription>
+              </div>
+              {mode === "create" && !importedData && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateWithGPT}
+                  disabled={isGenerating || isSubmitting}
+                  className="ml-4"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Generate with GPT
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
-            {mode === "create" && !importedData && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleGenerateWithGPT}
-                disabled={isGenerating || isSubmitting}
-                className="ml-4"
-              >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Generate with GPT
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
-        </DialogHeader>
+          </DialogHeader>
+        </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
+            <div className="flex-1 overflow-y-auto px-6 pb-4 space-y-6">
             <Tabs defaultValue={mode === "create" && !importedData ? "import" : "basic"} className="w-full">
               <TabsList className="grid w-full grid-cols-6">
                 {mode === "create" && (
@@ -993,6 +1015,92 @@ export function CharacterModal({
                     )}
                   />
                 </div>
+
+                {/* Initiative Display */}
+                <div className="space-y-2 pt-2">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-4 w-4 text-purple-500" />
+                    <h4 className="text-sm font-medium">Initiative Modifier</h4>
+                  </div>
+                  <div className="pl-6 space-y-1">
+                    {(() => {
+                      const abilityScores = form.watch("abilityScores") || character?.abilityScores || {
+                        strength: 10,
+                        dexterity: 10,
+                        constitution: 10,
+                        intelligence: 10,
+                        wisdom: 10,
+                        charisma: 10,
+                      };
+                      
+                      // Get classes from form or character data
+                      const formClasses = form.watch("classes");
+                      const charClasses = (character as any)?.classes;
+                      const classes = formClasses || charClasses || (form.watch("class") || character?.class ? [{ 
+                        name: form.watch("class") || character?.class || "", 
+                        level: form.watch("level") || character?.level || 1,
+                        subclass: (character as any)?.classes?.[0]?.subclass,
+                      }] : []);
+                      
+                      // Get feats and features from form or character data
+                      const feats = form.watch("feats") || (character as any)?.feats || [];
+                      const features = form.watch("features") || (character as any)?.features || [];
+                      const currentEquipmentBonuses = form.watch("equipmentBonuses") || equipmentBonuses || character?.equipmentBonuses || {
+                        armorClass: 0,
+                        abilityScores: {
+                          strength: 0,
+                          dexterity: 0,
+                          constitution: 0,
+                          intelligence: 0,
+                          wisdom: 0,
+                          charisma: 0,
+                        },
+                      };
+                      
+                      const entity = {
+                        abilityScores,
+                        abilityModifiers: {
+                          dexterity: Math.floor(((abilityScores?.dexterity || 10) + (currentEquipmentBonuses?.abilityScores?.dexterity || 0) - 10) / 2),
+                          charisma: Math.floor(((abilityScores?.charisma || 10) + (currentEquipmentBonuses?.abilityScores?.charisma || 0) - 10) / 2),
+                        },
+                        classes: classes.map((c: any) => ({
+                          name: typeof c === "string" ? c : c.name,
+                          level: typeof c === "string" ? 1 : (c.level || 1),
+                          subclass: typeof c === "string" ? undefined : c.subclass,
+                        })),
+                        feats,
+                        features: features.map((f: any) => typeof f === "string" ? { name: f, source: "class" } : f),
+                        equipmentBonuses: currentEquipmentBonuses,
+                      };
+                      
+                      const breakdown = calculateInitiativeBreakdown(entity);
+                      const modifierText = breakdown.totalModifier >= 0 
+                        ? `+${breakdown.totalModifier}` 
+                        : `${breakdown.totalModifier}`;
+                      
+                      return (
+                        <>
+                          <div className="text-2xl font-bold text-purple-600">
+                            {modifierText}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {formatInitiativeBreakdown(breakdown)}
+                          </div>
+                          {breakdown.hasAdvantage && (
+                            <div className="text-xs text-green-600 font-medium">
+                              Has Advantage
+                            </div>
+                          )}
+                          {breakdown.hasDisadvantage && (
+                            <div className="text-xs text-red-600 font-medium">
+                              Has Disadvantage
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
               </div>
                 </div>
               </TabsContent>
@@ -1255,34 +1363,37 @@ export function CharacterModal({
                 />
               </TabsContent>
             </Tabs>
-
+            </div>
             {!isReadOnly && (
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {mode === "create" ? `Create ${characterType === "player" ? "Character" : "NPC"}` : "Save Changes"}
-                </Button>
-              </DialogFooter>
+              <div className="flex-shrink-0 border-t px-6 py-4">
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => onOpenChange(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {mode === "create" ? `Create ${characterType === "player" ? "Character" : "NPC"}` : "Save Changes"}
+                  </Button>
+                </DialogFooter>
+              </div>
             )}
-
             {isReadOnly && (
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                >
-                  Close
-                </Button>
-              </DialogFooter>
+              <div className="flex-shrink-0 border-t px-6 py-4">
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => onOpenChange(false)}
+                  >
+                    Close
+                  </Button>
+                </DialogFooter>
+              </div>
             )}
           </form>
         </Form>

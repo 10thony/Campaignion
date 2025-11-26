@@ -10,6 +10,14 @@
       "hitPoints": 45,
       "armorClass": 18,
       "characterType": "PlayerCharacter",
+      "abilityScores": {
+        "strength": 16,
+        "dexterity": 12,
+        "constitution": 14,
+        "intelligence": 10,
+        "wisdom": 12,
+        "charisma": 8
+      },
       "abilityModifiers": {
         "strength": 3,
         "dexterity": 1,
@@ -18,6 +26,33 @@
         "wisdom": 1,
         "charisma": -1
       },
+      "classes": [
+        {
+          "name": "Fighter",
+          "level": 5,
+          "hitDie": "d10",
+          "subclass": "Champion",
+          "features": ["Fighting Style", "Second Wind", "Action Surge", "Extra Attack", "Improved Critical"]
+        }
+      ],
+      "feats": [],
+      "features": [
+        {
+          "name": "Fighting Style",
+          "description": "You adopt a particular style of fighting as your specialty.",
+          "source": "class"
+        },
+        {
+          "name": "Second Wind",
+          "description": "You have a limited well of stamina that you can draw on to protect yourself from harm.",
+          "source": "class"
+        },
+        {
+          "name": "Action Surge",
+          "description": "You can push yourself beyond your normal limits for a moment.",
+          "source": "class"
+        }
+      ],
       "experiencePoints": 6500,
       "proficiencyBonus": 3
     },
@@ -29,6 +64,14 @@
       "hitPoints": 24,
       "armorClass": 12,
       "characterType": "PlayerCharacter",
+      "abilityScores": {
+        "strength": 8,
+        "dexterity": 14,
+        "constitution": 12,
+        "intelligence": 18,
+        "wisdom": 14,
+        "charisma": 10
+      },
       "abilityModifiers": {
         "strength": -1,
         "dexterity": 2,
@@ -37,6 +80,33 @@
         "wisdom": 2,
         "charisma": 0
       },
+      "classes": [
+        {
+          "name": "Wizard",
+          "level": 4,
+          "hitDie": "d6",
+          "subclass": "Evocation",
+          "features": ["Spellcasting", "Arcane Recovery", "Sculpt Spells"]
+        }
+      ],
+      "feats": [
+        {
+          "name": "Alert",
+          "description": "You gain a +5 bonus to initiative. You can't be surprised while you are conscious. Other creatures don't gain advantage on attack rolls against you as a result of being hidden from you."
+        }
+      ],
+      "features": [
+        {
+          "name": "Spellcasting",
+          "description": "You are a student of arcane magic.",
+          "source": "class"
+        },
+        {
+          "name": "Arcane Recovery",
+          "description": "You have learned to regain some of your magical energy by studying your spellbook.",
+          "source": "class"
+        }
+      ],
       "experiencePoints": 2700,
       "proficiencyBonus": 2
     },
@@ -48,6 +118,14 @@
       "hitPoints": 30,
       "armorClass": 16,
       "characterType": "PlayerCharacter",
+      "abilityScores": {
+        "strength": 12,
+        "dexterity": 10,
+        "constitution": 14,
+        "intelligence": 12,
+        "wisdom": 16,
+        "charisma": 14
+      },
       "abilityModifiers": {
         "strength": 1,
         "dexterity": 0,
@@ -56,6 +134,28 @@
         "wisdom": 3,
         "charisma": 2
       },
+      "classes": [
+        {
+          "name": "Cleric",
+          "level": 3,
+          "hitDie": "d8",
+          "subclass": "Life Domain",
+          "features": ["Spellcasting", "Divine Domain", "Channel Divinity", "Disciple of Life"]
+        }
+      ],
+      "feats": [],
+      "features": [
+        {
+          "name": "Spellcasting",
+          "description": "As a conduit for divine power, you can cast cleric spells.",
+          "source": "class"
+        },
+        {
+          "name": "Divine Domain",
+          "description": "Choose one domain related to your deity.",
+          "source": "class"
+        }
+      ],
       "experiencePoints": 900,
       "proficiencyBonus": 2
     },
@@ -67,6 +167,14 @@
       "hitPoints": 38,
       "armorClass": 15,
       "characterType": "PlayerCharacter",
+      "abilityScores": {
+        "strength": 10,
+        "dexterity": 18,
+        "constitution": 12,
+        "intelligence": 14,
+        "wisdom": 12,
+        "charisma": 16
+      },
       "abilityModifiers": {
         "strength": 0,
         "dexterity": 4,
@@ -75,6 +183,33 @@
         "wisdom": 1,
         "charisma": 3
       },
+      "classes": [
+        {
+          "name": "Rogue",
+          "level": 6,
+          "hitDie": "d8",
+          "subclass": "Swashbuckler",
+          "features": ["Expertise", "Sneak Attack", "Thieves' Cant", "Cunning Action", "Fancy Footwork", "Rakish Audacity", "Uncanny Dodge"]
+        }
+      ],
+      "feats": [],
+      "features": [
+        {
+          "name": "Expertise",
+          "description": "At 1st level, choose two of your skill proficiencies.",
+          "source": "class"
+        },
+        {
+          "name": "Sneak Attack",
+          "description": "Beginning at 1st level, you know how to strike subtly and exploit a foe's distraction.",
+          "source": "class"
+        },
+        {
+          "name": "Rakish Audacity",
+          "description": "Starting at 3rd level, your confidence propels you into battle. You can give yourself a bonus to your initiative rolls equal to your Charisma modifier. You also gain an additional way to use your Sneak Attack.",
+          "source": "class"
+        }
+      ],
       "experiencePoints": 14000,
       "proficiencyBonus": 3
     }
@@ -88,6 +223,14 @@
       "hitPoints": 30,
       "armorClass": 16,
       "characterType": "NonPlayerCharacter",
+      "abilityScores": {
+        "strength": 14,
+        "dexterity": 10,
+        "constitution": 14,
+        "intelligence": 12,
+        "wisdom": 10,
+        "charisma": 12
+      },
       "abilityModifiers": {
         "strength": 2,
         "dexterity": 0,
@@ -95,7 +238,18 @@
         "intelligence": 1,
         "wisdom": 0,
         "charisma": 1
-      }
+      },
+      "classes": [
+        {
+          "name": "Fighter",
+          "level": 3,
+          "hitDie": "d10",
+          "subclass": "Battle Master",
+          "features": ["Fighting Style", "Second Wind", "Action Surge", "Combat Superiority"]
+        }
+      ],
+      "feats": [],
+      "features": []
     },
     {
       "name": "Sister Garaele",
@@ -105,6 +259,14 @@
       "hitPoints": 32,
       "armorClass": 15,
       "characterType": "NonPlayerCharacter",
+      "abilityScores": {
+        "strength": 10,
+        "dexterity": 12,
+        "constitution": 12,
+        "intelligence": 14,
+        "wisdom": 16,
+        "charisma": 14
+      },
       "abilityModifiers": {
         "strength": 0,
         "dexterity": 1,
@@ -112,7 +274,18 @@
         "intelligence": 2,
         "wisdom": 3,
         "charisma": 2
-      }
+      },
+      "classes": [
+        {
+          "name": "Cleric",
+          "level": 4,
+          "hitDie": "d8",
+          "subclass": "Knowledge Domain",
+          "features": ["Spellcasting", "Divine Domain", "Channel Divinity", "Blessings of Knowledge"]
+        }
+      ],
+      "feats": [],
+      "features": []
     },
     {
       "name": "Toblen Stonehill",
@@ -122,6 +295,14 @@
       "hitPoints": 8,
       "armorClass": 10,
       "characterType": "NonPlayerCharacter",
+      "abilityScores": {
+        "strength": 10,
+        "dexterity": 10,
+        "constitution": 10,
+        "intelligence": 10,
+        "wisdom": 10,
+        "charisma": 12
+      },
       "abilityModifiers": {
         "strength": 0,
         "dexterity": 0,
@@ -129,7 +310,18 @@
         "intelligence": 0,
         "wisdom": 0,
         "charisma": 1
-      }
+      },
+      "classes": [
+        {
+          "name": "Commoner",
+          "level": 1,
+          "hitDie": "d4",
+          "subclass": null,
+          "features": []
+        }
+      ],
+      "feats": [],
+      "features": []
     },
     {
       "name": "Sildar Hallwinter",
@@ -139,6 +331,14 @@
       "hitPoints": 45,
       "armorClass": 17,
       "characterType": "NonPlayerCharacter",
+      "abilityScores": {
+        "strength": 14,
+        "dexterity": 12,
+        "constitution": 14,
+        "intelligence": 12,
+        "wisdom": 14,
+        "charisma": 12
+      },
       "abilityModifiers": {
         "strength": 2,
         "dexterity": 1,
@@ -146,7 +346,23 @@
         "intelligence": 1,
         "wisdom": 2,
         "charisma": 1
-      }
+      },
+      "classes": [
+        {
+          "name": "Fighter",
+          "level": 5,
+          "hitDie": "d10",
+          "subclass": "Champion",
+          "features": ["Fighting Style", "Second Wind", "Action Surge", "Extra Attack", "Improved Critical"]
+        }
+      ],
+      "feats": [
+        {
+          "name": "Alert",
+          "description": "You gain a +5 bonus to initiative. You can't be surprised while you are conscious. Other creatures don't gain advantage on attack rolls against you as a result of being hidden from you."
+        }
+      ],
+      "features": []
     }
   ]
 } 

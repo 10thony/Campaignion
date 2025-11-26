@@ -34,6 +34,14 @@ export const getCampaigns = query({
   },
 });
 
+// Public function for MAUI native apps - returns all campaigns without authentication
+export const getAllCampaigns = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("campaigns").collect();
+  },
+});
+
 export const getCampaignById = query({
   args: { campaignId: v.id("campaigns") },
   handler: async (ctx, args) => {

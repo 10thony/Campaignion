@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MapMovementValidator, MapUtils } from '@/lib/mapMovementValidator';
+import { useTheme } from '../theme/ThemeProvider';
+import { getEntityColors } from '@/lib/terrainColors';
 
 // Import types from live server schemas
 interface Position {
@@ -129,6 +131,8 @@ export const LiveMapView: React.FC<LiveMapViewProps> = ({
   showMovementRange = true,
   showAttackRange = true,
 }) => {
+  const { actualTheme } = useTheme();
+  const isDark = actualTheme === 'dark';
   const [hoveredCell, setHoveredCell] = useState<Position | null>(null);
   const [selectedPosition, setSelectedPosition] = useState<Position | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -174,20 +178,20 @@ export const LiveMapView: React.FC<LiveMapViewProps> = ({
         
         if (isObstacle) {
           state = 'outbounds';
-          customColor = '#4a5568'; // Dark gray for obstacles
+          customColor = isDark ? '#251f33' : '#4a5568'; // Dusty Grape 800 / Dark gray for obstacles
         } else if (participant) {
           state = 'occupied';
           // Generate color based on entity type and status
           occupant = {
             id: participant.entityId,
             type: participant.entityType,
-            color: getEntityColor(participant, currentTurnIndex, initiativeOrder),
+            color: getEntityColor(participant, currentTurnIndex, initiativeOrder, isDark),
             speed: 30, // Default speed
             name: participant.entityId,
           };
         } else if (terrain) {
           // Apply terrain coloring
-          customColor = getTerrainColor(terrain.type);
+          customColor = getTerrainColor(terrain.type, isDark);
         }
         
         cells.push({
@@ -343,50 +347,50 @@ export const LiveMapView: React.FC<LiveMapViewProps> = ({
       const posKey = `${cell.x},${cell.y}`;
       let enhancedCell = { ...cell };
       
-      // Add movement range highlighting
+      // Add movement range highlighting - Pacific Cyan
       if (showMovementRange && selectedAction?.type === 'move' && validMovementPositions.has(posKey)) {
-        enhancedCell.customColor = enhancedCell.customColor || '#22c55e40'; // Semi-transparent green
+        enhancedCell.customColor = enhancedCell.customColor || (isDark ? 'rgba(0, 201, 241, 0.25)' : 'rgba(0, 145, 173, 0.25)');
       }
       
-      // Add attack range highlighting
+      // Add attack range highlighting - Cherry Rose
       if (showAttackRange && selectedAction?.type === 'attack' && validAttackTargets.has(posKey)) {
-        enhancedCell.customColor = enhancedCell.customColor || '#ef444440'; // Semi-transparent red
+        enhancedCell.customColor = enhancedCell.customColor || (isDark ? 'rgba(244, 13, 102, 0.25)' : 'rgba(183, 9, 76, 0.25)');
       }
       
-      // Add spell/item targeting highlighting
+      // Add spell/item targeting highlighting - Royal Plum
       if ((selectedAction?.type === 'cast' || selectedAction?.type === 'useItem') && isMyTurn) {
         const distance = Math.abs(cell.x - (currentUserParticipant?.position.x || 0)) + 
                         Math.abs(cell.y - (currentUserParticipant?.position.y || 0));
         if (distance <= 10) { // Spell/item range
-          enhancedCell.customColor = enhancedCell.customColor || '#8b5cf640'; // Semi-transparent purple
+          enhancedCell.customColor = enhancedCell.customColor || (isDark ? 'rgba(186, 59, 135, 0.25)' : 'rgba(137, 43, 100, 0.25)');
         }
       }
       
-      // Highlight selected target
+      // Highlight selected target - Dark Raspberry
       if (selectedTarget) {
         const targetEntity = Object.values(mapState.entities).find(e => e.entityId === selectedTarget);
         if (targetEntity && targetEntity.position.x === cell.x && targetEntity.position.y === cell.y) {
-          enhancedCell.customColor = '#f59e0b'; // Orange for selected target
+          enhancedCell.customColor = isDark ? '#d62376' : '#a01a58';
         }
       }
       
-      // Highlight selected position
+      // Highlight selected position - Pacific Cyan
       if (selectedPosition && selectedPosition.x === cell.x && selectedPosition.y === cell.y) {
-        enhancedCell.customColor = '#06b6d4'; // Cyan for selected position
+        enhancedCell.customColor = isDark ? '#00c9f1' : '#0091ad';
       }
       
-      // Highlight hovered cell
+      // Highlight hovered cell - Dusty Grape
       if (hoveredCell && hoveredCell.x === cell.x && hoveredCell.y === cell.y) {
         enhancedCell.customColor = enhancedCell.customColor ? 
-          `${enhancedCell.customColor}80` : '#6b728080'; // Add transparency to existing color or light gray
+          `${enhancedCell.customColor}80` : (isDark ? 'rgba(122, 103, 162, 0.5)' : 'rgba(92, 77, 125, 0.4)');
       }
       
-      // Highlight current turn participant with pulsing effect
+      // Highlight current turn participant with pulsing effect - Royal Plum
       if (currentTurnParticipant) {
         const currentEntity = Object.values(mapState.entities).find(e => e.entityId === currentTurnParticipant.entityId);
         if (currentEntity && currentEntity.position.x === cell.x && currentEntity.position.y === cell.y) {
           // Use a bright border color for current turn
-          enhancedCell.customColor = enhancedCell.occupant?.color || '#3b82f6';
+          enhancedCell.customColor = enhancedCell.occupant?.color || (isDark ? '#ba3b87' : '#892b64');
         }
       }
       
@@ -503,34 +507,34 @@ export const LiveMapView: React.FC<LiveMapViewProps> = ({
             className="border-2 border-muted rounded-lg"
           />
           
-          {/* Legend */}
+          {/* Legend - Using new palette colors */}
           <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 text-xs">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500/40 border border-green-500 rounded"></div>
+              <div className="w-4 h-4 bg-pacific-cyan-500/40 border border-pacific-cyan-500 rounded"></div>
               <span>Valid Movement</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-red-500/40 border border-red-500 rounded"></div>
+              <div className="w-4 h-4 bg-cherry-rose-500/40 border border-cherry-rose-500 rounded"></div>
               <span>Attack Range</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-purple-500/40 border border-purple-500 rounded"></div>
+              <div className="w-4 h-4 bg-royal-plum-500/40 border border-royal-plum-500 rounded"></div>
               <span>Spell/Item Range</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-orange-500 border border-orange-600 rounded"></div>
+              <div className="w-4 h-4 bg-dark-raspberry-500 border border-dark-raspberry-600 rounded"></div>
               <span>Selected Target</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-cyan-500 border border-cyan-600 rounded"></div>
+              <div className="w-4 h-4 bg-pacific-cyan-500 border border-pacific-cyan-600 rounded"></div>
               <span>Selected Position</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-600 border border-gray-700 rounded"></div>
+              <div className="w-4 h-4 bg-dusty-grape-700 border border-dusty-grape-800 rounded"></div>
               <span>Obstacles</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-blue-500 border border-blue-600 rounded"></div>
+              <div className="w-4 h-4 bg-royal-plum-500 border border-royal-plum-600 rounded"></div>
               <span>Current Turn</span>
             </div>
             <div className="flex items-center gap-2">
@@ -620,7 +624,7 @@ export const LiveMapView: React.FC<LiveMapViewProps> = ({
                   <div className="flex items-center gap-2">
                     <div
                       className="w-3 h-3 rounded border"
-                      style={{ backgroundColor: getEntityColor(participant, currentTurnIndex, initiativeOrder) }}
+                      style={{ backgroundColor: getEntityColor(participant, currentTurnIndex, initiativeOrder, isDark) }}
                     />
                     <span className="font-medium">
                       {participant.entityId}
@@ -648,40 +652,40 @@ export const LiveMapView: React.FC<LiveMapViewProps> = ({
   );
 };
 
-// Helper functions
-function getEntityColor(participant: ParticipantState, currentTurnIndex: number, initiativeOrder: InitiativeEntry[]): string {
+// Helper functions using new color palette
+function getEntityColor(participant: ParticipantState, currentTurnIndex: number, initiativeOrder: InitiativeEntry[], isDark: boolean = false): string {
   const isCurrentTurn = initiativeOrder[currentTurnIndex]?.entityId === participant.entityId;
   
   if (isCurrentTurn) {
-    return '#3b82f6'; // Blue for current turn
+    return isDark ? '#ba3b87' : '#892b64'; // Royal Plum for current turn
   }
   
   switch (participant.entityType) {
     case 'playerCharacter':
-      return '#22c55e'; // Green for player characters
+      return isDark ? '#3d92c4' : '#2e6f95'; // Rich Cerulean
     case 'npc':
-      return '#f59e0b'; // Orange for NPCs
+      return isDark ? '#7a67a2' : '#5c4d7d'; // Dusty Grape
     case 'monster':
-      return '#ef4444'; // Red for monsters
+      return isDark ? '#f40d66' : '#b7094c'; // Cherry Rose
     default:
-      return '#6b7280'; // Gray default
+      return isDark ? '#5c7aad' : '#455e89'; // Dusk Blue
   }
 }
 
-function getTerrainColor(terrainType?: string): string {
+function getTerrainColor(terrainType?: string, isDark: boolean = false): string {
   switch (terrainType) {
     case 'soft':
-      return '#fef3c7'; // Light yellow
+      return isDark ? 'rgba(0, 201, 241, 0.15)' : 'rgba(0, 145, 173, 0.1)'; // Pacific Cyan
     case 'rough':
-      return '#fed7aa'; // Light orange
+      return isDark ? 'rgba(214, 35, 118, 0.15)' : 'rgba(160, 26, 88, 0.1)'; // Dark Raspberry
     case 'intense':
-      return '#fecaca'; // Light red
+      return isDark ? 'rgba(244, 13, 102, 0.2)' : 'rgba(183, 9, 76, 0.15)'; // Cherry Rose
     case 'brutal':
-      return '#f3e8ff'; // Light purple
+      return isDark ? 'rgba(186, 59, 135, 0.2)' : 'rgba(137, 43, 100, 0.15)'; // Royal Plum
     case 'deadly':
-      return '#e5e7eb'; // Light gray
+      return isDark ? 'rgba(122, 103, 162, 0.2)' : 'rgba(92, 77, 125, 0.15)'; // Dusty Grape
     default:
-      return '#f9fafb'; // Very light gray
+      return isDark ? '#251f33' : '#f9fafb'; // Dusty Grape 800 / Very light gray
   }
 }
 

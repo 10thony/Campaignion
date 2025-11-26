@@ -54,6 +54,7 @@ interface Item {
     intelligence?: number
     wisdom?: number
     charisma?: number
+    initiative?: number
   }
   createdAt?: number
   creatorId?: string
@@ -97,6 +98,7 @@ export function ItemModal({
         intelligence: item?.abilityModifiers?.intelligence || undefined,
         wisdom: item?.abilityModifiers?.wisdom || undefined,
         charisma: item?.abilityModifiers?.charisma || undefined,
+        initiative: item?.abilityModifiers?.initiative || undefined,
       },
     },
   })

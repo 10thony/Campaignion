@@ -1,0 +1,12 @@
+[install]
+# Use exact versions for reproducibility
+exact = true
+
+[install.cache]
+# Use global cache
+dir = "~/.bun/install/cache"
+
+[run]
+# Silence lifecycle scripts
+silent = false
+

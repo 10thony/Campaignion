@@ -207,7 +207,7 @@ type MapTool = 'select' | 'move' | 'measure' | 'aoe' | 'terrain' | 'info';
 Run the test suite:
 
 ```bash
-npm test src/components/maps/__tests__/TacticalMapView.test.tsx
+bun test src/components/maps/__tests__/TacticalMapView.test.tsx
 ```
 
 ## Demo

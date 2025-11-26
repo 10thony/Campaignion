@@ -283,9 +283,9 @@ The test mode system includes comprehensive test coverage:
 
 Run tests with:
 ```bash
-npm run test -- --run TestModeService.test.ts
-npm run test -- --run TestModeIntegration.test.ts
-npm run test -- --run adminAuth.test.ts
+bun test -- --run TestModeService.test.ts
+bun test -- --run TestModeIntegration.test.ts
+bun test -- --run adminAuth.test.ts
 ```
 
 ## Limitations

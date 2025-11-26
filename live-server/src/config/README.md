@@ -137,7 +137,7 @@ The configuration system automatically validates all environment variables on st
 Run the configuration validation script to check your environment:
 
 ```bash
-npm run validate-config
+bun run validate-config
 ```
 
 This script will:
@@ -215,10 +215,10 @@ The configuration system includes comprehensive tests:
 
 ```bash
 # Test configuration validation
-npm test -- src/test/config.test.ts
+bun test -- src/test/config.test.ts
 
 # Test Convex client configuration
-npm test -- src/test/convex-config.test.ts
+bun test -- src/test/convex-config.test.ts
 ```
 
 ## Best Practices
@@ -236,7 +236,7 @@ npm test -- src/test/convex-config.test.ts
 1. **"Configuration Error" on startup**
    - Check that all required variables are set in `.env`
    - Verify variable formats (URLs, numbers, enums)
-   - Run `npm run validate-config` for detailed diagnostics
+   - Run `bun run validate-config` for detailed diagnostics
 
 2. **"Convex connection failed"**
    - Verify `CONVEX_URL` is correct and accessible
@@ -254,7 +254,7 @@ npm test -- src/test/convex-config.test.ts
 
 ### Getting Help
 
-1. Run the validation script: `npm run validate-config`
+1. Run the validation script: `bun run validate-config`
 2. Check the error messages for specific guidance
 3. Compare your `.env` with `.env.example`
 4. Verify all external services (Convex, Clerk) are properly configured

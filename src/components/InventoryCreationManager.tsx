@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -7,7 +7,7 @@ import { Badge } from './ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
 import { Package, Shield, Plus, Settings } from 'lucide-react'
 import { InventoryPanel } from './InventoryPanel'
-import { EquipmentManager } from './EquipmentManager'
+import { ItemModal } from './modals/ItemModal'
 import { useQuery } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import type { Doc } from '../../convex/_generated/dataModel'
@@ -47,7 +47,7 @@ interface InventoryCreationManagerProps {
   }
   equipment: EquipmentData
   equipmentBonuses: EquipmentBonuses
-  abilityScores: {
+  abilityScores?: {
     strength: number
     dexterity: number
     constitution: number
@@ -66,7 +66,6 @@ export function InventoryCreationManager({
   inventory,
   equipment,
   equipmentBonuses,
-  abilityScores,
   onInventoryChange,
   onEquipmentChange,
   onBonusesChange,
@@ -77,9 +76,16 @@ export function InventoryCreationManager({
   const [localEquipment, setLocalEquipment] = useState(equipment)
   const [localBonuses, setLocalBonuses] = useState(equipmentBonuses)
   const [showItemSelector, setShowItemSelector] = useState(false)
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null)
+  const [showItemDetailsModal, setShowItemDetailsModal] = useState(false)
 
   // Get available items for the character
   const availableItems = useQuery(api.items.getMyItems) || []
+  
+  // Get selected item details
+  const selectedItem = selectedItemId 
+    ? availableItems.find((i: Doc<"items">) => i._id === selectedItemId)
+    : null
 
   // Update local state when props change
   useEffect(() => {
@@ -170,6 +176,12 @@ export function InventoryCreationManager({
     setShowItemSelector(true)
   }
 
+  // Handle viewing item details
+  const handleViewItem = (itemId: string) => {
+    setSelectedItemId(itemId)
+    setShowItemDetailsModal(true)
+  }
+
   // Handle capacity change
   const handleCapacityChange = (newCapacity: number) => {
     const newInventory = { ...localInventory, capacity: newCapacity }
@@ -251,8 +263,10 @@ export function InventoryCreationManager({
             onQuantityChange={handleQuantityChange}
             onRemoveItem={handleRemoveItem}
             onAddItem={handleAddItem}
+            onViewItem={handleViewItem}
             canEdit={canEdit && !isReadOnly}
             title="Character Inventory"
+            equipment={localEquipment}
           />
         </TabsContent>
 
@@ -283,6 +297,7 @@ export function InventoryCreationManager({
                             <div className="text-xs text-muted-foreground">{item.type}</div>
                             {canEdit && !isReadOnly && (
                               <Button
+                                type="button"
                                 size="sm"
                                 variant="outline"
                                 onClick={() => {
@@ -298,6 +313,7 @@ export function InventoryCreationManager({
                           <div className="text-sm text-muted-foreground">
                             {canEdit && !isReadOnly ? (
                               <Button
+                                type="button"
                                 size="sm"
                                 variant="outline"
                                 onClick={() => setShowItemSelector(true)}
@@ -327,6 +343,7 @@ export function InventoryCreationManager({
                           <div className="text-xs text-muted-foreground">{item.type}</div>
                           {canEdit && !isReadOnly && (
                             <Button
+                              type="button"
                               size="sm"
                               variant="outline"
                               onClick={() => {
@@ -342,6 +359,7 @@ export function InventoryCreationManager({
                     })}
                     {canEdit && !isReadOnly && (
                       <Button
+                        type="button"
                         size="sm"
                         variant="outline"
                         onClick={() => setShowItemSelector(true)}
@@ -415,13 +433,23 @@ export function InventoryCreationManager({
         </TabsContent>
       </Tabs>
 
+      {/* Item Details Modal */}
+      {selectedItem && (
+        <ItemModal
+          open={showItemDetailsModal}
+          onOpenChange={setShowItemDetailsModal}
+          mode="view"
+          item={selectedItem}
+        />
+      )}
+
       {/* Item Selection Modal - This would be implemented as a separate component */}
       {showItemSelector && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-background p-6 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">Select Item</h3>
-              <Button variant="outline" onClick={() => setShowItemSelector(false)}>
+              <Button type="button" variant="outline" onClick={() => setShowItemSelector(false)}>
                 Close
               </Button>
             </div>
@@ -433,6 +461,7 @@ export function InventoryCreationManager({
                     <div className="text-sm text-muted-foreground">{item.type} • {item.rarity}</div>
                   </div>
                   <Button
+                    type="button"
                     size="sm"
                     onClick={() => {
                       // Add to inventory

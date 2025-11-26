@@ -15,7 +15,8 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['pdfjs-dist']
+    include: ['pdfjs-dist'],
+    exclude: ['pdfjs-dist/build/pdf.worker.min.mjs']
   },
   define: {
     // Define global for PDF.js compatibility

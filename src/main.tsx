@@ -11,6 +11,7 @@ import { convex } from './lib/convex'
 import { ThemeProvider } from './components/theme/ThemeProvider'
 import { AuthenticationProvider } from './components/providers/AuthenticationProvider'
 import { router } from './router'
+import { Toaster } from 'sonner'
 import './index.css'
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
@@ -37,6 +38,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <DndProvider backend={HTML5Backend}>
               <ThemeProvider defaultTheme="system" storageKey="campaignion-ui-theme">
                 <RouterProvider router={router} />
+                <Toaster />
               </ThemeProvider>
             </DndProvider>
           </QueryClientProvider>

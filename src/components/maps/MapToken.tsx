@@ -9,6 +9,8 @@ import {
   Heart,
   Target
 } from 'lucide-react';
+import { useTheme } from '../theme/ThemeProvider';
+import { getEntityColors } from '@/lib/terrainColors';
 
 interface MapTokenProps {
   entity: {
@@ -29,6 +31,10 @@ export const MapToken: React.FC<MapTokenProps> = React.memo(({
   isSelected,
   cellSize
 }) => {
+  const { actualTheme } = useTheme();
+  const isDark = actualTheme === 'dark';
+  const entityColors = getEntityColors(isDark);
+  
   // Calculate token size based on cell size
   const tokenSize = Math.max(20, cellSize * 0.8);
   const iconSize = Math.max(12, tokenSize * 0.6);
@@ -47,7 +53,7 @@ export const MapToken: React.FC<MapTokenProps> = React.memo(({
     }
   };
 
-  // Get entity type color
+  // Get entity type color - using new palette
   const getEntityColor = () => {
     if (entity.color) {
       return entity.color;
@@ -55,20 +61,20 @@ export const MapToken: React.FC<MapTokenProps> = React.memo(({
     
     switch (entity.entityType) {
       case 'playerCharacter':
-        return '#3b82f6'; // Blue
+        return entityColors.playerCharacter; // Rich Cerulean
       case 'npc':
-        return '#10b981'; // Green
+        return entityColors.npc; // Dusty Grape
       case 'monster':
-        return '#ef4444'; // Red
+        return entityColors.monster; // Cherry Rose
       default:
-        return '#6b7280'; // Gray
+        return entityColors.default; // Dusk Blue
     }
   };
 
   // Get selection ring color
   const getSelectionColor = () => {
     if (isSelected) {
-      return '#3b82f6'; // Blue for selected
+      return entityColors.selected; // Pacific Cyan
     }
     return 'transparent';
   };
@@ -78,15 +84,15 @@ export const MapToken: React.FC<MapTokenProps> = React.memo(({
     switch (entity.entityType) {
       case 'playerCharacter':
         return (
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border border-white" />
+          <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border border-white ${isDark ? 'bg-rich-cerulean-300' : 'bg-rich-cerulean-500'}`} />
         );
       case 'npc':
         return (
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border border-white" />
+          <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border border-white ${isDark ? 'bg-dusty-grape-300' : 'bg-dusty-grape-500'}`} />
         );
       case 'monster':
         return (
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-white" />
+          <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border border-white ${isDark ? 'bg-cherry-rose-300' : 'bg-cherry-rose-500'}`} />
         );
       default:
         return null;

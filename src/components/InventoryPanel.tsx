@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { ItemCard } from './ItemCard'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
 import { Progress } from './ui/progress'
-import { Scale, Package, Plus } from 'lucide-react'
+import { Input } from './ui/input'
+import { Scale, Package, Plus, Search } from 'lucide-react'
 
 interface InventoryItem {
   item: {
@@ -26,6 +27,7 @@ interface InventoryItem {
       intelligence?: number
       wisdom?: number
       charisma?: number
+      initiative?: number
     }
     damageRolls?: Array<{
       dice: { count: number; type: string }
@@ -36,14 +38,27 @@ interface InventoryItem {
   quantity: number
 }
 
+interface EquipmentData {
+  headgear?: string
+  armwear?: string
+  chestwear?: string
+  legwear?: string
+  footwear?: string
+  mainHand?: string
+  offHand?: string
+  accessories?: string[]
+}
+
 interface InventoryPanelProps {
   items: InventoryItem[]
   capacity: number
   onQuantityChange?: (itemId: string, quantity: number) => void
   onRemoveItem?: (itemId: string) => void
   onAddItem?: () => void
+  onViewItem?: (itemId: string) => void
   canEdit?: boolean
   title?: string
+  equipment?: EquipmentData
 }
 
 export function InventoryPanel({
@@ -52,10 +67,29 @@ export function InventoryPanel({
   onQuantityChange,
   onRemoveItem,
   onAddItem,
+  onViewItem,
   canEdit = false,
-  title = "Inventory"
+  title = "Inventory",
+  equipment
 }: InventoryPanelProps) {
-  const [filter, setFilter] = useState<string>('')
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [activeFilters, setActiveFilters] = useState<Set<string>>(new Set())
+
+  // Helper function to get equipment slot for an item
+  const getEquipmentSlot = (itemId: string): string | null => {
+    if (!equipment) return null
+    
+    if (equipment.headgear === itemId) return 'Head'
+    if (equipment.armwear === itemId) return 'Arms'
+    if (equipment.chestwear === itemId) return 'Chest'
+    if (equipment.legwear === itemId) return 'Legs'
+    if (equipment.footwear === itemId) return 'Feet'
+    if (equipment.mainHand === itemId) return 'Main Hand'
+    if (equipment.offHand === itemId) return 'Off Hand'
+    if (equipment.accessories?.includes(itemId)) return 'Accessory'
+    
+    return null
+  }
 
   // Calculate inventory stats
   const totalWeight = items.reduce((sum, invItem) => 
@@ -71,10 +105,30 @@ export function InventoryPanel({
   const weightPercentage = Math.min((totalWeight / capacity) * 100, 100)
   const isOverWeight = totalWeight > capacity
 
-  const filteredItems = items.filter(invItem =>
-    invItem.item.name.toLowerCase().includes(filter.toLowerCase()) ||
-    invItem.item.type.toLowerCase().includes(filter.toLowerCase())
-  )
+  // Get all unique item types from current items
+  const availableTypes = useMemo(() => {
+    const types = new Set<string>()
+    items.forEach(invItem => {
+      types.add(invItem.item.type)
+    })
+    return Array.from(types).sort()
+  }, [items])
+
+  // Filter items based on search query and active filters
+  const filteredItems = useMemo(() => {
+    return items.filter(invItem => {
+      // Search filter
+      const matchesSearch = searchQuery === '' || 
+        invItem.item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        invItem.item.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        invItem.item.description?.toLowerCase().includes(searchQuery.toLowerCase())
+
+      // Type filter - if filters are active, item must match at least one
+      const matchesType = activeFilters.size === 0 || activeFilters.has(invItem.item.type)
+
+      return matchesSearch && matchesType
+    })
+  }, [items, searchQuery, activeFilters])
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -84,17 +138,22 @@ export function InventoryPanel({
     }
   }
 
-  const getItemsByType = () => {
-    const grouped: Record<string, InventoryItem[]> = {}
-    filteredItems.forEach(invItem => {
-      const type = invItem.item.type
-      if (!grouped[type]) grouped[type] = []
-      grouped[type].push(invItem)
+  const toggleFilter = (type: string) => {
+    setActiveFilters(prev => {
+      const next = new Set(prev)
+      if (next.has(type)) {
+        next.delete(type)
+      } else {
+        next.add(type)
+      }
+      return next
     })
-    return grouped
   }
 
-  const groupedItems = getItemsByType()
+  const clearAllFilters = () => {
+    setActiveFilters(new Set())
+    setSearchQuery('')
+  }
 
   return (
     <Card className="w-full">
@@ -105,7 +164,7 @@ export function InventoryPanel({
             {title}
           </CardTitle>
           {canEdit && (
-            <Button size="sm" onClick={onAddItem}>
+            <Button type="button" size="sm" onClick={onAddItem}>
               <Plus className="h-4 w-4 mr-2" />
               Add Item
             </Button>
@@ -154,42 +213,100 @@ export function InventoryPanel({
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search items by name, type, or description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        {/* Filter Buttons */}
+        {availableTypes.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-muted-foreground">Filter by Type:</span>
+              {(activeFilters.size > 0 || searchQuery) && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearAllFilters}
+                  className="h-7 text-xs"
+                >
+                  Clear All
+                </Button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {availableTypes.map((type) => (
+                <Button
+                  key={type}
+                  type="button"
+                  variant={activeFilters.has(type) ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => toggleFilter(type)}
+                  className="h-8"
+                >
+                  {type}
+                  {activeFilters.has(type) && (
+                    <Badge variant="secondary" className="ml-2 h-4 px-1.5 text-xs">
+                      {filteredItems.filter(item => item.item.type === type).length}
+                    </Badge>
+                  )}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Inventory Grid */}
         {items.length === 0 ? (
           <div className="text-center py-8">
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">Inventory is empty</p>
             {canEdit && (
-              <Button variant="outline" className="mt-2" onClick={onAddItem}>
+              <Button type="button" variant="outline" className="mt-2" onClick={onAddItem}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add First Item
               </Button>
             )}
           </div>
+        ) : filteredItems.length === 0 ? (
+          <div className="text-center py-8">
+            <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">No items match your filters</p>
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-2"
+              onClick={clearAllFilters}
+            >
+              Clear Filters
+            </Button>
+          </div>
         ) : (
-          <div className="space-y-6">
-            {Object.entries(groupedItems).map(([type, typeItems]) => (
-              <div key={type}>
-                <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                  {type}
-                  <Badge variant="secondary" className="text-xs">
-                    {typeItems.reduce((sum, invItem) => sum + invItem.quantity, 0)} items
-                  </Badge>
-                </h3>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {typeItems.map((invItem) => (
-                    <ItemCard
-                      key={invItem.item._id}
-                      item={invItem.item}
-                      quantity={invItem.quantity}
-                      onQuantityChange={handleQuantityChange}
-                      canEdit={canEdit}
-                      showQuantityControls={canEdit}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {filteredItems.map((invItem) => {
+              const equipmentSlot = getEquipmentSlot(invItem.item._id)
+              return (
+                <ItemCard
+                  key={invItem.item._id}
+                  item={invItem.item}
+                  quantity={invItem.quantity}
+                  onQuantityChange={handleQuantityChange}
+                  onView={onViewItem}
+                  canEdit={canEdit}
+                  showQuantityControls={canEdit}
+                  isEquipped={!!equipmentSlot}
+                  equipmentSlot={equipmentSlot || undefined}
+                />
+              )
+            })}
           </div>
         )}
 

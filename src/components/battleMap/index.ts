@@ -6,3 +6,7 @@ export { BattleMapSelector } from './BattleMapSelector';
 export { NewBattleMapDialog } from './NewBattleMapDialog';
 export { BattleTokenDialog } from './BattleTokenDialog';
 export { TerrainKey } from './TerrainKey';
+export { DraggablePanel } from './DraggablePanel';
+export { PanelDock, FloatingPanelDock } from './PanelDock';
+export { InitiativePanel } from './InitiativePanel';
+export { CombatActionSelector } from './CombatActionSelector';

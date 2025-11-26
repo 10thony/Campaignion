@@ -141,6 +141,7 @@ export default defineSchema({
           wisdom: v.number(),
           charisma: v.number(),
         }),
+        initiative: v.optional(v.number()), // Direct initiative bonus from equipped items
       })
     ),
 
@@ -420,6 +421,7 @@ export default defineSchema({
         intelligence: v.optional(v.number()),
         wisdom: v.optional(v.number()),
         charisma: v.optional(v.number()),
+        initiative: v.optional(v.number()), // Direct initiative bonus from items
       })
     ),
     armorClass: v.optional(v.number()),
@@ -464,6 +466,7 @@ export default defineSchema({
     name: v.string(),
     width: v.number(),
     height: v.number(),
+    mapType: v.optional(v.union(v.literal("battle"), v.literal("nonCombat"))), // Type of map: battle or non-combat (village, shop, etc.)
     cells: v.array(
       v.object({
         x: v.number(),
@@ -523,6 +526,15 @@ export default defineSchema({
           })
         ),
         customColor: v.optional(v.string()),
+        // Portal link to another map/floor
+        portalLink: v.optional(
+          v.object({
+            targetMapId: v.id("maps"),
+            targetX: v.number(),
+            targetY: v.number(),
+            label: v.optional(v.string()), // Optional label like "Stairs to 2nd Floor" or "Door to Shop"
+          })
+        ),
       })
     ),
     createdBy: v.id("users"),
@@ -897,6 +909,7 @@ export default defineSchema({
     challengeRating: v.string(),
     challengeRatingValue: v.optional(v.number()),
     experiencePoints: v.optional(v.number()),
+    initiative: v.optional(v.number()),
     legendaryActionCount: v.optional(v.number()),
     lairActionCount: v.optional(v.number()),
     traits: v.optional(
@@ -907,38 +920,10 @@ export default defineSchema({
         })
       )
     ),
-    actions: v.optional(
-      v.array(
-        v.object({
-          name: v.string(),
-          description: v.string(),
-        })
-      )
-    ),
-    reactions: v.optional(
-      v.array(
-        v.object({
-          name: v.string(),
-          description: v.string(),
-        })
-      )
-    ),
-    legendaryActions: v.optional(
-      v.array(
-        v.object({
-          name: v.string(),
-          description: v.string(),
-        })
-      )
-    ),
-    lairActions: v.optional(
-      v.array(
-        v.object({
-          name: v.string(),
-          description: v.string(),
-        })
-      )
-    ),
+    actions: v.optional(v.array(v.id("actions"))),
+    reactions: v.optional(v.array(v.id("actions"))),
+    legendaryActions: v.optional(v.array(v.id("actions"))),
+    lairActions: v.optional(v.array(v.id("actions"))),
     regionalEffects: v.optional(
       v.array(
         v.object({
@@ -980,6 +965,7 @@ export default defineSchema({
           wisdom: v.number(),
           charisma: v.number(),
         }),
+        initiative: v.optional(v.number()), // Direct initiative bonus from equipped items
       })
     ),
 
@@ -1849,6 +1835,137 @@ export default defineSchema({
         distance: v.number(),
       })
     ),
+    // Initiative system state
+    initiativeState: v.optional(v.object({
+      initiativeOrder: v.array(
+        v.object({
+          tokenId: v.string(),
+          label: v.string(),
+          roll: v.number(),
+          modifier: v.number(),
+          total: v.number(),
+          dexterityScore: v.number(),
+          type: v.union(v.literal("pc"), v.literal("npc_friendly"), v.literal("npc_foe")),
+          characterId: v.optional(v.id("characters")),
+          monsterId: v.optional(v.id("monsters")),
+        })
+      ),
+      currentTurnIndex: v.optional(v.union(v.number(), v.null())),
+      isInCombat: v.boolean(),
+      roundNumber: v.number(),
+    })),
+    // Action history for tracking combat actions during rounds
+    actionHistory: v.optional(v.array(
+      v.object({
+        id: v.string(),
+        roundNumber: v.number(),
+        turnIndex: v.number(),
+        tokenId: v.id("battleTokens"),
+        tokenLabel: v.string(),
+        actionType: v.union(
+          v.literal("attack"),
+          v.literal("move"),
+          v.literal("spell"),
+          v.literal("item"),
+          v.literal("bonus_action"),
+          v.literal("reaction"),
+          v.literal("other")
+        ),
+        actionName: v.string(),
+        targetTokenId: v.optional(v.id("battleTokens")),
+        targetLabel: v.optional(v.string()),
+        // Movement data
+        fromX: v.optional(v.number()),
+        fromY: v.optional(v.number()),
+        toX: v.optional(v.number()),
+        toY: v.optional(v.number()),
+        // Attack/action results
+        attackRoll: v.optional(v.number()),
+        attackBonus: v.optional(v.number()),
+        hit: v.optional(v.boolean()),
+        damage: v.optional(v.number()),
+        damageType: v.optional(v.string()),
+        // Other action data
+        actionData: v.optional(v.any()),
+        timestamp: v.number(),
+      })
+    )),
+    // State snapshots for undo functionality
+    stateSnapshots: v.optional(v.array(
+      v.object({
+        id: v.string(),
+        timestamp: v.number(),
+        description: v.string(),
+        tokenPositions: v.array(
+          v.object({
+            tokenId: v.id("battleTokens"),
+            x: v.number(),
+            y: v.number(),
+          })
+        ),
+        mapCells: v.optional(v.array(
+          v.object({
+            x: v.number(),
+            y: v.number(),
+            state: v.optional(v.union(v.literal("inbounds"), v.literal("outbounds"), v.literal("occupied"))),
+            terrainType: v.optional(v.string()),
+            customColor: v.optional(v.string()),
+          })
+        )),
+        // Include initiative state in snapshots
+        initiativeState: v.optional(v.object({
+          initiativeOrder: v.array(
+            v.object({
+              tokenId: v.string(),
+              label: v.string(),
+              roll: v.number(),
+              modifier: v.number(),
+              total: v.number(),
+              dexterityScore: v.number(),
+              type: v.union(v.literal("pc"), v.literal("npc_friendly"), v.literal("npc_foe")),
+              characterId: v.optional(v.id("characters")),
+              monsterId: v.optional(v.id("monsters")),
+            })
+          ),
+          currentTurnIndex: v.optional(v.union(v.number(), v.null())),
+          isInCombat: v.boolean(),
+          roundNumber: v.number(),
+        })),
+        // Include action history up to this point
+        actionHistory: v.optional(v.array(
+          v.object({
+            id: v.string(),
+            roundNumber: v.number(),
+            turnIndex: v.number(),
+            tokenId: v.id("battleTokens"),
+            tokenLabel: v.string(),
+            actionType: v.union(
+              v.literal("attack"),
+              v.literal("move"),
+              v.literal("spell"),
+              v.literal("item"),
+              v.literal("bonus_action"),
+              v.literal("reaction"),
+              v.literal("other")
+            ),
+            actionName: v.string(),
+            targetTokenId: v.optional(v.id("battleTokens")),
+            targetLabel: v.optional(v.string()),
+            fromX: v.optional(v.number()),
+            fromY: v.optional(v.number()),
+            toX: v.optional(v.number()),
+            toY: v.optional(v.number()),
+            attackRoll: v.optional(v.number()),
+            attackBonus: v.optional(v.number()),
+            hit: v.optional(v.boolean()),
+            damage: v.optional(v.number()),
+            damageType: v.optional(v.string()),
+            actionData: v.optional(v.any()),
+            timestamp: v.number(),
+          })
+        )),
+      })
+    )),
     createdBy: v.id("users"),
     clerkId: v.optional(v.string()),
     createdAt: v.number(),

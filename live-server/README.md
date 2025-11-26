@@ -16,7 +16,7 @@ Real-time D&D 5e live interaction server with tRPC and WebSocket support.
 
 1. Install dependencies:
 ```bash
-npm install
+bun install
 ```
 
 2. Copy environment variables:
@@ -28,19 +28,19 @@ cp .env.example .env
 
 4. Start development server:
 ```bash
-npm run dev
+bun run dev
 ```
 
 ## Available Scripts
 
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build for production
-- `npm start` - Start production server
-- `npm test` - Run tests
-- `npm run test:watch` - Run tests in watch mode
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
-- `npm run type-check` - Run TypeScript type checking
+- `bun run dev` - Start development server with hot reload
+- `bun run build` - Build for production
+- `bun start` - Start production server
+- `bun test` - Run tests
+- `bun run test:watch` - Run tests in watch mode
+- `bun run lint` - Run ESLint
+- `bun run lint:fix` - Fix ESLint issues
+- `bun run type-check` - Run TypeScript type checking
 
 ## Docker
 

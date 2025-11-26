@@ -22,6 +22,7 @@ interface Item {
     intelligence?: number
     wisdom?: number
     charisma?: number
+    initiative?: number
   }
   damageRolls?: Array<{
     dice: { count: number; type: string }
@@ -38,6 +39,8 @@ interface ItemCardProps {
   onQuantityChange?: (itemId: string, quantity: number) => void
   canEdit?: boolean
   showQuantityControls?: boolean
+  isEquipped?: boolean
+  equipmentSlot?: string
 }
 
 export function ItemCard({ 
@@ -47,7 +50,9 @@ export function ItemCard({
   onEdit, 
   onQuantityChange,
   canEdit = false,
-  showQuantityControls = false
+  showQuantityControls = false,
+  isEquipped = false,
+  equipmentSlot
 }: ItemCardProps) {
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -105,25 +110,38 @@ export function ItemCard({
                   Attunement
                 </Badge>
               )}
+              {isEquipped && (
+                <Badge variant="default" className="text-xs bg-purple-600 hover:bg-purple-700">
+                  Equipped{equipmentSlot ? ` (${equipmentSlot})` : ''}
+                </Badge>
+              )}
             </div>
           </div>
           
           {showQuantityControls && (
             <div className="flex items-center gap-2 ml-2">
               <Button
+                type="button"
                 size="sm"
                 variant="outline"
                 className="h-6 w-6 p-0"
-                onClick={() => onQuantityChange?.(item._id, Math.max(0, quantity - 1))}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onQuantityChange?.(item._id, Math.max(0, quantity - 1))
+                }}
               >
                 -
               </Button>
               <span className="text-sm font-medium w-8 text-center">{quantity}</span>
               <Button
+                type="button"
                 size="sm"
                 variant="outline"
                 className="h-6 w-6 p-0"
-                onClick={() => onQuantityChange?.(item._id, quantity + 1)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onQuantityChange?.(item._id, quantity + 1)
+                }}
               >
                 +
               </Button>
@@ -211,6 +229,7 @@ export function ItemCard({
 
         <div className="flex gap-2 pt-2">
           <Button 
+            type="button"
             variant="outline" 
             size="sm" 
             className="flex-1"
@@ -223,6 +242,7 @@ export function ItemCard({
           </Button>
           {canEdit && (
             <Button 
+              type="button"
               size="sm" 
               className="flex-1"
               onClick={(e) => {

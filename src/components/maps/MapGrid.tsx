@@ -252,7 +252,15 @@ export const MapGrid: React.FC<MapGridProps> = ({
                 key={`${x},${y}`}
                 x={x}
                 y={y}
-                cell={cell}
+                cell={cell ? {
+                  ...cell,
+                  portalLink: cell.portalLink ? {
+                    targetMapId: cell.portalLink.targetMapId as string,
+                    targetX: cell.portalLink.targetX,
+                    targetY: cell.portalLink.targetY,
+                    label: cell.portalLink.label
+                  } : undefined
+                } : null}
                 entity={entity}
                 isSelected={entity?.entityId === selectedTokenId}
                 isInMovementRange={isInMovementRange}

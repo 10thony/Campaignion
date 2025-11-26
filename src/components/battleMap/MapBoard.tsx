@@ -6,25 +6,19 @@ import { ItemTypes, DragItem } from "../../lib/dndTypes";
 import { BattleToken } from "./BattleToken";
 import { TerrainKey } from "./TerrainKey";
 import { CombatActionSelector } from "./CombatActionSelector";
+import { InitiativePanel } from "./InitiativePanel";
+import { DraggablePanel } from "./DraggablePanel";
+import { FloatingPanelDock } from "./PanelDock";
 import { useBattleMapUI } from "../../lib/battleMapStore";
-import { useRef, useState, useCallback } from "react";
+import { usePanelLayout } from "../../lib/panelLayoutStore";
+import { useRef, useState, useCallback, useEffect, useMemo } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { Button } from "../ui/button";
-import { ChevronDown, ChevronRight } from "lucide-react";
-
-// Terrain color mapping
-const terrainColors: Record<string, string> = {
-  normal: "rgba(255, 255, 255, 0.1)",
-  difficult: "rgba(139, 69, 19, 0.3)", // brown
-  hazardous: "rgba(255, 165, 0, 0.3)", // orange
-  magical: "rgba(147, 51, 234, 0.3)", // purple
-  water: "rgba(59, 130, 246, 0.4)", // blue
-  ice: "rgba(191, 219, 254, 0.5)", // light blue
-  fire: "rgba(239, 68, 68, 0.4)", // red
-  acid: "rgba(132, 204, 22, 0.4)", // lime
-  poison: "rgba(34, 197, 94, 0.4)", // green
-  unstable: "rgba(156, 163, 175, 0.4)", // gray
-};
+import { Info, Layers, Swords, MapIcon } from "lucide-react";
+import { hexToPixel, pixelToHex, hexDistance, getHexesInRange, getHexagonPath, getHexGridDimensions, getHexagonClipPath } from "../../lib/hexUtils";
+import { toast } from "sonner";
+import { useTheme } from "../theme/ThemeProvider";
+import { getTerrainColors, getOverlayColors } from "../../lib/terrainColors";
 
 export function MapBoard({ mapId }: { mapId: string }) {
   const map = useQuery(api.battleMaps.get, { id: mapId as Id<"battleMaps"> });
@@ -49,8 +43,17 @@ export function MapBoard({ mapId }: { mapId: string }) {
     // Combat functionality
     combatState,
     clearCombatState,
+    // Initiative functionality
+    initiativeState,
+    // View control
+    resetView: resetViewTrigger,
   } = useBattleMapUI();
+  const { panels } = usePanelLayout();
   const { user } = useUser();
+  const { actualTheme } = useTheme();
+  const isDark = actualTheme === 'dark';
+  const terrainColors = getTerrainColors(isDark);
+  const overlayColors = getOverlayColors(isDark);
   const dropRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [aoeCenter, setAoeCenter] = useState<{ x: number; y: number } | null>(null);
@@ -63,24 +66,30 @@ export function MapBoard({ mapId }: { mapId: string }) {
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [lastPanTime, setLastPanTime] = useState(0);
   const [, setPanVelocity] = useState({ x: 0, y: 0 });
-  
-  // Controls dialog state
-  const [isControlsCollapsed, setIsControlsCollapsed] = useState(false);
 
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: ItemTypes.TOKEN,
       drop: async (item: DragItem, monitor) => {
         if (!map) return;
+        
+        // Check initiative restrictions
+        if (initiativeState.isInCombat && initiativeState.currentTurnIndex !== null) {
+          const currentEntry = initiativeState.initiativeOrder[initiativeState.currentTurnIndex];
+          if (currentEntry && currentEntry.tokenId !== item.id) {
+            toast.error(`It's ${currentEntry.label}'s turn. Only the current turn's token can move during combat.`);
+            return;
+          }
+        }
+        
         const clientOffset = monitor.getClientOffset();
         if (!clientOffset || !dropRef.current) return;
         const rect = dropRef.current.getBoundingClientRect();
-        const x = Math.floor(
-          (clientOffset.x - rect.left - item.offsetX) / map.cellSize
-        );
-        const y = Math.floor(
-          (clientOffset.y - rect.top - item.offsetY) / map.cellSize
-        );
+        // Convert pixel coordinates to hex coordinates
+        const pixelX = (clientOffset.x - rect.left - item.offsetX) / zoom - panOffset.x;
+        const pixelY = (clientOffset.y - rect.top - item.offsetY) / zoom - panOffset.y;
+        const hexSize = map.cellSize / 2; // Hex size is half of cellSize for pointy-top hexes
+        const { x, y } = pixelToHex(pixelX, pixelY, hexSize);
         try {
           await move({
             id: item.id as Id<"battleTokens">,
@@ -88,14 +97,15 @@ export function MapBoard({ mapId }: { mapId: string }) {
             y,
             enforceSingleOccupancy,
           });
-        } catch (e) {
+        } catch (e: any) {
           console.error(e);
-          // Could show a toast
+          const errorMessage = e?.message || "Failed to move token";
+          toast.error(errorMessage);
         }
       },
       collect: (m) => ({ isOver: m.isOver() }),
     }),
-    [map, move, enforceSingleOccupancy]
+    [map, move, enforceSingleOccupancy, zoom, panOffset, initiativeState]
   );
 
   // Combine the drop ref with our dropRef for calculations
@@ -108,8 +118,8 @@ export function MapBoard({ mapId }: { mapId: string }) {
 
   // Enhanced pan and zoom handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    // Allow panning with left mouse button
-    if (e.button === 0) {
+    // Allow panning with middle mouse button or when holding shift
+    if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
       setIsPanning(true);
       setPanStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
       setLastPanTime(Date.now());
@@ -143,8 +153,23 @@ export function MapBoard({ mapId }: { mapId: string }) {
       
       e.preventDefault();
       e.stopPropagation();
+    } else if (dropRef.current && map) {
+      // Update hovered cell
+      const rect = dropRef.current.getBoundingClientRect();
+      const pixelX = (e.clientX - rect.left) / zoom - panOffset.x;
+      const pixelY = (e.clientY - rect.top) / zoom - panOffset.y;
+      const hexSize = map.cellSize / 2; // Calculate inline
+      const { x, y } = pixelToHex(pixelX, pixelY, hexSize);
+      
+      if (x >= 0 && x < map.cols && y >= 0 && y < map.rows) {
+        if (hoveredCell?.x !== x || hoveredCell?.y !== y) {
+          setHoveredCell({ x, y });
+        }
+      } else {
+        setHoveredCell(null);
+      }
     }
-  }, [isPanning, panStart, panOffset, lastPanTime]);
+  }, [isPanning, panStart, panOffset, lastPanTime, dropRef, map, zoom, hoveredCell]);
 
   const handleMouseUp = useCallback((e: React.MouseEvent) => {
     if (isPanning) {
@@ -183,6 +208,13 @@ export function MapBoard({ mapId }: { mapId: string }) {
     setPanOffset({ x: 0, y: 0 });
     setPanVelocity({ x: 0, y: 0 });
   }, []);
+
+  // Watch for reset view trigger from store
+  useEffect(() => {
+    if (resetViewTrigger !== undefined) {
+      resetView();
+    }
+  }, [resetViewTrigger, resetView]);
 
   // Touch support for mobile devices
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -229,30 +261,26 @@ export function MapBoard({ mapId }: { mapId: string }) {
     }
   }, [isPanning]);
 
-  // Calculate movement range for selected token
+  // Calculate movement range for selected token using hex distance
   const getMovementRange = useCallback(() => {
     if (!selectedTokenForMovement || !tokens || !map) return { range: 0, cells: new Set<string>(), token: null };
     
     const token = tokens.find(t => t._id === selectedTokenForMovement);
     if (!token || !token.speed) return { range: 0, cells: new Set<string>(), token: null };
     
-    const range = Math.floor(token.speed / 5); // Convert feet to grid squares (5ft per square)
+    const range = Math.floor(token.speed / 5); // Convert feet to grid hexes (5ft per hex)
     const cells = new Set<string>();
     
-    // Simple range calculation - show all cells within movement range
-    for (let y = Math.max(0, token.y - range); y <= Math.min(map.rows - 1, token.y + range); y++) {
-      for (let x = Math.max(0, token.x - range); x <= Math.min(map.cols - 1, token.x + range); x++) {
-        const distance = Math.abs(x - token.x) + Math.abs(y - token.y); // Manhattan distance
-        if (distance <= range) {
-          cells.add(`${x},${y}`);
-        }
-      }
-    }
+    // Use hex distance calculation
+    const hexesInRange = getHexesInRange(token.x, token.y, range, map.cols, map.rows);
+    hexesInRange.forEach(hex => {
+      cells.add(`${hex.x},${hex.y}`);
+    });
     
     return { range, cells, token };
   }, [selectedTokenForMovement, tokens, map]);
 
-  // Calculate AoE affected cells
+  // Calculate AoE affected cells using hex distance
   const getAoeCells = useCallback(() => {
     if (!aoeTemplate || !aoeCenter || !map) return new Set<string>();
     
@@ -261,54 +289,98 @@ export function MapBoard({ mapId }: { mapId: string }) {
     
     switch (type) {
       case 'sphere':
-        // Circle around center
-        for (let y = Math.max(0, aoeCenter.y - size); y <= Math.min(map.rows - 1, aoeCenter.y + size); y++) {
-          for (let x = Math.max(0, aoeCenter.x - size); x <= Math.min(map.cols - 1, aoeCenter.x + size); x++) {
-            const distance = Math.sqrt((x - aoeCenter.x) ** 2 + (y - aoeCenter.y) ** 2);
-            if (distance <= size) {
-              cells.add(`${x},${y}`);
-            }
-          }
-        }
+        // Circle around center using hex distance
+        const hexesInRange = getHexesInRange(aoeCenter.x, aoeCenter.y, size, map.cols, map.rows);
+        hexesInRange.forEach(hex => {
+          cells.add(`${hex.x},${hex.y}`);
+        });
         break;
         
       case 'cube':
-        // Square around center
-        for (let y = Math.max(0, aoeCenter.y - size); y <= Math.min(map.rows - 1, aoeCenter.y + size); y++) {
-          for (let x = Math.max(0, aoeCenter.x - size); x <= Math.min(map.cols - 1, aoeCenter.x + size); x++) {
-            cells.add(`${x},${y}`);
-          }
-        }
+        // Hex cube - get hexes within range (cube in hex grid)
+        const cubeHexes = getHexesInRange(aoeCenter.x, aoeCenter.y, size, map.cols, map.rows);
+        cubeHexes.forEach(hex => {
+          cells.add(`${hex.x},${hex.y}`);
+        });
         break;
         
       case 'cone':
-        // 90-degree cone (simplified - pointing right from center)
-        for (let y = Math.max(0, aoeCenter.y - size); y <= Math.min(map.rows - 1, aoeCenter.y + size); y++) {
-          for (let x = aoeCenter.x; x <= Math.min(map.cols - 1, aoeCenter.x + size); x++) {
-            const distance = Math.sqrt((x - aoeCenter.x) ** 2 + (y - aoeCenter.y) ** 2);
-            if (distance <= size && x >= aoeCenter.x) {
-              const angle = Math.atan2(y - aoeCenter.y, x - aoeCenter.x);
-              if (Math.abs(angle) <= Math.PI / 4) { // 45 degrees each side
-                cells.add(`${x},${y}`);
-              }
+        // Cone using hex grid (simplified - pointing right from center)
+        const coneHexes = getHexesInRange(aoeCenter.x, aoeCenter.y, size, map.cols, map.rows);
+        coneHexes.forEach(hex => {
+          // Filter to approximate cone shape (rightward direction)
+          if (hex.x >= aoeCenter.x) {
+            const angle = Math.atan2(hex.y - aoeCenter.y, hex.x - aoeCenter.x);
+            if (Math.abs(angle) <= Math.PI / 3) { // 60 degrees each side for hex
+              cells.add(`${hex.x},${hex.y}`);
             }
           }
-        }
+        });
         break;
         
       case 'line':
-        // Horizontal line from center
-        for (let x = aoeCenter.x; x <= Math.min(map.cols - 1, aoeCenter.x + size); x++) {
-          cells.add(`${x},${aoeCenter.y}`);
-          // Add thickness
-          if (aoeCenter.y > 0) cells.add(`${x},${aoeCenter.y - 1}`);
-          if (aoeCenter.y < map.rows - 1) cells.add(`${x},${aoeCenter.y + 1}`);
-        }
+        // Line in hex grid
+        const lineHexes = getHexesInRange(aoeCenter.x, aoeCenter.y, size, map.cols, map.rows);
+        lineHexes.forEach(hex => {
+          // Filter to approximate line (horizontal)
+          if (Math.abs(hex.y - aoeCenter.y) <= 1 && hex.x >= aoeCenter.x && hex.x <= aoeCenter.x + size) {
+            cells.add(`${hex.x},${hex.y}`);
+          }
+        });
         break;
     }
     
     return cells;
   }, [aoeTemplate, aoeCenter, map]);
+
+  // Calculate hex grid dimensions (hooks must be called before early return)
+  const hexSize = useMemo(() => (map?.cellSize ?? 40) / 2, [map?.cellSize]);
+  const gridDimensions = useMemo(() => {
+    if (!map) return { width: 0, height: 0 };
+    return getHexGridDimensions(map.cols, map.rows, hexSize);
+  }, [map?.cols, map?.rows, hexSize]);
+  
+  // SVG path for hexagon rendering
+  const hexPath = useMemo(() => getHexagonPath(hexSize), [hexSize]);
+  // CSS clip-path for hexagon cells (better browser support)
+  const hexClipPath = useMemo(() => getHexagonClipPath(hexSize), [hexSize]);
+
+  // Render hex grid background (must be called before early return to satisfy rules of hooks)
+  const renderHexGrid = useMemo(() => {
+    if (!map) return [];
+    const hexes = [];
+    const svgSize = hexSize * 2;
+    const viewBoxSize = svgSize;
+    for (let y = 0; y < map.rows; y++) {
+      for (let x = 0; x < map.cols; x++) {
+        const pixelPos = hexToPixel(x, y, hexSize);
+        hexes.push(
+          <svg
+            key={`grid-${x}-${y}`}
+            className="absolute pointer-events-none"
+            style={{
+              left: pixelPos.x - hexSize,
+              top: pixelPos.y - hexSize,
+              width: svgSize,
+              height: svgSize,
+            }}
+            viewBox={`${-hexSize} ${-hexSize} ${viewBoxSize} ${viewBoxSize}`}
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <path
+              d={hexPath}
+              fill="none"
+              stroke="rgba(0,0,0,0.4)"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+          </svg>
+        );
+      }
+    }
+    return hexes;
+  }, [map?.rows, map?.cols, hexSize, hexPath]);
 
   if (!map) return <div className="p-4">Loading map…</div>;
 
@@ -319,38 +391,51 @@ export function MapBoard({ mapId }: { mapId: string }) {
     if (selectedTokenForMovement && tokens && map) {
       const selectedToken = tokens.find(t => t._id === selectedTokenForMovement);
       if (selectedToken && selectedToken.speed) {
-        const movementData = getMovementRange();
-        
-        // Check if the clicked cell is within movement range
-        const cellKey = `${x},${y}`;
-        if (movementData.cells.has(cellKey)) {
-          // Check for collision with other tokens (if single occupancy is enforced)
-          if (enforceSingleOccupancy) {
-            const isOccupied = tokens.some(token => 
-              token._id !== selectedToken._id && 
-              token.x === x && token.y === y
-            );
-            if (isOccupied) {
-              console.log("Cannot move to occupied cell");
-              return;
-            }
-          }
-          
-          // Move the token
-          try {
-            await move({
-              id: selectedToken._id,
-              x,
-              y,
-            });
-            
-            // Clear movement selection after successful move
-            setSelectedTokenForMovement(null);
-          } catch (e) {
-            console.error("Failed to move token:", e);
+        // Check initiative restrictions
+        if (initiativeState.isInCombat && initiativeState.currentTurnIndex !== null) {
+          const currentEntry = initiativeState.initiativeOrder[initiativeState.currentTurnIndex];
+          if (currentEntry && currentEntry.tokenId !== selectedToken._id) {
+            const currentTokenLabel = tokens.find(t => t._id === currentEntry.tokenId)?.label || currentEntry.label;
+            toast.error(`It's ${currentTokenLabel}'s turn. Only the current turn's token can move during combat.`);
+            return;
           }
         }
-        return; // Don't process other editing modes when moving
+        
+        const movementData = getMovementRange();
+        
+          // Check if the clicked cell is within movement range using hex distance
+          const cellKey = `${x},${y}`;
+          const distance = hexDistance(selectedToken.x, selectedToken.y, x, y);
+          if (movementData.cells.has(cellKey) && distance <= movementData.range) {
+            // Check for collision with other tokens (if single occupancy is enforced)
+            if (enforceSingleOccupancy) {
+              const isOccupied = tokens.some(token => 
+                token._id !== selectedToken._id && 
+                token.x === x && token.y === y
+              );
+              if (isOccupied) {
+                console.log("Cannot move to occupied cell");
+                return;
+              }
+            }
+            
+            // Move the token
+            try {
+              await move({
+                id: selectedToken._id,
+                x,
+                y,
+              });
+              
+              // Clear movement selection after successful move
+              setSelectedTokenForMovement(null);
+            } catch (e: any) {
+              console.error("Failed to move token:", e);
+              const errorMessage = e?.message || "Failed to move token";
+              toast.error(errorMessage);
+            }
+          }
+          return; // Don't process other editing modes when moving
       }
     }
 
@@ -405,15 +490,13 @@ export function MapBoard({ mapId }: { mapId: string }) {
   };
 
   const gridStyle: React.CSSProperties = {
-    width: map.cols * map.cellSize,
-    height: map.rows * map.cellSize,
-    backgroundSize: `${map.cellSize}px ${map.cellSize}px`,
-    backgroundImage:
-      "linear-gradient(to right, rgba(0,0,0,0.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.15) 1px, transparent 1px)",
+    width: gridDimensions.width,
+    height: gridDimensions.height,
   };
 
   // Render cell overlays for terrain, AoE, measurements, and movement
   const renderCells = () => {
+    if (!map) return [];
     const cells = [];
     const aoeCells = getAoeCells();
     const movementData = getMovementRange();
@@ -442,49 +525,57 @@ export function MapBoard({ mapId }: { mapId: string }) {
           isSelected;
 
         if (needsRendering) {
+          const pixelPos = hexToPixel(x, y, hexSize);
           let cellStyle: React.CSSProperties = {
-            left: x * map.cellSize,
-            top: y * map.cellSize,
-            width: map.cellSize,
-            height: map.cellSize,
+            left: pixelPos.x - hexSize,
+            top: pixelPos.y - hexSize,
+            width: hexSize * 2,
+            height: hexSize * 2,
+            clipPath: hexClipPath,
+            WebkitClipPath: hexClipPath,
           };
 
           let cellClass = "absolute pointer-events-auto cursor-pointer transition-all";
 
           if (isSelected) {
-            cellStyle.backgroundColor = "rgba(34, 197, 94, 0.3)";
-            cellStyle.border = "2px solid rgba(34, 197, 94, 0.8)";
-            cellClass += " ring-2 ring-green-400";
+            cellStyle.backgroundColor = overlayColors.multiSelect;
+            cellStyle.border = `2px solid ${isDark ? 'rgba(0, 201, 241, 0.8)' : 'rgba(0, 145, 173, 0.8)'}`;
+            cellClass += " ring-2 ring-pacific-cyan-400";
           } else if (isAoeCell) {
-            cellStyle.backgroundColor = "rgba(255, 0, 0, 0.3)";
-            cellStyle.border = "2px solid rgba(255, 0, 0, 0.6)";
+            cellStyle.backgroundColor = overlayColors.aoe;
+            cellStyle.border = `2px solid ${isDark ? 'rgba(214, 35, 118, 0.7)' : 'rgba(160, 26, 88, 0.7)'}`;
             cellClass += " animate-pulse";
           } else if (isMeasurePoint) {
-            cellStyle.backgroundColor = "rgba(59, 130, 246, 0.4)";
-            cellStyle.border = "2px solid rgba(59, 130, 246, 0.8)";
+            cellStyle.backgroundColor = overlayColors.measurePoint;
+            cellStyle.border = `2px solid ${isDark ? 'rgba(61, 146, 196, 0.9)' : 'rgba(46, 111, 149, 0.9)'}`;
           } else if (isMovementRange && !isHovered) {
-            // Terrain color takes precedence as background, movement range shown as yellow border
+            // Terrain color takes precedence as background, movement range shown with Pacific Cyan
             if (color !== terrainColors.normal) {
               cellStyle.backgroundColor = color;
             } else {
-              cellStyle.backgroundColor = "rgba(250, 204, 21, 0.2)";
+              cellStyle.backgroundColor = overlayColors.movementRange;
             }
-            cellStyle.border = "2px solid rgba(250, 204, 21, 0.6)";
+            cellStyle.border = `2px solid ${isDark ? 'rgba(0, 201, 241, 0.6)' : 'rgba(0, 145, 173, 0.6)'}`;
           } else if (isMovementRange && isHovered) {
-            // Terrain color takes precedence as background, movement range shown as yellow border
+            // Terrain color takes precedence as background, movement range shown with Pacific Cyan
             if (color !== terrainColors.normal) {
               cellStyle.backgroundColor = color;
             } else {
-              cellStyle.backgroundColor = "rgba(250, 204, 21, 0.4)";
+              cellStyle.backgroundColor = overlayColors.movementHover;
             }
-            cellStyle.border = "3px solid rgba(250, 204, 21, 0.8)";
-            cellClass += " ring-2 ring-yellow-400";
+            cellStyle.border = `3px solid ${isDark ? 'rgba(0, 201, 241, 0.9)' : 'rgba(0, 145, 173, 0.9)'}`;
+            cellClass += " ring-2 ring-pacific-cyan-400";
           } else if (color !== terrainColors.normal) {
             cellStyle.backgroundColor = color;
             cellClass += " hover:brightness-110";
           } else if (editingMode === "terrain" || editingMode === "measure" || editingMode === "aoe" || editingMode === "multiselect") {
             cellClass += " hover:bg-neutral-200 hover:bg-opacity-30";
           }
+
+          // Calculate hex distance for tooltip
+          const distance = movementData.token 
+            ? hexDistance(movementData.token.x, movementData.token.y, x, y)
+            : 0;
 
           cells.push(
             <div
@@ -497,7 +588,7 @@ export function MapBoard({ mapId }: { mapId: string }) {
               title={
                 isAoeCell ? "AoE Target" :
                 isMeasurePoint ? "Measurement Point" :
-                isMovementRange ? `Move here (${Math.abs(x - (movementData.token?.x || 0)) + Math.abs(y - (movementData.token?.y || 0))} squares)` :
+                isMovementRange ? `Move here (${distance} hexes)` :
                 map.cells?.find(c => c.x === x && c.y === y)?.terrainType || "normal"
               }
             />
@@ -541,162 +632,253 @@ export function MapBoard({ mapId }: { mapId: string }) {
           ref={setRefs}
           className="relative bg-gray-100 dark:bg-gray-300 shadow-inner"
           style={gridStyle}
+          onClick={(e) => {
+            // Handle cell clicks on the grid
+            if (!isPanning && dropRef.current && map) {
+              const rect = dropRef.current.getBoundingClientRect();
+              const pixelX = (e.clientX - rect.left) / zoom - panOffset.x;
+              const pixelY = (e.clientY - rect.top) / zoom - panOffset.y;
+              const hexSize = map.cellSize / 2; // Calculate inline
+              const { x, y } = pixelToHex(pixelX, pixelY, hexSize);
+              
+              if (x >= 0 && x < map.cols && y >= 0 && y < map.rows) {
+                handleCellClick(x, y);
+              }
+            }
+          }}
         >
+          {/* Hex grid background */}
+          {renderHexGrid}
           {renderCells()}
           
           {/* Measurement line */}
-          {measurePoints.length === 2 && (
-            <svg
-              className="absolute inset-0 pointer-events-none"
-              style={{ width: map.cols * map.cellSize, height: map.rows * map.cellSize }}
-            >
-              <line
-                x1={(measurePoints[0].x + 0.5) * map.cellSize}
-                y1={(measurePoints[0].y + 0.5) * map.cellSize}
-                x2={(measurePoints[1].x + 0.5) * map.cellSize}
-                y2={(measurePoints[1].y + 0.5) * map.cellSize}
-                stroke="#3b82f6"
-                strokeWidth="3"
-                strokeDasharray="5,5"
-              />
-              <circle
-                cx={(measurePoints[0].x + 0.5) * map.cellSize}
-                cy={(measurePoints[0].y + 0.5) * map.cellSize}
-                r="6"
-                fill="#3b82f6"
-              />
-              <circle
-                cx={(measurePoints[1].x + 0.5) * map.cellSize}
-                cy={(measurePoints[1].y + 0.5) * map.cellSize}
-                r="6"
-                fill="#3b82f6"
-              />
-            </svg>
-          )}
+          {measurePoints && measurePoints.length === 2 && (() => {
+            const startPixel = hexToPixel(measurePoints[0].x, measurePoints[0].y, hexSize);
+            const endPixel = hexToPixel(measurePoints[1].x, measurePoints[1].y, hexSize);
+            const distance = hexDistance(measurePoints[0].x, measurePoints[0].y, measurePoints[1].x, measurePoints[1].y);
+            const measureColor = isDark ? '#3d92c4' : '#2e6f95'; // Rich Cerulean
+            return (
+              <svg
+                className="absolute inset-0 pointer-events-none"
+                style={{ width: gridDimensions.width, height: gridDimensions.height }}
+              >
+                <line
+                  x1={startPixel.x}
+                  y1={startPixel.y}
+                  x2={endPixel.x}
+                  y2={endPixel.y}
+                  stroke={measureColor}
+                  strokeWidth="3"
+                  strokeDasharray="5,5"
+                />
+                <circle
+                  cx={startPixel.x}
+                  cy={startPixel.y}
+                  r="6"
+                  fill={measureColor}
+                />
+                <circle
+                  cx={endPixel.x}
+                  cy={endPixel.y}
+                  r="6"
+                  fill={measureColor}
+                />
+                <text
+                  x={(startPixel.x + endPixel.x) / 2}
+                  y={(startPixel.y + endPixel.y) / 2 - 10}
+                  fill={measureColor}
+                  fontSize="12"
+                  fontWeight="bold"
+                  textAnchor="middle"
+                >
+                  {distance} hexes ({(distance * 5).toFixed(0)}ft)
+                </text>
+              </svg>
+            );
+          })()}
           
-          {tokens?.map((t) => (
-            <BattleToken key={t._id} token={t} cellSize={map.cellSize} allTokens={tokens} />
-          ))}
+          {tokens?.map((t) => {
+            const tokenPixelPos = hexToPixel(t.x, t.y, hexSize);
+            return (
+              <div
+                key={t._id}
+                style={{
+                  position: 'absolute',
+                  left: tokenPixelPos.x,
+                  top: tokenPixelPos.y,
+                }}
+              >
+                <BattleToken token={t} cellSize={hexSize * 2} allTokens={tokens} />
+              </div>
+            );
+          })}
           {isOver && (
             <div className="absolute inset-0 pointer-events-none ring-2 ring-blue-400" />
           )}
         </div>
       </div>
 
-      {/* Zoom controls */}
-      <div className="absolute bottom-4 right-4 flex flex-col gap-1 bg-card border rounded-lg shadow-lg p-1">
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => setZoom(prev => Math.min(3, prev * 1.2))}
-          title="Zoom In"
-          className="h-8 w-8 p-0"
-        >
-          +
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => setZoom(prev => Math.max(0.5, prev * 0.8))}
-          title="Zoom Out"
-          className="h-8 w-8 p-0"
-        >
-          −
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={resetView}
-          title="Reset View"
-          className="h-8 w-8 p-0 text-xs"
-        >
-          ⌂
-        </Button>
-        <div className="text-xs text-center text-muted-foreground px-1 py-1">
-          {Math.round(zoom * 100)}%
-        </div>
-      </div>
+      {/* Draggable Panels Container */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Zoom Controls Panel */}
+        {panels.zoom.isVisible && (
+          <DraggablePanel
+            id="zoom"
+            title="Zoom"
+            anchor="bottom-right"
+            defaultWidth={80}
+            minWidth={70}
+            maxWidth={100}
+            showMinimize={false}
+            icon={<span className="text-sm">🔍</span>}
+          >
+            <div className="flex flex-col gap-1 p-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setZoom(prev => Math.min(3, prev * 1.2))}
+                title="Zoom In"
+                className="h-8 w-8 p-0 mx-auto"
+              >
+                +
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setZoom(prev => Math.max(0.5, prev * 0.8))}
+                title="Zoom Out"
+                className="h-8 w-8 p-0 mx-auto"
+              >
+                −
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={resetView}
+                title="Reset View"
+                className="h-8 w-8 p-0 text-xs mx-auto"
+              >
+                ⌂
+              </Button>
+              <div className="text-xs text-center text-muted-foreground px-1 py-1">
+                {Math.round(zoom * 100)}%
+              </div>
+            </div>
+          </DraggablePanel>
+        )}
 
-      {/* Collapsible Controls Dialog */}
-      <div className="absolute top-4 right-4 bg-card/95 border backdrop-blur-sm rounded-lg shadow-lg pointer-events-auto max-w-xs">
-        <button
-          onClick={() => setIsControlsCollapsed(!isControlsCollapsed)}
-          className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors rounded-t-lg"
+        {/* Controls Panel */}
+        <DraggablePanel
+          id="controls"
+          title="Controls"
+          anchor="top-right"
+          defaultWidth={280}
+          icon={<Info className="h-4 w-4" />}
+          minimizedContent={
+            <span className="text-xs">
+              {selectedTokenForMovement ? "Token selected" : "Drag to interact"}
+            </span>
+          }
         >
-          <div className="font-semibold text-foreground text-sm">Controls</div>
-          {isControlsCollapsed ? (
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          ) : (
-            <ChevronDown className="h-4 w-4 text-muted-foreground" />
-          )}
-        </button>
-        
-        {!isControlsCollapsed && (
           <div className="px-3 pb-3 text-sm">
             <div className="text-muted-foreground mb-2">• Click token to show range</div>
             <div className="text-muted-foreground mb-2">• Drag tokens to move</div>
-            <div className="text-muted-foreground mb-2">• Middle/Right mouse: Pan</div>
+            <div className="text-muted-foreground mb-2">• Shift+Click or Middle mouse: Pan</div>
             <div className="text-muted-foreground mb-2">• Scroll wheel: Pan</div>
             <div className="text-muted-foreground mb-2">• Ctrl+Scroll: Zoom</div>
             {selectedTokenForMovement && (
-              <div className="font-bold mt-2 text-yellow-600 dark:text-yellow-400">
+              <div className="font-bold mt-2 text-pacific-cyan-600 dark:text-pacific-cyan-300">
                 ⭐ Token selected - movement range shown
                 {tokens?.find(t => t._id === selectedTokenForMovement)?.speed && (
                   <div className="text-xs">Speed: {tokens?.find(t => t._id === selectedTokenForMovement)?.speed}ft</div>
                 )}
               </div>
             )}
-            {editingMode === "terrain" && <div className="font-bold mt-2 text-yellow-600 dark:text-yellow-400">📐 Click cells to paint terrain</div>}
+            {editingMode === "terrain" && <div className="font-bold mt-2 text-dusty-grape-600 dark:text-dusty-grape-300">📐 Click cells to paint terrain</div>}
             {editingMode === "measure" && (
-              <div className="font-bold mt-2 text-blue-600 dark:text-blue-400">
+              <div className="font-bold mt-2 text-rich-cerulean-600 dark:text-rich-cerulean-300">
                 📏 Click two points to measure
                 {measurePoints.length === 1 && <div className="text-xs">Click end point</div>}
               </div>
             )}
             {editingMode === "aoe" && (
-              <div className="font-bold mt-2 text-red-600 dark:text-red-400">
+              <div className="font-bold mt-2 text-dark-raspberry-600 dark:text-dark-raspberry-300">
                 🎯 Click to place {aoeTemplate?.type} AoE
                 <div className="text-xs">Size: {(aoeTemplate?.size || 0) * 5}ft</div>
               </div>
             )}
             {editingMode === "multiselect" && (
-              <div className="font-bold mt-2 text-green-600 dark:text-green-400">
+              <div className="font-bold mt-2 text-pacific-cyan-600 dark:text-pacific-cyan-300">
                 🎯 Multi-Select Mode
                 <div className="text-xs">Click cells to select ({selectedCells.size} selected)</div>
                 <div className="text-xs">Use toolbar to apply terrain or AoE</div>
               </div>
             )}
           </div>
+        </DraggablePanel>
+
+        {/* Terrain Key Panel */}
+        <DraggablePanel
+          id="terrain"
+          title="Terrain Types & Effects"
+          anchor="top-right"
+          defaultWidth={280}
+          icon={<Layers className="h-4 w-4" />}
+          minimizedContent={<span className="text-xs">10 terrain types</span>}
+        >
+          <div className="max-h-[50vh] overflow-y-auto">
+            <TerrainKey className="border-0 shadow-none bg-transparent backdrop-blur-none" />
+          </div>
+        </DraggablePanel>
+
+        {/* Initiative Panel */}
+        <DraggablePanel
+          id="initiative"
+          title="Initiative Tracker"
+          anchor="top-left"
+          defaultWidth={320}
+          icon={<Swords className="h-4 w-4" />}
+          minimizedContent={
+            initiativeState.isInCombat ? (
+              <span className="text-xs">Round {initiativeState.roundNumber}</span>
+            ) : (
+              <span className="text-xs">Not in combat</span>
+            )
+          }
+        >
+          <div className="max-h-[50vh] overflow-y-auto">
+            <InitiativePanel mapId={mapId} />
+          </div>
+        </DraggablePanel>
+
+        {/* Combat Action Selector Panel */}
+        {combatState.isCombatMode && combatState.attackerTokenId && combatState.targetTokenId && tokens && (
+          <DraggablePanel
+            id="combat"
+            title="Combat Actions"
+            anchor="free"
+            defaultWidth={400}
+            icon={<MapIcon className="h-4 w-4" />}
+            closable={false}
+          >
+            <CombatActionSelector
+              attacker={tokens.find(t => t._id === combatState.attackerTokenId)!}
+              target={tokens.find(t => t._id === combatState.targetTokenId)!}
+              attackerEntity={null}
+              availableActions={combatState.availableActions}
+              onActionSelected={() => {
+                clearCombatState();
+              }}
+              onCancel={() => {
+                clearCombatState();
+              }}
+            />
+          </DraggablePanel>
         )}
       </div>
 
-      {/* Terrain Key - positioned dynamically based on controls state */}
-      <div 
-        className="absolute right-4" 
-        style={{ 
-          top: isControlsCollapsed ? '4rem' : '20rem' // When collapsed, position below the controls header
-        }}
-      >
-        <TerrainKey />
-      </div>
-      
-      {/* Combat Action Selector */}
-      {combatState.isCombatMode && combatState.attackerTokenId && combatState.targetTokenId && tokens && (
-        <div className="absolute top-4 left-4 z-20">
-          <CombatActionSelector
-            attacker={tokens.find(t => t._id === combatState.attackerTokenId)!}
-            target={tokens.find(t => t._id === combatState.targetTokenId)!}
-            attackerEntity={null} // Will be populated by the component
-            availableActions={combatState.availableActions}
-            onActionSelected={() => {
-              clearCombatState();
-            }}
-            onCancel={() => {
-              clearCombatState();
-            }}
-          />
-        </div>
-      )}
+      {/* Floating dock for hidden panels */}
+      <FloatingPanelDock />
     </div>
   );
 }

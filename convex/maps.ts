@@ -38,6 +38,25 @@ export const getUserMaps = query({
   },
 });
 
+// List maps (for dropdowns, filtering by clerkId if provided)
+export const list = query({
+  args: { clerkId: v.optional(v.string()) },
+  handler: async (ctx, args) => {
+    try {
+      let query = ctx.db.query("maps");
+      
+      if (args.clerkId) {
+        query = query.filter((q) => q.eq(q.field("clerkId"), args.clerkId));
+      }
+      
+      return await query.collect();
+    } catch (error) {
+      console.error('list maps error:', error);
+      return [];
+    }
+  },
+});
+
 // Get all map instances (will be filtered on client side)
 export const getAllMapInstances = query({
   args: {},
@@ -109,6 +128,7 @@ export const createMap = mutation({
     name: v.string(),
     width: v.number(),
     height: v.number(),
+    mapType: v.optional(v.union(v.literal("battle"), v.literal("nonCombat"))),
     cells: v.array(
       v.object({
         x: v.number(),
@@ -159,6 +179,14 @@ export const createMap = mutation({
           })
         ),
         customColor: v.optional(v.string()),
+        portalLink: v.optional(
+          v.object({
+            targetMapId: v.id("maps"),
+            targetX: v.number(),
+            targetY: v.number(),
+            label: v.optional(v.string()),
+          })
+        ),
       })
     ),
     clerkId: v.optional(v.string()), // Add optional clerkId prop
@@ -186,6 +214,7 @@ export const createMap = mutation({
       name: args.name,
       width: args.width,
       height: args.height,
+      mapType: args.mapType || "battle", // Default to battle for backward compatibility
       cells: args.cells,
       createdBy: user._id,
       clerkId: args.clerkId || user.clerkId, // Store Clerk ID for direct filtering
@@ -258,6 +287,14 @@ export const updateMapCells = mutation({
           })
         ),
         customColor: v.optional(v.string()),
+        portalLink: v.optional(
+          v.object({
+            targetMapId: v.id("maps"),
+            targetX: v.number(),
+            targetY: v.number(),
+            label: v.optional(v.string()),
+          })
+        ),
       })
     ),
     clerkId: v.optional(v.string()), // Add optional clerkId prop
@@ -639,5 +676,162 @@ export const undoLastMove = mutation({
       movementHistory: newMovementHistory,
       updatedAt: Date.now(),
     });
+  },
+});
+
+// Set or update a portal link on a cell
+export const setCellPortalLink = mutation({
+  args: {
+    mapId: v.id("maps"),
+    x: v.number(),
+    y: v.number(),
+    portalLink: v.optional(
+      v.object({
+        targetMapId: v.id("maps"),
+        targetX: v.number(),
+        targetY: v.number(),
+        label: v.optional(v.string()),
+      })
+    ),
+    clerkId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const map = await ctx.db.get(args.mapId);
+    if (!map) {
+      throw new Error("Map not found");
+    }
+
+    let user;
+    if (args.clerkId) {
+      user = await ctx.db
+        .query("users")
+        .filter((q) => q.eq(q.field("clerkId"), args.clerkId))
+        .first();
+    } else {
+      user = await getCurrentUser(ctx);
+    }
+    
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Check if user owns this map or is admin/DM
+    if (map.createdBy !== user._id && user.role !== "admin" && user.role !== "dm") {
+      throw new Error("Unauthorized access to map");
+    }
+
+    // Verify target map exists if portal link is provided
+    if (args.portalLink) {
+      const targetMap = await ctx.db.get(args.portalLink.targetMapId);
+      if (!targetMap) {
+        throw new Error("Target map not found");
+      }
+    }
+
+    // Update the cell with the portal link
+    const cells = map.cells.map(cell => {
+      if (cell.x === args.x && cell.y === args.y) {
+        return {
+          ...cell,
+          portalLink: args.portalLink || undefined,
+        };
+      }
+      return cell;
+    });
+
+    await ctx.db.patch(args.mapId, {
+      cells,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// Navigate to a linked map (used when clicking on a portal link)
+export const navigateToLinkedMap = mutation({
+  args: {
+    instanceId: v.id("mapInstances"),
+    targetMapId: v.id("maps"),
+    targetX: v.number(),
+    targetY: v.number(),
+    entityId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const instance = await ctx.db.get(args.instanceId);
+    if (!instance) {
+      throw new Error("Map instance not found");
+    }
+
+    // Find the entity in current positions
+    const entityIndex = instance.currentPositions.findIndex(
+      pos => pos.entityId === args.entityId
+    );
+
+    if (entityIndex === -1) {
+      throw new Error("Entity not found in map instance");
+    }
+
+    // Check if target map exists
+    const targetMap = await ctx.db.get(args.targetMapId);
+    if (!targetMap) {
+      throw new Error("Target map not found");
+    }
+
+    // Verify target coordinates are valid
+    if (args.targetX < 0 || args.targetX >= targetMap.width || 
+        args.targetY < 0 || args.targetY >= targetMap.height) {
+      throw new Error("Invalid target coordinates");
+    }
+
+    // Find or create a map instance for the target map
+    let targetInstance = await ctx.db
+      .query("mapInstances")
+      .filter((q) => 
+        q.and(
+          q.eq(q.field("mapId"), args.targetMapId),
+          q.eq(q.field("interactionId"), instance.interactionId || null)
+        )
+      )
+      .first();
+
+    if (!targetInstance) {
+      // Create a new instance for the target map
+      targetInstance = await ctx.db.insert("mapInstances", {
+        mapId: args.targetMapId,
+        campaignId: instance.campaignId,
+        interactionId: instance.interactionId,
+        name: `${targetMap.name} - Session`,
+        currentPositions: [],
+        movementHistory: [],
+        createdBy: instance.createdBy,
+        clerkId: instance.clerkId,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+    }
+
+    // Move entity to the new map instance
+    const entity = instance.currentPositions[entityIndex];
+    const newPositions = instance.currentPositions.filter((_, i) => i !== entityIndex);
+    
+    // Add entity to target instance
+    const targetPositions = [...targetInstance.currentPositions];
+    targetPositions.push({
+      ...entity,
+      x: args.targetX,
+      y: args.targetY,
+    });
+
+    // Update both instances
+    await ctx.db.patch(args.instanceId, {
+      currentPositions: newPositions,
+      updatedAt: Date.now(),
+    });
+
+    await ctx.db.patch(targetInstance._id, {
+      currentPositions: targetPositions,
+      updatedAt: Date.now(),
+    });
+
+    return targetInstance._id;
   },
 }); 

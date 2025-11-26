@@ -3,8 +3,27 @@ import { query, mutation } from "./_generated/server";
 import { getCurrentUser } from "./clerkService";
 import { api } from "./_generated/api";
 
+// Type definitions for ability scores
+type AbilityScores = {
+  strength: number;
+  dexterity: number;
+  constitution: number;
+  intelligence: number;
+  wisdom: number;
+  charisma: number;
+};
+
+type AbilityModifiers = {
+  strength: number;
+  dexterity: number;
+  constitution: number;
+  intelligence: number;
+  wisdom: number;
+  charisma: number;
+};
+
 // Helper function to calculate ability modifiers
-function calculateAbilityModifiers(abilityScores: any) {
+function calculateAbilityModifiers(abilityScores: AbilityScores): AbilityModifiers {
   return {
     strength: Math.floor((abilityScores.strength - 10) / 2),
     dexterity: Math.floor((abilityScores.dexterity - 10) / 2),
@@ -18,6 +37,86 @@ function calculateAbilityModifiers(abilityScores: any) {
 // Helper function to calculate total AC
 function calculateTotalArmorClass(baseAC: number, dexMod: number, equipmentBonus: number = 0): number {
   return Math.max(10 + dexMod + equipmentBonus, baseAC + equipmentBonus);
+}
+
+// Type definitions for initiative calculation
+type InitiativeEntity = {
+  abilityModifiers?: { dexterity: number; charisma?: number };
+  abilityScores?: { dexterity: number };
+  equipmentBonuses?: { 
+    abilityScores?: { dexterity: number };
+    initiative?: number; // Direct initiative bonus from equipped items
+  };
+  classes?: Array<{ name: string; level: number; subclass?: string }>;
+  feats?: Array<{ name: string }>;
+  features?: Array<{ name: string; source: string }>;
+};
+
+// Helper function to calculate initiative modifier breakdown
+// This checks for bonuses from feats, class features, items, etc.
+function calculateInitiativeModifier(entity: InitiativeEntity): number {
+  // Get Dexterity modifier
+  let dexModifier = 0;
+  if (entity.abilityModifiers?.dexterity !== undefined) {
+    dexModifier = entity.abilityModifiers.dexterity;
+  } else if (entity.abilityScores?.dexterity !== undefined) {
+    dexModifier = Math.floor((entity.abilityScores.dexterity - 10) / 2);
+  }
+  
+  // Add equipment bonuses to dexterity (which affects the modifier)
+  if (entity.equipmentBonuses?.abilityScores?.dexterity) {
+    const equipmentDexBonus = entity.equipmentBonuses.abilityScores.dexterity;
+    if (entity.abilityScores?.dexterity !== undefined) {
+      const totalDex = entity.abilityScores.dexterity + equipmentDexBonus;
+      dexModifier = Math.floor((totalDex - 10) / 2);
+    }
+  }
+  
+  let totalModifier = dexModifier;
+  
+  // Check for Alert feat (+5 bonus)
+  const hasAlertFeat = entity.feats?.some(f => 
+    f.name.toLowerCase().includes("alert")
+  ) || false;
+  
+  if (hasAlertFeat) {
+    totalModifier += 5;
+  }
+  
+  // Check for Swashbuckler Rogue (adds Charisma modifier at 3rd level)
+  const swashbucklerClass = entity.classes?.find(
+    c => c.name === "Rogue" && c.subclass === "Swashbuckler" && c.level >= 3
+  );
+  
+  if (swashbucklerClass && entity.abilityModifiers?.charisma !== undefined) {
+    totalModifier += entity.abilityModifiers.charisma;
+  }
+  
+  // Check for Harengon race (add proficiency bonus)
+  // Note: This requires level information, which we'll need from the entity
+  const hasHarengonTrait = entity.features?.some(f =>
+    f.name.toLowerCase().includes("hare-trigger") ||
+    f.name.toLowerCase().includes("harengon")
+  );
+  
+  if (hasHarengonTrait && entity.classes && entity.classes.length > 0) {
+    const totalLevel = entity.classes.reduce((sum, c) => sum + c.level, 0);
+    const proficiencyBonus = Math.ceil(totalLevel / 4) + 1;
+    totalModifier += proficiencyBonus;
+  }
+  
+  // Add direct initiative bonus from equipped items
+  if (entity.equipmentBonuses?.initiative) {
+    totalModifier += entity.equipmentBonuses.initiative;
+  }
+  
+  return totalModifier;
+}
+
+// Helper function to roll initiative (d20 + modifier)
+function rollInitiative(modifier: number): number {
+  const roll = Math.floor(Math.random() * 20) + 1;
+  return roll + modifier;
 }
 
 // Phase 2: Database-driven helper functions
@@ -35,7 +134,7 @@ export const getClassHitDie = query({
 
 export const getProficiencyBonus = query({
   args: { level: v.number() },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args): Promise<number> => {
     return Math.ceil(args.level / 4) + 1;
   },
 });
@@ -65,6 +164,14 @@ export const getAllCharacters = query({
   },
 });
 
+// Public function for MAUI native apps - returns all characters without authentication
+export const getAllCharactersPublic = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("characters").collect();
+  },
+});
+
 export const getCharacterById = query({
   args: { characterId: v.id("characters") },
   handler: async (ctx, args) => {
@@ -74,12 +181,14 @@ export const getCharacterById = query({
 
 export const getCharacterWithActions = query({
   args: { characterId: v.id("characters") },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<({
+    resolvedActions: import("./_generated/dataModel").Doc<"actions">[];
+  } & import("./_generated/dataModel").Doc<"characters">) | null> => {
     const character = await ctx.db.get(args.characterId);
     if (!character) return null;
 
     // Resolve action IDs to actual action objects
-    const resolvedActions = [];
+    const resolvedActions: import("./_generated/dataModel").Doc<"actions">[] = [];
     if (character.actions && character.actions.length > 0) {
       for (const actionId of character.actions) {
         const action = await ctx.db.get(actionId);
@@ -310,19 +419,25 @@ export const createPlayerCharacter = mutation({
       }),
     })),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<import("./_generated/dataModel").Id<"characters">> => {
     const user = await getCurrentUser(ctx);
 
     // Calculate derived stats server-side
     const abilityModifiers = calculateAbilityModifiers(args.abilityScores);
-    const proficiencyBonus = await ctx.runQuery(api.characters.getProficiencyBonus, { level: args.level });
+    const proficiencyBonus: number = await ctx.runQuery(api.characters.getProficiencyBonus, { level: args.level });
     
     // Calculate total AC considering Dex modifier
     const dexModifier = abilityModifiers.dexterity;
     const totalAC = calculateTotalArmorClass(10, dexModifier);
 
     // Process multiclass data if provided
-    const processedClasses = args.classes || [{
+    const processedClasses: Array<{
+      name: string;
+      level: number;
+      hitDie: string;
+      features?: string[];
+      subclass?: string;
+    }> = args.classes || [{
       name: args.class,
       level: args.level,
       hitDie: await ctx.runQuery(api.characters.getClassHitDie, { className: args.class }),
@@ -330,7 +445,18 @@ export const createPlayerCharacter = mutation({
       subclass: undefined,
     }];
 
-    const characterId = await ctx.db.insert("characters", {
+    // Calculate and roll initiative
+    const initiativeModifier = calculateInitiativeModifier({
+      abilityModifiers,
+      abilityScores: args.abilityScores,
+      equipmentBonuses: args.equipmentBonuses,
+      classes: processedClasses,
+      feats: args.feats,
+      features: args.features,
+    });
+    const rolledInitiative = rollInitiative(initiativeModifier);
+
+    const characterId: import("./_generated/dataModel").Id<"characters"> = await ctx.db.insert("characters", {
       ...args,
       characterType: "player" as const,
       classes: processedClasses,
@@ -343,6 +469,7 @@ export const createPlayerCharacter = mutation({
       baseArmorClass: args.baseArmorClass || args.armorClass,
       experiencePoints: 0, // Default starting XP
       actions: args.actions || [], // Use provided actions or empty array
+      initiative: args.initiative ?? rolledInitiative, // Use provided initiative or auto-roll
       
       // Save inventory and equipment data
       inventory: args.inventory || { capacity: 150, items: [] },
@@ -528,19 +655,25 @@ export const createNPC = mutation({
     importedFrom: v.optional(v.string()),
     importData: v.optional(v.any()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<import("./_generated/dataModel").Id<"characters">> => {
     const user = await getCurrentUser(ctx);
 
     // Calculate derived stats server-side
     const abilityModifiers = calculateAbilityModifiers(args.abilityScores);
-    const proficiencyBonus = await ctx.runQuery(api.characters.getProficiencyBonus, { level: args.level });
+    const proficiencyBonus: number = await ctx.runQuery(api.characters.getProficiencyBonus, { level: args.level });
     
     // Calculate total AC considering Dex modifier
     const dexModifier = abilityModifiers.dexterity;
     const totalAC = calculateTotalArmorClass(10, dexModifier);
 
     // Process multiclass data if provided
-    const processedClasses = args.classes || [{
+    const processedClasses: Array<{
+      name: string;
+      level: number;
+      hitDie: string;
+      features?: string[];
+      subclass?: string;
+    }> = args.classes || [{
       name: args.class,
       level: args.level,
       hitDie: await ctx.runQuery(api.characters.getClassHitDie, { className: args.class }),
@@ -548,7 +681,18 @@ export const createNPC = mutation({
       subclass: undefined,
     }];
 
-    const npcId = await ctx.db.insert("characters", {
+    // Calculate and roll initiative
+    const initiativeModifier = calculateInitiativeModifier({
+      abilityModifiers,
+      abilityScores: args.abilityScores,
+      equipmentBonuses: args.equipmentBonuses,
+      classes: processedClasses,
+      feats: args.feats,
+      features: args.features,
+    });
+    const rolledInitiative = rollInitiative(initiativeModifier);
+
+    const npcId: import("./_generated/dataModel").Id<"characters"> = await ctx.db.insert("characters", {
       ...args,
       characterType: "npc" as const,
       classes: processedClasses,
@@ -561,6 +705,7 @@ export const createNPC = mutation({
       baseArmorClass: args.baseArmorClass || args.armorClass,
       experiencePoints: 0,
       actions: args.actions || [],
+      initiative: args.initiative ?? rolledInitiative, // Use provided initiative or auto-roll
       
       // Save inventory and equipment data
       inventory: args.inventory || { capacity: 150, items: [] },
@@ -612,7 +757,7 @@ export const updateCharacter = mutation({
     armorClass: v.optional(v.number()),
     experiencePoints: v.optional(v.number()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<void> => {
     const user = await getCurrentUser(ctx);
 
     const character = await ctx.db.get(args.characterId);
@@ -655,7 +800,7 @@ export const updateCharacter = mutation({
 
 export const deletePlayerCharacter = mutation({
       args: { characterId: v.id("characters") },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<void> => {
     const user = await getCurrentUser(ctx);
 
     const character = await ctx.db.get(args.characterId);
@@ -674,7 +819,7 @@ export const deletePlayerCharacter = mutation({
 
 export const deleteNPC = mutation({
       args: { npcId: v.id("characters") },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<void> => {
     const user = await getCurrentUser(ctx);
 
     const npc = await ctx.db.get(args.npcId);
@@ -693,7 +838,7 @@ export const deleteNPC = mutation({
 
 export const cloneCharacter = mutation({
   args: { characterId: v.id("characters") },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<import("./_generated/dataModel").Id<"characters">> => {
     const user = await getCurrentUser(ctx);
 
     const originalCharacter = await ctx.db.get(args.characterId);
@@ -702,8 +847,9 @@ export const cloneCharacter = mutation({
     }
 
     // Create a copy of the character with the current user as the creator
+    const { _id, ...characterWithoutId } = originalCharacter;
     const clonedCharacterData = {
-      ...originalCharacter,
+      ...characterWithoutId,
       name: `${originalCharacter.name} (Copy)`,
       userId: user._id,
       createdAt: Date.now(),
@@ -740,10 +886,7 @@ export const cloneCharacter = mutation({
       clonedAt: Date.now()
     };
 
-    // Remove the _id field so a new one is generated
-    delete clonedCharacterData._id;
-
-    const clonedCharacterId = await ctx.db.insert("characters", clonedCharacterData);
+    const clonedCharacterId: import("./_generated/dataModel").Id<"characters"> = await ctx.db.insert("characters", clonedCharacterData);
 
     return clonedCharacterId;
   },

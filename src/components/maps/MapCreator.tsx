@@ -8,6 +8,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Alert, AlertDescription } from '../ui/alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useUser } from '@clerk/clerk-react';
 
 interface MapCreatorProps {
@@ -33,6 +34,7 @@ export const MapCreator = ({ mapId, onMapCreated, showHeader = true }: MapCreato
   const [width, setWidth] = useState(10);
   const [height, setHeight] = useState(10);
   const [cellSize, setCellSize] = useState(DEFAULT_CELL_SIZE);
+  const [mapType, setMapType] = useState<'battle' | 'nonCombat'>('battle');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -97,6 +99,7 @@ export const MapCreator = ({ mapId, onMapCreated, showHeader = true }: MapCreato
         name: mapName.trim(),
         width,
         height,
+        mapType,
         cells: generatePreviewCells(),
         clerkId: user.id, // Pass clerkId for authentication
       });
@@ -186,12 +189,6 @@ export const MapCreator = ({ mapId, onMapCreated, showHeader = true }: MapCreato
   };
 
   if (isCreating) {
-    const previewMap = {
-      width,
-      height,
-      cells: generatePreviewCells(),
-    };
-
     return (
       <div className="p-4">
         {showHeader && <h2 className="text-2xl font-bold mb-4">Create New Map</h2>}
@@ -202,71 +199,64 @@ export const MapCreator = ({ mapId, onMapCreated, showHeader = true }: MapCreato
           </Alert>
         )}
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-4">
+        <div className="space-y-4 max-w-md">
+          <div>
+            <Label htmlFor="map-name" className="text-sm font-medium">Map Name *</Label>
+            <Input
+              id="map-name"
+              type="text"
+              value={mapName}
+              onChange={(e) => setMapName(e.target.value)}
+              placeholder="Enter map name..."
+              className="mt-1"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="map-type" className="text-sm font-medium">Map Type *</Label>
+            <Select value={mapType} onValueChange={(value: 'battle' | 'nonCombat') => setMapType(value)}>
+              <SelectTrigger id="map-type" className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="battle">Battle Map</SelectItem>
+                <SelectItem value="nonCombat">Non-Combat Map (Village/Shop/POI)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="map-name" className="text-sm font-medium">Map Name *</Label>
+              <Label htmlFor="map-width" className="text-sm font-medium">Width</Label>
               <Input
-                id="map-name"
-                type="text"
-                value={mapName}
-                onChange={(e) => setMapName(e.target.value)}
-                placeholder="Enter map name..."
+                id="map-width"
+                type="number"
+                min="1"
+                max="30"
+                value={width}
+                onChange={(e) => setWidth(Math.min(30, Math.max(1, parseInt(e.target.value) || 1)))}
                 className="mt-1"
-                required
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="map-width" className="text-sm font-medium">Width</Label>
-                <Input
-                  id="map-width"
-                  type="number"
-                  min="1"
-                  max="30"
-                  value={width}
-                  onChange={(e) => setWidth(Math.min(30, Math.max(1, parseInt(e.target.value) || 1)))}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="map-height" className="text-sm font-medium">Height</Label>
-                <Input
-                  id="map-height"
-                  type="number"
-                  min="1"
-                  max="30"
-                  value={height}
-                  onChange={(e) => setHeight(Math.min(30, Math.max(1, parseInt(e.target.value) || 1)))}
-                  className="mt-1"
-                />
-              </div>
-            </div>
-            <Button
-              onClick={handleCreateMap}
-              disabled={isSubmitting || !mapName.trim()}
-              className="w-full"
-            >
-              {isSubmitting ? 'Creating Map...' : 'Create Map'}
-            </Button>
-          </div>
-          
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Preview</h3>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg w-full max-w-full overflow-auto flex justify-center">
-              <div className="flex justify-center w-full">
-                <MapPreview 
-                  map={previewMap} 
-                  cellSize={30}
-                  className="border border-gray-300 dark:border-gray-600"
-                />
-              </div>
-              <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                <p>Dimensions: {width} × {height}</p>
-                <p>Total cells: {width * height}</p>
-              </div>
+            <div>
+              <Label htmlFor="map-height" className="text-sm font-medium">Height</Label>
+              <Input
+                id="map-height"
+                type="number"
+                min="1"
+                max="30"
+                value={height}
+                onChange={(e) => setHeight(Math.min(30, Math.max(1, parseInt(e.target.value) || 1)))}
+                className="mt-1"
+              />
             </div>
           </div>
+          <Button
+            onClick={handleCreateMap}
+            disabled={isSubmitting || !mapName.trim()}
+            className="w-full"
+          >
+            {isSubmitting ? 'Creating Map...' : 'Create Map'}
+          </Button>
         </div>
       </div>
     );
