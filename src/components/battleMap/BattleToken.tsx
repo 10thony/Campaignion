@@ -6,6 +6,10 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 import { BattleToken as BattleTokenType, areEnemies, isWithinRange } from "../../lib/combatUtils";
+import { getHexagonClipPath } from "../../lib/hexUtils";
+import { toast } from "sonner";
+import { useTheme } from "../theme/ThemeProvider";
+import { getHpBarColor, getSelectionColors } from "../../lib/terrainColors";
 
 // Utility function to intelligently truncate names for tokens
 function truncateTokenName(name: string, tokenSizePx: number): string {
@@ -38,20 +42,25 @@ type TokenProps = {
 };
 
 export function BattleToken({ token, cellSize, allTokens = [] }: TokenProps) {
+  const sizePx = token.size * cellSize;
+  const { actualTheme } = useTheme();
+  const isDark = actualTheme === 'dark';
+  const selectionColors = getSelectionColors(isDark);
+  
   const [{ isDragging }, drag, preview] = useDrag(
     () => ({
       type: ItemTypes.TOKEN,
       item: () => ({
         id: token._id,
         type: ItemTypes.TOKEN,
-        offsetX: cellSize / 2,
-        offsetY: cellSize / 2,
+        offsetX: sizePx / 2, // Offset from token center
+        offsetY: sizePx / 2,
       }),
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
     }),
-    [token._id, cellSize]
+    [token._id, sizePx]
   );
 
   const { 
@@ -64,7 +73,8 @@ export function BattleToken({ token, cellSize, allTokens = [] }: TokenProps) {
     setTargetToken,
     setAvailableActions,
     setIsCombatMode,
-    clearCombatState
+    clearCombatState,
+    initiativeState
   } = useBattleMapUI();
   
   const update = useMutation(api.battleTokens.update);
@@ -81,8 +91,6 @@ export function BattleToken({ token, cellSize, allTokens = [] }: TokenProps) {
   );
   
   const attackerEntity = character || monster;
-
-  const sizePx = token.size * cellSize;
   const hasHP = token.hp !== undefined && token.maxHp !== undefined;
   const hpPercent = hasHP ? (token.hp! / token.maxHp!) * 100 : 100;
   const isSelectedForMovement = selectedTokenForMovement === token._id;
@@ -108,6 +116,15 @@ export function BattleToken({ token, cellSize, allTokens = [] }: TokenProps) {
           }
         }
       } else {
+        // Normal movement selection - check initiative restrictions
+        if (initiativeState.isInCombat && initiativeState.currentTurnIndex !== null) {
+          const currentEntry = initiativeState.initiativeOrder[initiativeState.currentTurnIndex];
+          if (currentEntry && currentEntry.tokenId !== token._id) {
+            const currentTokenLabel = allTokens.find(t => t._id === currentEntry.tokenId)?.label || currentEntry.label;
+            toast.error(`It's ${currentTokenLabel}'s turn. Only the current turn's token can be selected for movement during combat.`);
+            return;
+          }
+        }
         // Normal movement selection
         setSelectedTokenForMovement(isSelectedForMovement ? null : token._id);
       }
@@ -134,6 +151,10 @@ export function BattleToken({ token, cellSize, allTokens = [] }: TokenProps) {
   const isTarget = combatState.targetTokenId === token._id;
   const isInCombatMode = combatState.isCombatMode;
 
+  // Calculate hex size for token (token should fit nicely in a hex cell)
+  const tokenHexSize = sizePx / 2;
+  const hexClipPath = getHexagonClipPath(tokenHexSize);
+
   return (
     <div
       ref={drag}
@@ -144,25 +165,26 @@ export function BattleToken({ token, cellSize, allTokens = [] }: TokenProps) {
       }}
       onContextMenu={handleRightClick}
       className={cn(
-        "absolute rounded-md flex flex-col items-center justify-center text-white font-medium select-none cursor-move transition-all overflow-hidden",
+        "absolute flex flex-col items-center justify-center text-white font-medium select-none cursor-move transition-all overflow-hidden",
         isDragging && "opacity-50",
-        isSelectedForMovement && "ring-4 ring-yellow-400 ring-opacity-80 scale-110",
-        isAttacker && "ring-4 ring-blue-400 ring-opacity-80 scale-110",
-        isTarget && "ring-4 ring-red-400 ring-opacity-80 scale-110"
+        isSelectedForMovement && "ring-4 ring-pacific-cyan-400 ring-opacity-80 scale-110",
+        isAttacker && "ring-4 ring-rich-cerulean-400 ring-opacity-80 scale-110",
+        isTarget && "ring-4 ring-cherry-rose-400 ring-opacity-80 scale-110"
       )}
       style={{
         width: sizePx,
         height: sizePx,
-        left: token.x * cellSize,
-        top: token.y * cellSize,
         backgroundColor: token.color,
+        clipPath: hexClipPath,
+        WebkitClipPath: hexClipPath, // Safari support
         boxShadow: isSelectedForMovement 
-          ? "0 0 20px rgba(250, 204, 21, 0.6)" 
+          ? `0 0 20px ${selectionColors.selected}` 
           : isAttacker 
-          ? "0 0 20px rgba(59, 130, 246, 0.6)"
+          ? `0 0 20px ${selectionColors.movement}`
           : isTarget
-          ? "0 0 20px rgba(239, 68, 68, 0.6)"
-          : "0 0 0 2px rgba(0,0,0,0.2) inset",
+          ? `0 0 20px ${selectionColors.attack}`
+          : "0 0 0 2px rgba(0,0,0,0.3) inset",
+        transform: 'translate(-50%, -50%)', // Center the token on the hex center
       }}
       title={`${token.label} (${token.type})${hasHP ? ` - ${token.hp}/${token.maxHp} HP` : ''}${token.speed ? ` - ${token.speed}ft speed` : ''}${isInCombatMode ? ' - Right-click to attack' : ''}`}
     >
@@ -173,9 +195,7 @@ export function BattleToken({ token, cellSize, allTokens = [] }: TokenProps) {
             className="h-full transition-all"
             style={{
               width: `${Math.max(0, Math.min(100, hpPercent))}%`,
-              backgroundColor: 
-                hpPercent > 50 ? '#22c55e' : 
-                hpPercent > 25 ? '#f59e0b' : '#ef4444'
+              backgroundColor: getHpBarColor(hpPercent, isDark)
             }}
           />
         </div>

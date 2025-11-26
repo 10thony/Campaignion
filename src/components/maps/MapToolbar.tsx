@@ -20,6 +20,7 @@ interface MapToolbarProps {
   activeTool: MapTool;
   onToolChange: (tool: MapTool) => void;
   isDM: boolean;
+  isNonCombat?: boolean; // If true, hide combat-related tools
   onClearMeasurements: () => void;
   onClearAOE: () => void;
   className?: string;
@@ -29,6 +30,7 @@ export const MapToolbar: React.FC<MapToolbarProps> = ({
   activeTool,
   onToolChange,
   isDM,
+  isNonCombat = false,
   onClearMeasurements,
   onClearAOE,
   className = ""
@@ -62,7 +64,7 @@ export const MapToolbar: React.FC<MapToolbarProps> = ({
       name: 'Area of Effect',
       icon: Zap,
       description: 'Place AoE spell templates',
-      available: true
+      available: !isNonCombat // Only available in combat maps
     },
     {
       id: 'terrain' as MapTool,

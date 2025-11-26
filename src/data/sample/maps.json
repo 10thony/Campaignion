@@ -1,41 +1,197 @@
 {
   "version": "1.0.0",
-  "description": "Sample tactical maps for D&D 5e combat",
+  "description": "Sample tactical maps for D&D 5e combat with battle scenarios",
   "maps": [
     {
-      "name": "Forest Clearing",
-      "width": 15,
-      "height": 15,
-      "description": "A small clearing in a dense forest, perfect for an ambush or small skirmish.",
-      "cells": []
-    },
-    {
-      "name": "Tavern Interior",
-      "width": 12,
-      "height": 10,
-      "description": "The interior of a cozy tavern with tables, chairs, and a bar area.",
-      "cells": []
-    },
-    {
-      "name": "Dungeon Corridor",
+      "name": "Goblin Ambush - Forest Road",
       "width": 20,
-      "height": 8,
-      "description": "A long, narrow dungeon corridor with alcoves and doorways.",
-      "cells": []
+      "height": 15,
+      "cellSize": 40,
+      "description": "A narrow road winding through a dense forest. Perfect spot for goblin raiders to ambush unwary travelers. Rocky outcrops and dense undergrowth provide cover.",
+      "scenario": "Goblin Ambush",
+      "difficulty": "Easy",
+      "encounterLevel": 1,
+      "terrain": {
+        "road": [[5,0], [6,0], [5,1], [6,1], [7,1], [5,2], [6,2], [7,2], [8,2], [6,3], [7,3], [8,3], [9,3], [7,4], [8,4], [9,4], [8,5], [9,5]],
+        "rockyOutcrops": [[2,3], [3,3], [2,4], [3,4], [17,10], [18,10], [17,11], [18,11]],
+        "difficultTerrain": [[1,1], [2,1], [1,2], [2,2], [18,8], [19,8], [18,9], [19,9]]
+      },
+      "enemies": [
+        { "monsterName": "Goblin", "count": 4, "defaultPosition": [[3,10], [16,4], [10,2], [12,8]] }
+      ],
+      "allies": [
+        { "characterName": "Thorin Ironfist", "defaultPosition": [10,12] },
+        { "characterName": "Elara Moonwhisper", "defaultPosition": [8,13] },
+        { "characterName": "Brother Marcus", "defaultPosition": [9,12] },
+        { "characterName": "Whisper", "defaultPosition": [11,13] }
+      ]
     },
     {
-      "name": "Village Square",
-      "width": 18,
+      "name": "Orc War Party - Mountain Pass",
+      "width": 25,
       "height": 18,
-      "description": "The central square of a small village with a well, market stalls, and surrounding buildings.",
-      "cells": []
+      "cellSize": 40,
+      "description": "A treacherous mountain pass with narrow paths and cliff edges. Orc raiders have set up a temporary camp, blocking the only safe route through.",
+      "scenario": "Orc Blockade",
+      "difficulty": "Medium",
+      "encounterLevel": 3,
+      "terrain": {
+        "narrowPath": [[12,0], [13,0], [12,1], [13,1], [11,2], [12,2], [13,2], [11,3], [12,3], [13,3], [10,4], [11,4], [12,4], [13,4], [9,5], [10,5], [11,5], [12,5], [13,5]],
+        "cliffEdges": [[0,8], [1,8], [2,8], [0,9], [1,9], [24,10], [24,11], [23,10], [23,11]],
+        "difficultTerrain": [[3,8], [4,8], [5,8], [20,10], [21,10], [22,10], [4,9], [5,9], [20,11], [21,11], [22,11]],
+        "hazardousTerrain": [[1,15], [2,15], [3,15], [22,3], [23,3], [24,3]]
+      },
+      "enemies": [
+        { "monsterName": "Orc", "count": 3, "defaultPosition": [[15,4], [18,6], [14,8]] }
+      ],
+      "allies": [
+        { "characterName": "Sildar Hallwinter", "defaultPosition": [12,16] },
+        { "characterName": "Gundren Rockseeker", "defaultPosition": [11,16] }
+      ]
     },
     {
-      "name": "Cave Entrance",
-      "width": 14,
-      "height": 12,
-      "description": "The entrance to a dark cave system with rocky terrain and scattered debris.",
-      "cells": []
+      "name": "Owlbear Nest - Cave Entrance",
+      "width": 16,
+      "height": 14,
+      "cellSize": 40,
+      "description": "The entrance to a dark cave. Bones and debris litter the ground. A dangerous owlbear has claimed this territory as its hunting ground.",
+      "scenario": "Guardian Beast",
+      "difficulty": "Hard",
+      "encounterLevel": 4,
+      "terrain": {
+        "caveEntrance": [[5,0], [6,0], [7,0], [8,0], [9,0], [10,0], [5,1], [6,1], [7,1], [8,1], [9,1], [10,1], [6,2], [7,2], [8,2], [9,2]],
+        "rockyDebris": [[2,3], [3,3], [13,3], [14,3], [1,4], [15,4], [2,11], [3,11], [13,11], [14,11]],
+        "difficultTerrain": [[0,2], [1,2], [2,2], [13,2], [14,2], [15,2], [0,12], [1,12], [2,12], [13,12], [14,12], [15,12]]
+      },
+      "enemies": [
+        { "monsterName": "Owlbear", "count": 1, "defaultPosition": [[8,7]] }
+      ],
+      "allies": [
+        { "characterName": "Thorin Ironfist", "defaultPosition": [8,12] },
+        { "characterName": "Elara Moonwhisper", "defaultPosition": [6,13] },
+        { "characterName": "Brother Marcus", "defaultPosition": [7,12] },
+        { "characterName": "Whisper", "defaultPosition": [9,13] }
+      ]
+    },
+    {
+      "name": "Ancient Tomb - Skeleton Guard",
+      "width": 22,
+      "height": 16,
+      "cellSize": 40,
+      "description": "An ancient burial chamber filled with sarcophagi and magical darkness. Animated skeletons guard the entrance to the deeper catacombs.",
+      "scenario": "Undead Guardians",
+      "difficulty": "Medium",
+      "encounterLevel": 2,
+      "terrain": {
+        "sarcophagi": [[4,3], [5,3], [16,3], [17,3], [4,12], [5,12], [16,12], [17,12]],
+        "magicalDarkness": [[10,5], [11,5], [10,6], [11,6], [12,6]],
+        "difficultTerrain": [[1,1], [2,1], [20,1], [21,1], [1,14], [2,14], [20,14], [21,14]]
+      },
+      "enemies": [
+        { "monsterName": "Skeleton", "count": 6, "defaultPosition": [[10,2], [11,2], [12,2], [10,8], [11,8], [12,8]] }
+      ],
+      "allies": [
+        { "characterName": "Brother Marcus", "defaultPosition": [11,14] },
+        { "characterName": "Sister Garaele", "defaultPosition": [10,15] }
+      ]
+    },
+    {
+      "name": "The Green Dragon's Lair",
+      "width": 28,
+      "height": 20,
+      "cellSize": 40,
+      "description": "A vast underground cavern with a pool of acidic water and mounds of treasure. A young green dragon has made this its lair. Toxic fumes fill the air.",
+      "scenario": "Dragon Encounter",
+      "difficulty": "Very Hard",
+      "encounterLevel": 10,
+      "terrain": {
+        "acidPool": [[13,8], [14,8], [15,8], [12,9], [13,9], [14,9], [15,9], [16,9], [13,10], [14,10], [15,10], [14,11]],
+        "treasureMounds": [[4,3], [5,3], [23,3], [24,3], [4,16], [5,16], [23,16], [24,16]],
+        "hazardousTerrain": [[10,6], [11,6], [16,6], [17,6], [10,13], [11,13], [16,13], [17,13]],
+        "difficultTerrain": [[2,2], [3,2], [25,2], [26,2], [2,17], [3,17], [25,17], [26,17]]
+      },
+      "enemies": [
+        { "monsterName": "Young Red Dragon", "count": 1, "defaultPosition": [[14,10]] }
+      ],
+      "allies": [
+        { "characterName": "Thorin Ironfist", "defaultPosition": [8,18] },
+        { "characterName": "Elara Moonwhisper", "defaultPosition": [6,19] },
+        { "characterName": "Brother Marcus", "defaultPosition": [7,18] },
+        { "characterName": "Whisper", "defaultPosition": [9,19] },
+        { "characterName": "Sildar Hallwinter", "defaultPosition": [10,18] }
+      ]
+    },
+    {
+      "name": "Troll Bridge - River Crossing",
+      "width": 24,
+      "height": 14,
+      "cellSize": 40,
+      "description": "A rickety wooden bridge spans a deep ravine. A troll has claimed this crossing and demands tribute from all who pass. The bridge is in poor repair.",
+      "scenario": "Troll Encounter",
+      "difficulty": "Very Hard",
+      "encounterLevel": 5,
+      "terrain": {
+        "bridge": [[11,0], [12,0], [11,1], [12,1], [11,2], [12,2], [11,3], [12,3], [11,4], [12,4], [11,5], [12,5], [11,6], [12,6], [11,7], [12,7], [11,8], [12,8], [11,9], [12,9], [11,10], [12,10], [11,11], [12,11], [11,12], [12,12], [11,13], [12,13]],
+        "river": [[8,0], [9,0], [10,0], [13,0], [14,0], [15,0], [7,1], [8,1], [9,1], [10,1], [13,1], [14,1], [15,1], [16,1], [8,13], [9,13], [10,13], [13,13], [14,13], [15,13]],
+        "unstable": [[11,6], [12,6], [11,7], [12,7]]
+      },
+      "enemies": [
+        { "monsterName": "Troll", "count": 1, "defaultPosition": [[11,7]] }
+      ],
+      "allies": [
+        { "characterName": "Thorin Ironfist", "defaultPosition": [12,0] },
+        { "characterName": "Elara Moonwhisper", "defaultPosition": [11,0] },
+        { "characterName": "Brother Marcus", "defaultPosition": [12,1] },
+        { "characterName": "Whisper", "defaultPosition": [11,1] }
+      ]
+    },
+    {
+      "name": "Tavern Brawl - The Sleeping Giant",
+      "width": 18,
+      "height": 14,
+      "cellSize": 40,
+      "description": "The interior of a cozy tavern with tables, chairs, and a bar. A heated argument has escalated into an all-out brawl. Patrons scatter as the fight breaks out.",
+      "scenario": "Bar Fight",
+      "difficulty": "Easy",
+      "encounterLevel": 1,
+      "terrain": {
+        "tables": [[4,6], [5,6], [6,6], [12,6], [13,6], [14,6], [8,10], [9,10]],
+        "bar": [[0,4], [1,4], [2,4], [3,4], [4,4], [5,4]],
+        "chairs": [[3,8], [4,8], [13,8], [14,8]],
+        "difficultTerrain": [[0,0], [0,1], [0,13], [17,0], [17,1], [17,13]]
+      },
+      "enemies": [
+        { "monsterName": "Orc", "count": 2, "defaultPosition": [[10,7], [9,8]] }
+      ],
+      "allies": [
+        { "characterName": "Toblen Stonehill", "defaultPosition": [3,4] },
+        { "characterName": "Whisper", "defaultPosition": [15,9] }
+      ]
+    },
+    {
+      "name": "Goblin Stronghold - Main Chamber",
+      "width": 30,
+      "height": 22,
+      "cellSize": 40,
+      "description": "The central chamber of a goblin cave system. Makeshift fortifications and barricades divide the room. Multiple goblin raiders use superior numbers and terrain advantage.",
+      "scenario": "Siege Defense",
+      "difficulty": "Hard",
+      "encounterLevel": 3,
+      "terrain": {
+        "barricades": [[10,5], [19,5], [10,16], [19,16]],
+        "difficultTerrain": [[5,2], [6,2], [24,2], [25,2], [5,19], [6,19], [24,19], [25,19]],
+        "hazardousTerrain": [[0,10], [0,11], [29,10], [29,11]]
+      },
+      "enemies": [
+        { "monsterName": "Goblin", "count": 8, "defaultPosition": [[10,4], [15,3], [19,4], [14,11], [15,11], [14,18], [15,18], [16,18]] }
+      ],
+      "allies": [
+        { "characterName": "Thorin Ironfist", "defaultPosition": [15,20] },
+        { "characterName": "Elara Moonwhisper", "defaultPosition": [13,21] },
+        { "characterName": "Brother Marcus", "defaultPosition": [14,20] },
+        { "characterName": "Whisper", "defaultPosition": [16,21] },
+        { "characterName": "Sildar Hallwinter", "defaultPosition": [17,20] }
+      ]
     }
   ]
 }

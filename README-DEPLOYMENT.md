@@ -17,7 +17,7 @@ Before deploying, you need to set these environment variables in Netlify:
 
 ### Getting Your Convex URL
 
-1. Run `npx convex dev` locally or deploy with `npx convex deploy`
+1. Run `bunx convex dev` locally or deploy with `bunx convex deploy`
 2. The Convex URL will be displayed in the terminal
 3. It should look like: `https://your-project.convex.cloud`
 
@@ -39,16 +39,16 @@ If you encounter build errors:
 1. Check the full build logs in Netlify
 2. Ensure all environment variables are set
 3. Verify the Convex deployment is active
-4. Run `npm run build` locally to test
+4. Run `bun run build` locally to test
 
 ### Manual Build (if needed)
 
 If type checking fails and you need to deploy urgently:
 ```bash
-npm run build:skip-check
+bun run build:skip-check
 ```
 
-Then update the build command in Netlify to use `npm run build:skip-check` instead.
+Then update the build command in Netlify to use `bun run build:skip-check` instead.
 
 ### Post-Deployment
 

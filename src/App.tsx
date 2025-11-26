@@ -14,9 +14,13 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Modern background pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(139,92,246,0.1),transparent_50%)] pointer-events-none" />
+      {/* Vibrant blue-reddish gradient - Cerulean to Cherry Rose spectrum */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#2e6f95]/20 via-[#723c70]/15 to-[#b7094c]/18 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-tl from-[#0091ad]/12 via-transparent to-[#a01a58]/14 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(23,128,161,0.18),transparent_55%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(160,26,88,0.16),transparent_50%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_70%,rgba(69,94,137,0.12),transparent_45%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(137,43,100,0.10),transparent_40%)] pointer-events-none" />
       
       <Sidebar isCollapsed={isSidebarCollapsed} setIsCollapsed={setIsSidebarCollapsed} />
       

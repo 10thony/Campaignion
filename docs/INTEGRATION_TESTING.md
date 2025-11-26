@@ -56,15 +56,15 @@ The integration testing suite validates:
 
 2. **Dependencies**: Install all dependencies:
    ```bash
-   npm install
-   cd live-server && npm install
+   bun install
+   cd live-server && bun install
    ```
 
 ### Running Tests
 
 #### Complete Integration Test Suite
 ```bash
-npm run integration-tests
+bun run integration-tests
 ```
 
 This command:
@@ -77,23 +77,23 @@ This command:
 
 **Client Integration Tests**:
 ```bash
-npm run test:integration
+bun run test:integration
 ```
 
 **Server Integration Tests**:
 ```bash
 cd live-server
-npm run test:integration
+bun run test:integration
 ```
 
 **End-to-End Tests**:
 ```bash
-npm run test:e2e
+bun run test:e2e
 ```
 
 #### Watch Mode
 ```bash
-npm run test:integration:watch
+bun run test:integration:watch
 ```
 
 ### Test Configuration
@@ -296,10 +296,12 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - run: npm ci
-      - run: npm run integration-tests
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run integration-tests
       - uses: actions/upload-artifact@v3
         with:
           name: test-reports
@@ -314,7 +316,7 @@ jobs:
 {
   "husky": {
     "hooks": {
-      "pre-commit": "npm run test:integration"
+      "pre-commit": "bun run test:integration"
     }
   }
 }
@@ -348,14 +350,14 @@ jobs:
 
 Enable debug logging:
 ```bash
-DEBUG=integration-tests npm run integration-tests
+DEBUG=integration-tests bun run integration-tests
 ```
 
 ### Verbose Output
 
 Run with verbose reporting:
 ```bash
-npm run test:integration -- --reporter=verbose
+bun run test:integration -- --reporter=verbose
 ```
 
 ## Best Practices

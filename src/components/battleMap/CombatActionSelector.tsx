@@ -35,7 +35,7 @@ export function CombatActionSelector({
   );
   
   const monster = useQuery(
-    api.monsters.getMonsterById,
+    api.monsters.getMonsterWithActions,
     attacker.monsterId ? { monsterId: attacker.monsterId } : "skip"
   );
   

@@ -5,9 +5,13 @@ import { api } from "../../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "../ui/select";
 import { NPCTokenSelector } from "./NPCTokenSelector";
+import { PanelDock } from "./PanelDock";
 import { useState } from "react";
 import { Id } from "../../../convex/_generated/dataModel";
 import { useUser } from "@clerk/clerk-react";
+import { Trash2, Save, History, Crosshair } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Input } from "../ui/input";
 
 const terrainOptions = [
   { value: "normal", label: "Normal", color: "#ffffff" },
@@ -40,10 +44,18 @@ export function BattleMapToolbar() {
     clearSelectedCells,
     isMultiSelectMode,
     setIsMultiSelectMode,
+    // Battle map instance management
+    currentInstanceId,
+    setCurrentInstanceId,
+    // View control
+    triggerResetView,
   } = useBattleMapUI();
   
   const [npcSelectorOpen, setNpcSelectorOpen] = useState(false);
   const [npcSelectorType, setNpcSelectorType] = useState<"pc" | "npc_friendly" | "npc_foe">("npc_friendly");
+  const [snapshotDialogOpen, setSnapshotDialogOpen] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [snapshotDescription, setSnapshotDescription] = useState("");
   
   const tokens = useQuery(
     api.battleTokens.listByMap,
@@ -51,6 +63,14 @@ export function BattleMapToolbar() {
   );
   const createToken = useMutation(api.battleTokens.create);
   const updateCell = useMutation(api.battleMaps.updateCell);
+  const getOrCreateInstance = useMutation(api.battleMaps.getOrCreateInstance);
+  const saveSnapshot = useMutation(api.battleMaps.saveStateSnapshot);
+  const restoreSnapshot = useMutation(api.battleMaps.restoreStateSnapshot);
+  const clearBattleMap = useMutation(api.battleMaps.clearBattleMap);
+  const getSnapshots = useQuery(
+    api.battleMaps.getStateSnapshots,
+    currentInstanceId ? { instanceId: currentInstanceId as Id<"battleMapInstances"> } : "skip"
+  );
   const { user } = useUser();
 
   const addToken = async (type: "pc" | "npc_friendly" | "npc_foe") => {
@@ -109,6 +129,69 @@ export function BattleMapToolbar() {
     const diagonal = Math.min(dx, dy);
     const straight = Math.max(dx, dy) - diagonal;
     return (diagonal * 7.5) + (straight * 5); // Average diagonal cost
+  };
+
+  // Ensure we have a battle map instance for the current map
+  const ensureInstance = async () => {
+    if (!selectedMapId || !user) return null;
+    
+    if (currentInstanceId) {
+      return currentInstanceId;
+    }
+    
+    // Get or create a new instance
+    const instanceId = await getOrCreateInstance({
+      mapId: selectedMapId as Id<"battleMaps">,
+      name: `Instance ${new Date().toLocaleString()}`,
+      clerkId: user.id,
+    });
+    
+    setCurrentInstanceId(instanceId);
+    return instanceId;
+  };
+
+  const handleSaveSnapshot = async () => {
+    if (!selectedMapId || !user) return;
+    
+    const instanceId = await ensureInstance();
+    if (!instanceId) return;
+    
+    await saveSnapshot({
+      instanceId: instanceId as Id<"battleMapInstances">,
+      description: snapshotDescription || `Snapshot ${new Date().toLocaleString()}`,
+      includeMapCells: true,
+      clerkId: user.id,
+    });
+    
+    setSnapshotDescription("");
+    setSnapshotDialogOpen(false);
+  };
+
+  const handleRestoreSnapshot = async (snapshotId: string) => {
+    if (!selectedMapId || !user) return;
+    
+    // Ensure we have a battle map instance
+    const instanceId = await ensureInstance();
+    if (!instanceId) return;
+    
+    await restoreSnapshot({
+      instanceId: instanceId as Id<"battleMapInstances">,
+      snapshotId,
+      clerkId: user.id,
+    });
+    
+    setRestoreDialogOpen(false);
+  };
+
+  const handleClearBattleMap = async () => {
+    if (!currentInstanceId || !user) return;
+    
+    if (confirm("Are you sure you want to clear all tokens from the battle map? This action cannot be undone.")) {
+      await clearBattleMap({
+        instanceId: currentInstanceId as Id<"battleMapInstances">,
+        clerkId: user.id,
+      });
+    }
   };
 
   return (
@@ -274,6 +357,93 @@ export function BattleMapToolbar() {
         )}
       </div>
 
+      {/* State management controls */}
+      <div className="flex items-center gap-2 border-r pr-2">
+        <Dialog open={snapshotDialogOpen} onOpenChange={setSnapshotDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" disabled={!selectedMapId}>
+              <Save className="w-4 h-4 mr-1" />
+              Save State
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Save Battle Map State</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                placeholder="Enter description (optional)"
+                value={snapshotDescription}
+                onChange={(e) => setSnapshotDescription(e.target.value)}
+              />
+              <Button onClick={handleSaveSnapshot} className="w-full">
+                Save Snapshot
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={restoreDialogOpen} onOpenChange={setRestoreDialogOpen}>
+          <DialogTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              disabled={!currentInstanceId || !getSnapshots?.length}
+            >
+              <History className="w-4 h-4 mr-1" />
+              Restore
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Restore Previous State</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {getSnapshots?.map((snapshot) => (
+                <div key={snapshot.id} className="flex items-center justify-between p-2 border rounded">
+                  <div>
+                    <div className="font-medium">{snapshot.description}</div>
+                    <div className="text-sm text-gray-500">
+                      {new Date(snapshot.timestamp).toLocaleString()}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => handleRestoreSnapshot(snapshot.id)}
+                  >
+                    Restore
+                  </Button>
+                </div>
+              ))}
+              {!getSnapshots?.length && (
+                <div className="text-center text-gray-500 py-4">
+                  No snapshots available
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={triggerResetView}
+        >
+          <Crosshair className="w-4 h-4 mr-1" />
+          Reset View
+        </Button>
+
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleClearBattleMap}
+          disabled={!currentInstanceId || !tokens?.length}
+        >
+          <Trash2 className="w-4 h-4 mr-1" />
+          Clear Map
+        </Button>
+      </div>
+
       {/* General options */}
       <div className="flex items-center gap-3">
         <label className="flex items-center gap-2 text-sm text-neutral-600">
@@ -288,6 +458,11 @@ export function BattleMapToolbar() {
         <span className="text-xs text-neutral-500">
           Tokens: {tokens?.length ?? 0}
         </span>
+      </div>
+
+      {/* Panel Layout Manager */}
+      <div className="border-l pl-2">
+        <PanelDock />
       </div>
 
       {/* Entity Token Selector Dialog */}

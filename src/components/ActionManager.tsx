@@ -188,46 +188,68 @@ export function ActionManager({
             </div>
             
             {characterActions.length > 0 ? (
-              <div className="grid gap-3 max-h-96 overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto p-4">
                 {characterActions.map((action: Action) => (
                   <Card key={action._id} className="cursor-pointer transition-colors ring-2 ring-primary">
                     <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h4 className="font-medium">{action.name}</h4>
-                            <Badge 
-                              variant="secondary" 
-                              className={getActionCostColor(action.actionCost)}
-                            >
-                              {getActionIcon(action.actionCost)}
-                              <span className="ml-1">{action.actionCost}</span>
-                            </Badge>
+                      <div className="flex flex-col h-full">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-medium">{action.name}</h4>
+                              <Badge 
+                                variant="secondary" 
+                                className={getActionCostColor(action.actionCost)}
+                              >
+                                {getActionIcon(action.actionCost)}
+                                <span className="ml-1">{action.actionCost}</span>
+                              </Badge>
+                            </div>
                           </div>
-                          <p className="text-sm text-muted-foreground mb-2">
-                            {action.description}
-                          </p>
-                          <div className="flex gap-2 text-xs text-muted-foreground">
-                            <span>Type: {action.type}</span>
-                            <span>•</span>
-                            <span>Source: {action.sourceBook}</span>
-                            {action.requiresConcentration && (
-                              <>
-                                <span>•</span>
-                                <span>Concentration</span>
-                              </>
-                            )}
-                          </div>
+                          <Button
+                            onClick={() => handleSelectAction(action._id, false)}
+                            size="sm"
+                            variant="ghost"
+                            disabled={disabled}
+                            className="text-destructive hover:text-destructive flex-shrink-0"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
-                        <Button
-                          onClick={() => handleSelectAction(action._id, false)}
-                          size="sm"
-                          variant="ghost"
-                          disabled={disabled}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <p className="text-sm text-muted-foreground mb-2 flex-grow">
+                          {action.description}
+                        </p>
+                        {action.damageRolls && action.damageRolls.length > 0 && (
+                          <div className="mb-2">
+                            <div className="text-xs font-medium text-foreground mb-1">Damage:</div>
+                            <div className="text-sm text-muted-foreground">
+                              {action.damageRolls.map((roll, idx) => (
+                                <div key={idx} className="flex items-center gap-1">
+                                  <span>
+                                    {roll.dice.count}{roll.dice.type.toLowerCase()}
+                                    {roll.modifier !== 0 && (
+                                      <span>{roll.modifier > 0 ? '+' : ''}{roll.modifier}</span>
+                                    )}
+                                  </span>
+                                  <Badge variant="outline" className="text-xs">
+                                    {roll.damageType}
+                                  </Badge>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex gap-2 text-xs text-muted-foreground flex-wrap">
+                          <span>Type: {action.type}</span>
+                          <span>•</span>
+                          <span>Source: {action.sourceBook}</span>
+                          {action.requiresConcentration && (
+                            <>
+                              <span>•</span>
+                              <span>Concentration</span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -255,7 +277,7 @@ export function ActionManager({
             </div>
             
             {availableActions.length > 0 ? (
-              <div className="grid gap-3 max-h-96 overflow-y-auto">
+              <div className="grid gap-3 max-h-96 overflow-y-auto p-4">
                 {availableActions.map((action: Action) => (
                   <Card key={action._id} className="cursor-pointer transition-colors hover:ring-2 hover:ring-primary">
                     <CardContent className="p-4">

@@ -124,6 +124,486 @@
         "strength": 2,
         "constitution": 2
       }
-    }
+    },
+      {
+        "name": "Frost-Cleaver Battleaxe",
+        "type": "Weapon",
+        "rarity": "Rare",
+        "description": "A heavy battleaxe made of never-melting ice. It is cold to the touch and leaves a trail of frost in the air when swung.",
+        "scope": "global",
+        "weight": 5,
+        "cost": 3000,
+        "attunement": true,
+        "effects": "Grants resistance to fire damage while held.",
+        "damageRolls": [
+          {
+            "dice": { "count": 1, "type": "D8" },
+            "modifier": 1,
+            "damageType": "SLASHING"
+          },
+          {
+            "dice": { "count": 1, "type": "D6" },
+            "modifier": 0,
+            "damageType": "COLD"
+          }
+        ]
+      },
+      {
+        "name": "Mithral Half Plate",
+        "type": "Armor",
+        "rarity": "Uncommon",
+        "description": "Exquisitely crafted armor made of silvery mithral. It is lighter than standard steel and allows for greater stealth.",
+        "scope": "global",
+        "weight": 20,
+        "cost": 800,
+        "attunement": false,
+        "typeOfArmor": "Medium",
+        "armorClass": 15,
+        "effects": "Does not impose disadvantage on Dexterity (Stealth) checks."
+      },
+      {
+        "name": "Phial of Volatile Magma",
+        "type": "Potion",
+        "rarity": "Uncommon",
+        "description": "A glass vial containing swirling, bright orange liquid magma. It is hot to the touch.",
+        "scope": "global",
+        "weight": 1,
+        "cost": 250,
+        "effects": "Can be thrown up to 30ft. Explodes on impact dealing 4d6 fire damage in a 10ft radius."
+      },
+      {
+        "name": "Wand of Binding",
+        "type": "Wand",
+        "rarity": "Rare",
+        "description": "A twisted piece of driftwood wrapped in iron wire. It hums with abjuration magic.",
+        "scope": "global",
+        "weight": 1,
+        "cost": 4500,
+        "attunement": true,
+        "durability": {
+          "current": 7,
+          "max": 7,
+          "baseDurability": 7
+        },
+        "effects": "Allows the user to cast Hold Monster (consumes charges). Regains 1d6+1 charges at dawn."
+      },
+      {
+        "name": "Seeker's Shortbow",
+        "type": "Weapon",
+        "rarity": "Uncommon",
+        "description": "A bow carved from yew wood with an eye symbol etched into the grip.",
+        "scope": "global",
+        "weight": 2,
+        "cost": 600,
+        "attunement": true,
+        "damageRolls": [
+          {
+            "dice": { "count": 1, "type": "D6" },
+            "modifier": 1,
+            "damageType": "PIERCING"
+          }
+        ],
+        "effects": "The wielder ignores half cover and three-quarters cover when making ranged attacks with this weapon."
+      },
+      {
+        "name": "Helm of Telepathy",
+        "type": "Wondrous Item",
+        "rarity": "Uncommon",
+        "description": "A sleek metal helmet that covers the ears but leaves the face exposed, embedded with a small violet crystal.",
+        "scope": "global",
+        "weight": 3,
+        "cost": 3000,
+        "attunement": true,
+        "effects": "Allows the user to read thoughts and communicate telepathically."
+      },
+      {
+        "name": "Gauntlets of Ogre Power",
+        "type": "Wondrous Item",
+        "rarity": "Uncommon",
+        "description": "Thick iron gauntlets covered in rust-colored fur.",
+        "scope": "global",
+        "weight": 4,
+        "cost": 500,
+        "attunement": true,
+        "abilityModifiers": {
+          "strength": 19
+        },
+        "effects": "Your Strength score is 19 while you wear these gauntlets."
+      },
+      {
+        "name": "Lightning Javelin",
+        "type": "Weapon",
+        "rarity": "Uncommon",
+        "description": "A javelin inscribed with zigzagging runes. When thrown, it transforms into a bolt of lightning.",
+        "scope": "global",
+        "weight": 2,
+        "cost": 1000,
+        "attunement": false,
+        "damageRolls": [
+          {
+            "dice": { "count": 1, "type": "D6" },
+            "modifier": 0,
+            "damageType": "PIERCING"
+          },
+          {
+            "dice": { "count": 4, "type": "D6" },
+            "modifier": 0,
+            "damageType": "LIGHTNING"
+          }
+        ]
+      },
+      {
+        "name": "Shield of the Sentinel",
+        "type": "Shield",
+        "rarity": "Rare",
+        "description": "A large tower shield emblazoned with a watching eye.",
+        "scope": "global",
+        "weight": 8,
+        "cost": 4000,
+        "attunement": true,
+        "typeOfArmor": "Shield",
+        "effects": "Advantage on Initiative rolls and Perception checks.",
+        "armorClass": 2
+      },
+      {
+        "name": "Dust of Sneezing and Choking",
+        "type": "Adventuring Gear",
+        "rarity": "Uncommon",
+        "description": "A small pouch containing a fine, irritating powder.",
+        "scope": "global",
+        "weight": 0.5,
+        "cost": 300,
+        "effects": "When cast into the air, creatures in a 10-foot radius must save or become incapacitated by fits of sneezing."
+      },
+      {
+        "name": "Screaming Bolts (x5)",
+        "type": "Ammunition",
+        "rarity": "Uncommon",
+        "description": "Crossbow bolts with holes drilled in the shaft to create a high-pitched shriek when fired.",
+        "scope": "global",
+        "weight": 0.5,
+        "cost": 150,
+        "damageRolls": [
+          {
+            "dice": { "count": 1, "type": "D4" },
+            "modifier": 0,
+            "damageType": "THUNDER"
+          }
+        ],
+        "effects": "On a hit, the target must succeed on a Constitution save or be deafened."
+      },
+      {
+        "name": "Ring of Mind Shielding",
+        "type": "Ring",
+        "rarity": "Uncommon",
+        "description": "A ring of fine copper shaped like a snake biting its own tail.",
+        "scope": "global",
+        "weight": 0,
+        "cost": 1500,
+        "attunement": true,
+        "effects": "You are immune to magic that allows other creatures to read your thoughts or determine if you are lying."
+      },
+      {
+        "name": "Rod of the Pact Keeper +1",
+        "type": "Rod",
+        "rarity": "Uncommon",
+        "description": "A smooth, black metal rod that feels warm to the touch.",
+        "scope": "global",
+        "weight": 2,
+        "cost": 2000,
+        "attunement": true,
+        "effects": "Grants +1 to spell attack rolls and saving throw DCs for Warlock spells. Can regain one spell slot per long rest."
+      },
+      {
+        "name": "Folding Boat",
+        "type": "Vehicle",
+        "rarity": "Rare",
+        "description": "A small wooden box that unfolds into a boat.",
+        "scope": "global",
+        "weight": 4,
+        "cost": 5000,
+        "effects": "Can unfold into a 10-foot rowboat or a 24-foot ship upon speaking the command word."
+      },
+      {
+        "name": "Sun Blade",
+        "type": "Weapon",
+        "rarity": "Rare",
+        "description": "A sword hilt that projects a blade of pure radiance.",
+        "scope": "global",
+        "weight": 2,
+        "cost": 4500,
+        "attunement": true,
+        "damageRolls": [
+          {
+            "dice": { "count": 1, "type": "D8" },
+            "modifier": 2,
+            "damageType": "RADIANT"
+          }
+        ],
+        "effects": "Deals extra damage to undead. Emits bright light in a 15-foot radius."
+      },
+        {
+          "name": "Greataxe of the Void",
+          "type": "Weapon",
+          "rarity": "Very Rare",
+          "description": "A massive axe forged from black iron that seems to absorb the surrounding light. When swinging this weapon, the user feels a hunger emanating from the blade. Requirement: User must have a Strength score of 17 or higher to attune.",
+          "weight": 12,
+          "cost": 12000,
+          "attunement": true,
+          "scope": "global",
+          "effects": "On a critical hit, the target is banished to a pocket dimension until the end of their next turn.",
+          "damageRolls": [
+            {
+              "dice": { "count": 1, "type": "D12" },
+              "modifier": 2,
+              "damageType": "SLASHING"
+            },
+            {
+              "dice": { "count": 1, "type": "D6" },
+              "modifier": 0,
+              "damageType": "NECROTIC"
+            }
+          ]
+          
+        },
+        {
+          "name": "Whisperwind Longbow",
+          "type": "Weapon",
+          "rarity": "Rare",
+          "description": "Crafted from hollowed Ash wood, arrows fired from this bow make absolutely no sound. Requirement: Proficiency in Stealth required to utilize the silence feature.",
+          "weight": 2,
+          "cost": 4500,
+          "attunement": true,
+          "scope": "global",
+          "effects": "Attacks made while hidden do not reveal the attacker's position unless the attack misses by 5 or more.",
+          "damageRolls": [
+            {
+              "dice": { "count": 1, "type": "D8" },
+              "modifier": 1,
+              "damageType": "PIERCING"
+            }
+          ]
+          
+        },
+        {
+          "name": "Carapace of the Iron Beetle",
+          "type": "Armor",
+          "typeOfArmor": "Heavy",
+          "rarity": "Legendary",
+          "description": "Plate armor crafted from the chitins of a subterranean behemoth. It is incredibly heavy and dense. Requirement: Wearer must have Heavy Armor proficiency. Movement speed is reduced by 5ft while worn.",
+          "weight": 85,
+          "cost": 75000,
+          "attunement": true,
+          "armorClass": 21,
+          "scope": "global",
+          "effects": "Grant resistance to non-magical Bludgeoning, Piercing, and Slashing damage. The wearer cannot be knocked prone.",
+          "abilityModifiers": {
+            "dexterity": -2
+          }
+          
+        },
+        {
+          "name": "Shadowstep Leather",
+          "type": "Armor",
+          "typeOfArmor": "Light",
+          "rarity": "Very Rare",
+          "description": "Dark leather armor that seems to blur at the edges. Requirement: Must be worn by a rogue, ranger, or bard.",
+          "weight": 8,
+          "cost": 18000,
+          "attunement": true,
+          "armorClass": 13,
+          "scope": "global",
+          "effects": "As a bonus action, the wearer can teleport up to 30 feet to an unoccupied space they can see that is in dim light or darkness (3 charges/day).",
+          "abilityModifiers": {
+            "dexterity": 2
+          }
+          
+        },
+        {
+          "name": "Aegis of the Sun",
+          "type": "Armor",
+          "typeOfArmor": "Shield",
+          "rarity": "Rare",
+          "description": "A golden circular shield that is warm to the touch. Requirement: Must be a follower of a deity of light or life.",
+          "weight": 6,
+          "cost": 6000,
+          "attunement": true,
+          "armorClass": 4,
+          "scope": "global",
+          "effects": "Sheds bright light in a 20-foot radius. Once per day, use a reaction to blind an attacker who hits you with a melee attack."
+          
+        },
+        {
+          "name": "Draught of the Phoenix",
+          "type": "Potion",
+          "rarity": "Very Rare",
+          "description": "A swirling orange liquid that glows with intense heat. The bottle feels like it might melt.",
+          "weight": 1,
+          "cost": 2500,
+          "attunement": false,
+          "scope": "global",
+          "effects": "Upon consumption, the user gains resistance to Fire damage for 1 hour. If the user drops to 0 HP within that hour, they immediately explode in fire (3d6 damage to adjacent enemies) and regain 20 HP."
+          
+        },
+        {
+          "name": "Fulminating Pike",
+          "type": "Weapon",
+          "rarity": "Rare",
+          "description": "A long spear tipped with electrum. Static electricity crackles when it strikes metal.",
+          "weight": 10,
+          "cost": 5500,
+          "attunement": true,
+          "scope": "global",
+          "effects": "This weapon has the Thrown property (range 20/60). It immediately returns to the wielder's hand after being thrown.",
+          "damageRolls": [
+            {
+              "dice": { "count": 1, "type": "D10" },
+              "modifier": 1,
+              "damageType": "PIERCING"
+            },
+            {
+              "dice": { "count": 1, "type": "D6" },
+              "modifier": 0,
+              "damageType": "LIGHTNING"
+            }
+          ]
+          
+        },
+        {
+          "name": "Ring of Temporal Flux",
+          "type": "Ring",
+          "rarity": "Very Rare",
+          "description": "A band of shifting quicksilver that never sits comfortably on the finger.",
+          "weight": 0,
+          "cost": 28000,
+          "attunement": true,
+          "scope": "global",
+          "effects": "Once per long rest, the wearer can reroll a failed saving throw. Additionally, they are immune to the Slow spell.",
+          "abilityModifiers": {
+            "initiative": 2
+          }
+          
+        },
+        {
+          "name": "Staff of Withered Roots",
+          "type": "Staff",
+          "rarity": "Rare",
+          "description": "A gnarled staff made of petrified wood, smelling faintly of grave dirt. Requirement: Spellcaster class.",
+          "weight": 5,
+          "cost": 8000,
+          "attunement": true,
+          "scope": "global",
+          "effects": "Allows the caster to cast Blight or Speak with Dead once per day without expending a spell slot.",
+          "damageRolls": [
+            {
+              "dice": { "count": 1, "type": "D6" },
+              "modifier": 1,
+              "damageType": "BLUDGEONING"
+            },
+            {
+              "dice": { "count": 1, "type": "D4" },
+              "modifier": 0,
+              "damageType": "NECROTIC"
+            }
+          ]
+          
+        },
+        {
+          "name": "Scepter of the Tides",
+          "type": "Rod",
+          "rarity": "Legendary",
+          "description": "A rod made of blue coral. You can hear the ocean if you hold it to your ear. Requirement: Must speak Aquan.",
+          "weight": 3,
+          "cost": 55000,
+          "attunement": true,
+          "scope": "global",
+          "effects": "The wielder can breathe underwater and has a swimming speed of 60ft. Can cast Control Water at will.",
+          "abilityModifiers": {
+            "charisma": 2
+          }
+          
+        },
+        {
+          "name": "Cube of Force Containment",
+          "type": "Wondrous Item",
+          "rarity": "Rare",
+          "description": "A small metallic cube with complex gears. When thrown, it expands into a cage of pure force.",
+          "weight": 1,
+          "cost": 7000,
+          "attunement": false,
+          "scope": "global",
+          "effects": "As an action, throw at a Large or smaller creature. Target must succeed on DC 15 DEX save or be restrained in a force cage for 1 minute.",
+          "durability": {
+            "current": 3,
+            "max": 3,
+            "baseDurability": 3
+          }
+          
+        },
+        {
+          "name": "Phase-Shift Bolts (x5)",
+          "type": "Ammunition",
+          "rarity": "Rare",
+          "description": "Crossbow bolts etched with runes of transmutation. They shimmer and disappear periodically.",
+          "weight": 0.5,
+          "cost": 600,
+          "attunement": false,
+          "scope": "global",
+          "effects": "These bolts ignore half and three-quarters cover. They ignore the AC bonus from shields.",
+          "damageRolls": [
+            {
+              "dice": { "count": 1, "type": "D6" },
+              "modifier": 0,
+              "damageType": "FORCE"
+            }
+          ]
+          
+        },
+        {
+          "name": "Clockwork Steed",
+          "type": "Mount",
+          "rarity": "Very Rare",
+          "description": "A mechanical horse constructed of brass and iron. It requires no food, but needs oiling. Requirement: Proficiency in Tinker's Tools to repair.",
+          "weight": 600,
+          "cost": 30000,
+          "attunement": false,
+          "scope": "global",
+          "effects": "Movement speed 60ft. Immune to exhaustion and poison. Can carry up to 1000 lbs.",
+          "durability": {
+            "current": 100,
+            "max": 100,
+            "baseDurability": 100
+          }
+          
+        },
+        {
+          "name": "Master Thief's Skeleton Key",
+          "type": "Tool",
+          "rarity": "Very Rare",
+          "description": "A bone-white key that morphs its shape to fit any keyhole. Requirement: Proficiency in Thieves' Tools.",
+          "weight": 0.1,
+          "cost": 15000,
+          "attunement": true,
+          "scope": "global",
+          "effects": "Grants advantage on all checks to pick locks. Can open a magical lock (like Arcane Lock) with a DC 25 check.",
+          "abilityModifiers": {
+            "dexterity": 1
+          }
+          
+        },
+        {
+          "name": "Scroll of Mass Teleport",
+          "type": "Scroll",
+          "rarity": "Legendary",
+          "description": "A shimmering parchment that feels as if it is vibrating. The words hurt to look at directly.",
+          "weight": 0,
+          "cost": 25000,
+          "attunement": false,
+          "scope": "global",
+          "effects": "Teleports up to 10 willing creatures to a known teleportation circle on the same plane of existence. The scroll is consumed on use."
+          
+        }
+      
+    
   ]
 } 

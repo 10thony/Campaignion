@@ -77,6 +77,7 @@ export const TacticalMapView: React.FC<TacticalMapViewProps> = ({
   // Mutations
   const moveEntity = useMutation(api.maps.moveEntity);
   const updateMapCells = useMutation(api.maps.updateMapCells);
+  const navigateToLinkedMap = useMutation(api.maps.navigateToLinkedMap);
 
   // DM status is now determined by databaseUser role
 
@@ -95,7 +96,34 @@ export const TacticalMapView: React.FC<TacticalMapViewProps> = ({
   }, [localState.selectedTokenId, mapInstance, map]);
 
   // Handle cell click based on active tool
-  const handleCellClick = useCallback((x: number, y: number) => {
+  const handleCellClick = useCallback(async (x: number, y: number) => {
+    // Check if this cell has a portal link
+    const cell = map?.cells?.find(c => c.x === x && c.y === y);
+    if (cell?.portalLink && activeTool === 'select') {
+      // If we have a selected entity, navigate it to the linked map
+      if (localState.selectedTokenId && mapInstance) {
+        try {
+          await navigateToLinkedMap({
+            instanceId,
+            targetMapId: cell.portalLink.targetMapId as Id<"maps">,
+            targetX: cell.portalLink.targetX,
+            targetY: cell.portalLink.targetY,
+            entityId: localState.selectedTokenId,
+          });
+          
+          // Clear selection after navigation
+          setLocalState(prev => ({
+            ...prev,
+            selectedTokenId: null,
+            movementPreview: null
+          }));
+        } catch (error) {
+          console.error('Failed to navigate to linked map:', error);
+        }
+        return;
+      }
+    }
+
     switch (activeTool) {
       case 'select':
         // Select token at this position
@@ -163,7 +191,7 @@ export const TacticalMapView: React.FC<TacticalMapViewProps> = ({
         // Show info panel for this cell/token
         break;
     }
-  }, [activeTool, localState, mapInstance, map, moveEntity, updateMapCells, instanceId, isDM]);
+  }, [activeTool, localState, mapInstance, map, moveEntity, updateMapCells, instanceId, isDM, navigateToLinkedMap]);
 
   // Handle cell hover for movement preview
   const handleCellHover = useCallback((x: number, y: number) => {

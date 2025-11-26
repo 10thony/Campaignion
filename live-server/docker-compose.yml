@@ -4,6 +4,7 @@ services:
   live-server:
     build:
       context: .
+      dockerfile: Dockerfile.bun
       target: dev
     ports:
       - "3001:3001"
@@ -24,6 +25,7 @@ services:
   live-server-prod:
     build:
       context: .
+      dockerfile: Dockerfile.bun
       target: runner
     ports:
       - "3001:3001"

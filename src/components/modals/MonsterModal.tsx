@@ -38,8 +38,12 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader2, Sparkles } from "lucide-react"
 import { ActionManager } from "@/components/ActionManager"
+import { InventoryCreationManager } from "@/components/InventoryCreationManager"
 import { useGPTGeneration } from "@/lib/gptGeneration"
 import { toast } from "sonner"
+import { calculateInitiativeBreakdown, formatInitiativeBreakdown } from "@/lib/initiativeUtils"
+import { Target } from "lucide-react"
+import { useQueryWithAuth } from "@/hooks/useConvexWithAuth"
 
 interface Monster {
   _id: string
@@ -81,26 +85,48 @@ interface Monster {
   challengeRatingValue?: number
   legendaryActionCount?: number
   lairActionCount?: number
-  actions?: Array<{
-    name: string
-    description: string
-  }>
+  initiative?: number
+  abilityModifiers?: {
+    strength: number
+    dexterity: number
+    constitution: number
+    intelligence: number
+    wisdom: number
+    charisma: number
+  }
+  actions?: string[] // Action IDs
   traits?: Array<{
     name: string
     description: string
   }>
-  reactions?: Array<{
-    name: string
-    description: string
-  }>
-  legendaryActions?: Array<{
-    name: string
-    description: string
-  }>
-  lairActions?: Array<{
-    name: string
-    description: string
-  }>
+  reactions?: string[] // Action IDs
+  legendaryActions?: string[] // Action IDs
+  lairActions?: string[] // Action IDs
+  inventory?: {
+    capacity: number
+    items: Array<{ itemId: string; quantity: number }>
+  }
+  equipment?: {
+    headgear?: string
+    armwear?: string
+    chestwear?: string
+    legwear?: string
+    footwear?: string
+    mainHand?: string
+    offHand?: string
+    accessories: string[]
+  }
+  equipmentBonuses?: {
+    armorClass: number
+    abilityScores: {
+      strength: number
+      dexterity: number
+      constitution: number
+      intelligence: number
+      wisdom: number
+      charisma: number
+    }
+  }
   createdAt?: number
   creatorId?: string
 }
@@ -121,26 +147,76 @@ export function MonsterModal({
   onSuccess,
 }: MonsterModalProps) {
   const createMonster = useMutation(api.monsters.createMonster)
+  const updateMonster = useMutation(api.monsters.updateMonster)
+  const actionsQuery = useQueryWithAuth(api.actions.getAllActions) || []
   const { generate, isGenerating } = useGPTGeneration()
   
-  // State for managing inline actions
-  const [inlineActions, setInlineActions] = React.useState<Array<{ name: string; description: string }>>(
-    monster?.actions || []
+  // State for managing action IDs (matching character implementation)
+  const [selectedActionIds, setSelectedActionIds] = React.useState<string[]>(
+    (monster as any)?.actions || []
   )
   
-  // State for managing special abilities
+  // State for managing special abilities (traits remain inline, others use action IDs)
   const [inlineTraits, setInlineTraits] = React.useState<Array<{ name: string; description: string }>>(
     monster?.traits || []
   )
-  const [inlineReactions, setInlineReactions] = React.useState<Array<{ name: string; description: string }>>(
-    monster?.reactions || []
+  const [selectedReactionIds, setSelectedReactionIds] = React.useState<string[]>(
+    (monster as any)?.reactions || []
   )
-  const [inlineLegendaryActions, setInlineLegendaryActions] = React.useState<Array<{ name: string; description: string }>>(
-    monster?.legendaryActions || []
+  const [selectedLegendaryActionIds, setSelectedLegendaryActionIds] = React.useState<string[]>(
+    (monster as any)?.legendaryActions || []
   )
-  const [inlineLairActions, setInlineLairActions] = React.useState<Array<{ name: string; description: string }>>(
-    monster?.lairActions || []
+  const [selectedLairActionIds, setSelectedLairActionIds] = React.useState<string[]>(
+    (monster as any)?.lairActions || []
   )
+  
+  // State for inventory and equipment
+  const [inventory, setInventory] = React.useState<{
+    capacity: number
+    items: Array<{ itemId: string; quantity: number }>
+  }>(monster?.inventory || { capacity: 150, items: [] })
+  
+  const [equipment, setEquipment] = React.useState<{
+    headgear?: string
+    armwear?: string
+    chestwear?: string
+    legwear?: string
+    footwear?: string
+    mainHand?: string
+    offHand?: string
+    accessories: string[]
+  }>(monster?.equipment || {
+    headgear: undefined,
+    armwear: undefined,
+    chestwear: undefined,
+    legwear: undefined,
+    footwear: undefined,
+    mainHand: undefined,
+    offHand: undefined,
+    accessories: []
+  })
+  
+  const [equipmentBonuses, setEquipmentBonuses] = React.useState<{
+    armorClass: number
+    abilityScores: {
+      strength: number
+      dexterity: number
+      constitution: number
+      intelligence: number
+      wisdom: number
+      charisma: number
+    }
+  }>(monster?.equipmentBonuses || {
+    armorClass: 0,
+    abilityScores: {
+      strength: 0,
+      dexterity: 0,
+      constitution: 0,
+      intelligence: 0,
+      wisdom: 0,
+      charisma: 0
+    }
+  })
   
   const form = useForm<MonsterFormData>({
     resolver: zodResolver(monsterSchema),
@@ -223,11 +299,34 @@ export function MonsterModal({
         lairActionCount: monster.lairActionCount || undefined,
         actions: monster.actions || [],
       })
-      setInlineActions(monster.actions || [])
+      setSelectedActionIds((monster as any)?.actions || [])
       setInlineTraits(monster.traits || [])
-      setInlineReactions(monster.reactions || [])
-      setInlineLegendaryActions(monster.legendaryActions || [])
-      setInlineLairActions(monster.lairActions || [])
+      setSelectedReactionIds((monster as any)?.reactions || [])
+      setSelectedLegendaryActionIds((monster as any)?.legendaryActions || [])
+      setSelectedLairActionIds((monster as any)?.lairActions || [])
+      // Set inventory and equipment state
+      setInventory(monster.inventory || { capacity: 150, items: [] })
+      setEquipment(monster.equipment || {
+        headgear: undefined,
+        armwear: undefined,
+        chestwear: undefined,
+        legwear: undefined,
+        footwear: undefined,
+        mainHand: undefined,
+        offHand: undefined,
+        accessories: []
+      })
+      setEquipmentBonuses(monster.equipmentBonuses || {
+        armorClass: 0,
+        abilityScores: {
+          strength: 0,
+          dexterity: 0,
+          constitution: 0,
+          intelligence: 0,
+          wisdom: 0,
+          charisma: 0
+        }
+      })
     } else if (mode === "create") {
       form.reset({
         name: "",
@@ -261,11 +360,34 @@ export function MonsterModal({
         lairActionCount: undefined,
         actions: [],
       })
-      setInlineActions([])
+      setSelectedActionIds([])
       setInlineTraits([])
-      setInlineReactions([])
-      setInlineLegendaryActions([])
-      setInlineLairActions([])
+      setSelectedReactionIds([])
+      setSelectedLegendaryActionIds([])
+      setSelectedLairActionIds([])
+      // Reset inventory and equipment
+      setInventory({ capacity: 150, items: [] })
+      setEquipment({
+        headgear: undefined,
+        armwear: undefined,
+        chestwear: undefined,
+        legwear: undefined,
+        footwear: undefined,
+        mainHand: undefined,
+        offHand: undefined,
+        accessories: []
+      })
+      setEquipmentBonuses({
+        armorClass: 0,
+        abilityScores: {
+          strength: 0,
+          dexterity: 0,
+          constitution: 0,
+          intelligence: 0,
+          wisdom: 0,
+          charisma: 0
+        }
+      })
     }
   }, [monster, mode, form])
 
@@ -292,17 +414,25 @@ export function MonsterModal({
         challengeRatingValue: data.challengeRatingValue || undefined,
         legendaryActionCount: data.legendaryActionCount || undefined,
         lairActionCount: data.lairActionCount || undefined,
-        actions: inlineActions.length > 0 ? inlineActions : undefined,
+        actions: selectedActionIds.length > 0 ? selectedActionIds : [],
         traits: inlineTraits.length > 0 ? inlineTraits : undefined,
-        reactions: inlineReactions.length > 0 ? inlineReactions : undefined,
-        legendaryActions: inlineLegendaryActions.length > 0 ? inlineLegendaryActions : undefined,
-        lairActions: inlineLairActions.length > 0 ? inlineLairActions : undefined,
+        reactions: selectedReactionIds.length > 0 ? selectedReactionIds : [],
+        legendaryActions: selectedLegendaryActionIds.length > 0 ? selectedLegendaryActionIds : [],
+        lairActions: selectedLairActionIds.length > 0 ? selectedLairActionIds : [],
+        // Include inventory and equipment
+        inventory,
+        equipment,
+        equipmentBonuses,
       }
 
       if (mode === "create") {
         await createMonster(cleanData)
+      } else if (mode === "edit" && monster) {
+        await updateMonster({
+          monsterId: monster._id,
+          ...cleanData,
+        })
       }
-      // TODO: Add edit functionality when mutation is available
       
       onSuccess?.()
       onOpenChange(false)
@@ -397,48 +527,52 @@ export function MonsterModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <DialogTitle>{getTitle()}</DialogTitle>
-              <DialogDescription>{getDescription()}</DialogDescription>
+      <DialogContent className="max-w-7xl w-[95vw] max-h-[95vh] flex flex-col p-0">
+        <div className="flex-shrink-0 px-6 pt-6 pb-4">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <DialogTitle>{getTitle()}</DialogTitle>
+                <DialogDescription>{getDescription()}</DialogDescription>
+              </div>
+              {mode === "create" && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateWithGPT}
+                  disabled={isGenerating || isSubmitting}
+                  className="ml-4"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Generate with GPT
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
-            {mode === "create" && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleGenerateWithGPT}
-                disabled={isGenerating || isSubmitting}
-                className="ml-4"
-              >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Generate with GPT
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
-        </DialogHeader>
+          </DialogHeader>
+        </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0">
+            <div className="flex-1 overflow-y-auto px-6 pb-4 space-y-6">
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-6">
+              <TabsList className="grid w-full grid-cols-7">
                 <TabsTrigger value="basic">Basic Info</TabsTrigger>
                 <TabsTrigger value="stats">Stats</TabsTrigger>
                 <TabsTrigger value="traits">Traits</TabsTrigger>
                 <TabsTrigger value="actions">Actions</TabsTrigger>
                 <TabsTrigger value="reactions">Reactions</TabsTrigger>
                 <TabsTrigger value="legendary">Legendary</TabsTrigger>
+                <TabsTrigger value="inventory">Inventory</TabsTrigger>
               </TabsList>
 
               {/* Basic Info Tab */}
@@ -627,6 +761,78 @@ export function MonsterModal({
                         </FormItem>
                       )}
                     />
+                  </div>
+
+                  {/* Initiative Display */}
+                  <div className="space-y-2 pt-2">
+                    <div className="flex items-center gap-2">
+                      <Target className="h-4 w-4 text-purple-500" />
+                      <h4 className="text-sm font-medium">Initiative Modifier</h4>
+                    </div>
+                    <div className="pl-6 space-y-1">
+                      {(() => {
+                        const abilityScores = form.watch("abilityScores") || monster?.abilityScores || {
+                          strength: 10,
+                          dexterity: 10,
+                          constitution: 10,
+                          intelligence: 10,
+                          wisdom: 10,
+                          charisma: 10,
+                        };
+                        
+                        // Get current equipment bonuses
+                        const currentEquipmentBonuses = equipmentBonuses || monster?.equipmentBonuses || {
+                          armorClass: 0,
+                          abilityScores: {
+                            strength: 0,
+                            dexterity: 0,
+                            constitution: 0,
+                            intelligence: 0,
+                            wisdom: 0,
+                            charisma: 0,
+                          },
+                        };
+                        
+                        // Calculate ability modifiers from scores (including equipment bonuses)
+                        const totalDexterity = (abilityScores?.dexterity || 10) + (currentEquipmentBonuses?.abilityScores?.dexterity || 0);
+                        const abilityModifiers = {
+                          dexterity: Math.floor((totalDexterity - 10) / 2),
+                        };
+                        
+                        const entity = {
+                          abilityScores,
+                          abilityModifiers,
+                          dexterity: abilityScores?.dexterity,
+                          equipmentBonuses: currentEquipmentBonuses,
+                        };
+                        
+                        const breakdown = calculateInitiativeBreakdown(entity);
+                        const modifierText = breakdown.totalModifier >= 0 
+                          ? `+${breakdown.totalModifier}` 
+                          : `${breakdown.totalModifier}`;
+                        
+                        return (
+                          <>
+                            <div className="text-2xl font-bold text-purple-600">
+                              {modifierText}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {formatInitiativeBreakdown(breakdown)}
+                            </div>
+                            {breakdown.hasAdvantage && (
+                              <div className="text-xs text-green-600 font-medium">
+                                Has Advantage
+                              </div>
+                            )}
+                            {breakdown.hasDisadvantage && (
+                              <div className="text-xs text-red-600 font-medium">
+                                Has Disadvantage
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
                   </div>
                   {/* Hit Dice Fields */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -943,9 +1149,9 @@ export function MonsterModal({
               {/* Actions Tab */}
               <TabsContent value="actions" className="space-y-6">
                 <ActionManager
-                  mode="monster"
-                  inlineActions={inlineActions}
-                  onInlineActionsChange={setInlineActions}
+                  mode="character"
+                  selectedActionIds={selectedActionIds}
+                  onActionIdsChange={setSelectedActionIds}
                   disabled={isReadOnly}
                 />
               </TabsContent>
@@ -953,9 +1159,9 @@ export function MonsterModal({
               {/* Reactions Tab */}
               <TabsContent value="reactions" className="space-y-6">
                 <ActionManager
-                  mode="monster"
-                  inlineActions={inlineReactions}
-                  onInlineActionsChange={setInlineReactions}
+                  mode="character"
+                  selectedActionIds={selectedReactionIds}
+                  onActionIdsChange={setSelectedReactionIds}
                   disabled={isReadOnly}
                 />
               </TabsContent>
@@ -967,9 +1173,9 @@ export function MonsterModal({
                   <div className="space-y-4">
                     <h4 className="text-sm font-medium">Legendary Actions</h4>
                     <ActionManager
-                      mode="monster"
-                      inlineActions={inlineLegendaryActions}
-                      onInlineActionsChange={setInlineLegendaryActions}
+                      mode="character"
+                      selectedActionIds={selectedLegendaryActionIds}
+                      onActionIdsChange={setSelectedLegendaryActionIds}
                       disabled={isReadOnly}
                     />
                   </div>
@@ -978,43 +1184,61 @@ export function MonsterModal({
                   <div className="space-y-4">
                     <h4 className="text-sm font-medium">Lair Actions</h4>
                     <ActionManager
-                      mode="monster"
-                      inlineActions={inlineLairActions}
-                      onInlineActionsChange={setInlineLairActions}
+                      mode="character"
+                      selectedActionIds={selectedLairActionIds}
+                      onActionIdsChange={setSelectedLairActionIds}
                       disabled={isReadOnly}
                     />
                   </div>
                 </div>
               </TabsContent>
+
+              {/* Inventory Tab */}
+              <TabsContent value="inventory" className="space-y-6">
+                <InventoryCreationManager
+                  inventory={inventory}
+                  equipment={equipment}
+                  equipmentBonuses={equipmentBonuses}
+                  abilityScores={form.watch("abilityScores")}
+                  onInventoryChange={setInventory}
+                  onEquipmentChange={setEquipment}
+                  onBonusesChange={setEquipmentBonuses}
+                  canEdit={!isReadOnly}
+                  isReadOnly={isReadOnly}
+                />
+              </TabsContent>
             </Tabs>
-
+            </div>
             {!isReadOnly && (
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {mode === "create" ? "Create Monster" : "Save Changes"}
-                </Button>
-              </DialogFooter>
+              <div className="flex-shrink-0 border-t px-6 py-4">
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => onOpenChange(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {mode === "create" ? "Create Monster" : "Save Changes"}
+                  </Button>
+                </DialogFooter>
+              </div>
             )}
-
             {isReadOnly && (
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => onOpenChange(false)}
-                >
-                  Close
-                </Button>
-              </DialogFooter>
+              <div className="flex-shrink-0 border-t px-6 py-4">
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => onOpenChange(false)}
+                  >
+                    Close
+                  </Button>
+                </DialogFooter>
+              </div>
             )}
           </form>
         </Form>

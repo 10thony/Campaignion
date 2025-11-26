@@ -984,7 +984,7 @@ export const actions = [
     },
 
     // ====================
-    //  MONSTER-SPECIFIC ACTIONS (15)
+    //  MONSTER-SPECIFIC ACTIONS (24)
     // ====================
 
     // ======= Dragon Actions =======
@@ -1210,6 +1210,217 @@ export const actions = [
           damageType: "SLASHING"
         }
       ],
+      createdAt: Date.now(),
+    },
+
+    // ======= Monster Reactions =======
+    {
+      name: "Scimitar",
+      description: "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage.",
+      actionCost: "Action",
+      type: "MELEE_ATTACK",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      attackBonusAbilityScore: "dexterity",
+      isProficient: true,
+      damageRolls: [
+        {
+          dice: { count: 1, type: "D6" },
+          modifier: 2,
+          damageType: "SLASHING"
+        }
+      ],
+      createdAt: Date.now(),
+    },
+    {
+      name: "Shortbow",
+      description: "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
+      actionCost: "Action",
+      type: "RANGED_ATTACK",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      attackBonusAbilityScore: "dexterity",
+      isProficient: true,
+      damageRolls: [
+        {
+          dice: { count: 1, type: "D6" },
+          modifier: 2,
+          damageType: "PIERCING"
+        }
+      ],
+      createdAt: Date.now(),
+    },
+    {
+      name: "Beak",
+      description: "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 10 (1d10 + 5) piercing damage.",
+      actionCost: "Action",
+      type: "MELEE_ATTACK",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      attackBonusAbilityScore: "strength",
+      isProficient: true,
+      damageRolls: [
+        {
+          dice: { count: 1, type: "D10" },
+          modifier: 5,
+          damageType: "PIERCING"
+        }
+      ],
+      createdAt: Date.now(),
+    },
+    {
+      name: "Claws",
+      description: "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 14 (2d8 + 5) slashing damage.",
+      actionCost: "Action",
+      type: "MELEE_ATTACK",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      attackBonusAbilityScore: "strength",
+      isProficient: true,
+      damageRolls: [
+        {
+          dice: { count: 2, type: "D8" },
+          modifier: 5,
+          damageType: "SLASHING"
+        }
+      ],
+      createdAt: Date.now(),
+    },
+    {
+      name: "Tail",
+      description: "Melee Weapon Attack: +10 to hit, reach 15 ft., one target. Hit: 13 (2d8 + 4) bludgeoning damage.",
+      actionCost: "Action",
+      type: "MELEE_ATTACK",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      attackBonusAbilityScore: "strength",
+      isProficient: true,
+      damageRolls: [
+        {
+          dice: { count: 2, type: "D8" },
+          modifier: 4,
+          damageType: "BLUDGEONING"
+        }
+      ],
+      createdAt: Date.now(),
+    },
+    {
+      name: "Opportunistic Strike",
+      description: "When an ally within 5 feet hits a creature with a melee attack, the monster can make a melee weapon attack against the same creature as a reaction.",
+      actionCost: "Reaction",
+      type: "MELEE_ATTACK",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      createdAt: Date.now(),
+    },
+    {
+      name: "Battle Fury",
+      description: "When the monster takes damage, it can make a melee weapon attack against the source of the damage as a reaction.",
+      actionCost: "Reaction",
+      type: "MELEE_ATTACK",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      createdAt: Date.now(),
+    },
+    {
+      name: "Tail Swipe",
+      description: "When a creature moves into a space within reach of the monster, the monster can make a tail attack against that creature as a reaction.",
+      actionCost: "Reaction",
+      type: "MELEE_ATTACK",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      createdAt: Date.now(),
+    },
+    {
+      name: "Frenzied Retaliation",
+      description: "When the monster takes damage from a melee attack, it can immediately make a natural weapon attack against the attacker as a reaction.",
+      actionCost: "Reaction",
+      type: "MELEE_ATTACK",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      createdAt: Date.now(),
+    },
+    {
+      name: "Bone Rattle",
+      description: "When the skeleton takes damage, it can make a shortsword attack against the nearest enemy as a reaction.",
+      actionCost: "Reaction",
+      type: "MELEE_ATTACK",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      createdAt: Date.now(),
+    },
+
+    // ======= Dragon Legendary Actions =======
+    {
+      name: "Detect",
+      description: "The dragon makes a Wisdom (Perception) check.",
+      actionCost: "Legendary Action",
+      type: "OTHER",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      createdAt: Date.now(),
+    },
+    {
+      name: "Tail Attack",
+      description: "The dragon makes a tail attack.",
+      actionCost: "Legendary Action",
+      type: "MELEE_ATTACK",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      createdAt: Date.now(),
+    },
+    {
+      name: "Wing Attack",
+      description: "The dragon beats its wings. Each creature within reach must succeed on a Dexterity saving throw or take bludgeoning damage and be knocked prone.",
+      actionCost: "Legendary Action",
+      type: "OTHER",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      createdAt: Date.now(),
+    },
+
+    // ======= Dragon Lair Actions =======
+    {
+      name: "Magma Eruption",
+      description: "Magma erupts from a point on the ground the dragon can see within 120 feet, creating a geyser. Each creature in the area must make a Dexterity saving throw, taking fire damage on a failed save, or half as much on a success.",
+      actionCost: "Lair Action",
+      type: "OTHER",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      createdAt: Date.now(),
+    },
+    {
+      name: "Volcanic Gases",
+      description: "A cloud of hot, toxic gas fills an area. The gas remains until initiative count 20 on the next round. Each creature that starts its turn in the gas must succeed on a Constitution saving throw or be poisoned until the end of its turn.",
+      actionCost: "Lair Action",
+      type: "OTHER",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
+      createdAt: Date.now(),
+    },
+    {
+      name: "Eye Ray",
+      description: "The beholder shoots one of its eye rays at a random target within 120 feet.",
+      actionCost: "Legendary Action",
+      type: "SPELL",
+      requiresConcentration: false,
+      sourceBook: "Monster Manual",
+      category: "general",
       createdAt: Date.now(),
     }
   ];

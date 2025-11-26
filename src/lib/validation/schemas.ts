@@ -88,6 +88,7 @@ export const itemSchema = z.object({
     intelligence: z.number().min(-5, "Modifier too low").max(10, "Modifier too high").optional(),
     wisdom: z.number().min(-5, "Modifier too low").max(10, "Modifier too high").optional(),
     charisma: z.number().min(-5, "Modifier too low").max(10, "Modifier too high").optional(),
+    initiative: z.number().min(-10, "Initiative bonus too low").max(10, "Initiative bonus too high").optional(),
   }).optional(),
 })
 
@@ -123,6 +124,7 @@ export const monsterSchema = z.object({
   }),
   challengeRating: z.string().min(1, "Challenge rating is required"),
   proficiencyBonus: z.number().min(2, "Proficiency bonus must be at least 2").max(9, "Proficiency bonus cannot exceed 9"),
+  initiative: z.number().optional(),
   senses: z.object({
     passivePerception: z.number().min(1, "Passive perception must be at least 1").max(30, "Passive perception cannot exceed 30"),
     darkvision: z.string().optional().or(z.literal("")),
@@ -133,10 +135,50 @@ export const monsterSchema = z.object({
   challengeRatingValue: z.number().min(0, "CR value must be non-negative").optional(),
   legendaryActionCount: z.number().min(0, "Legendary actions must be non-negative").max(5, "Cannot exceed 5 legendary actions").optional(),
   lairActionCount: z.number().min(0, "Lair actions must be non-negative").max(5, "Cannot exceed 5 lair actions").optional(),
-  actions: z.array(z.object({
-    name: z.string().min(1, "Action name is required").max(100, "Action name cannot exceed 100 characters"),
-    description: z.string().min(1, "Action description is required").max(1000, "Action description cannot exceed 1000 characters"),
+  actions: z.array(z.string()).optional(), // Action IDs (already validated in the database)
+  reactions: z.array(z.string()).optional(), // Reaction action IDs
+  legendaryActions: z.array(z.string()).optional(), // Legendary action IDs
+  lairActions: z.array(z.string()).optional(), // Lair action IDs
+  traits: z.array(z.object({
+    name: z.string(),
+    description: z.string(),
   })).optional(),
+  // Inventory and Equipment
+  inventory: z.object({
+    capacity: z.number().min(0, "Capacity must be non-negative"),
+    items: z.array(z.object({
+      itemId: z.string(),
+      quantity: z.number().int().min(1, "Quantity must be at least 1"),
+    })).optional().default([]),
+  }).optional(),
+  equipment: z.object({
+    headgear: z.string().optional(),
+    armwear: z.string().optional(),
+    chestwear: z.string().optional(),
+    legwear: z.string().optional(),
+    footwear: z.string().optional(),
+    mainHand: z.string().optional(),
+    offHand: z.string().optional(),
+    accessories: z.array(z.string()).optional().default([]),
+  }).optional(),
+  equipmentBonuses: z.object({
+    armorClass: z.number().min(-10).max(20).optional().default(0),
+    abilityScores: z.object({
+      strength: z.number().min(-10).max(10).optional().default(0),
+      dexterity: z.number().min(-10).max(10).optional().default(0),
+      constitution: z.number().min(-10).max(10).optional().default(0),
+      intelligence: z.number().min(-10).max(10).optional().default(0),
+      wisdom: z.number().min(-10).max(10).optional().default(0),
+      charisma: z.number().min(-10).max(10).optional().default(0),
+    }).optional().default({
+      strength: 0,
+      dexterity: 0,
+      constitution: 0,
+      intelligence: 0,
+      wisdom: 0,
+      charisma: 0,
+    }),
+  }).optional(),
 })
 
 export type MonsterFormData = z.infer<typeof monsterSchema>

@@ -2,6 +2,14 @@ import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getCurrentUser } from "./clerkService";
 
+// Public function for MAUI native apps - returns all items without authentication
+export const getAllItems = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("items").collect();
+  },
+});
+
 export const getItems = query({
   args: {},
   handler: async (ctx) => {
@@ -56,6 +64,11 @@ export const createItem = mutation({
       v.literal("Very Rare"), v.literal("Legendary"), v.literal("Artifact"), v.literal("Unique")
     ),
     description: v.string(),
+    scope: v.union(
+      v.literal("entitySpecific"),
+      v.literal("campaignSpecific"),
+      v.literal("global")
+    ),
     effects: v.optional(v.string()),
     weight: v.optional(v.number()),
     cost: v.optional(v.number()),
@@ -71,6 +84,7 @@ export const createItem = mutation({
       intelligence: v.optional(v.number()),
       wisdom: v.optional(v.number()),
       charisma: v.optional(v.number()),
+      initiative: v.optional(v.number()), // Direct initiative bonus from items
     })),
     damageRolls: v.optional(v.array(v.object({
       dice: v.object({
@@ -118,6 +132,7 @@ export const updateItem = mutation({
       intelligence: v.optional(v.number()),
       wisdom: v.optional(v.number()),
       charisma: v.optional(v.number()),
+      initiative: v.optional(v.number()), // Direct initiative bonus from items
     })),
   },
   handler: async (ctx, args) => {

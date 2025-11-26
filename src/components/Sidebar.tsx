@@ -28,9 +28,10 @@ const navigationItems = [
   { path: '/items', label: 'Items', icon: Package },
   { path: '/actions', label: 'Actions', icon: Zap },
   { path: '/battle-map', label: 'Battle Map', icon: Map, badge: 'Enhanced' },
-  { path: '/maps', label: 'Maps', icon: MapPin, badge: 'Legacy' },
+  // Disabled navigation items (pages still exist, just not accessible via nav)
+  // { path: '/maps', label: 'Maps', icon: MapPin, badge: 'Legacy' },
   { path: '/interactions', label: 'Interactions', icon: Sparkles },
-  { path: '/live-demo', label: 'Live Demo', icon: FlaskConical },
+  // { path: '/live-demo', label: 'Live Demo', icon: FlaskConical },
 ] as const
 
 interface SidebarProps {

@@ -17,20 +17,22 @@
     }
   },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "bun --watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
-    "test": "vitest --run",
-    "test:watch": "vitest",
-    "test:integration": "vitest --config vitest.integration.config.ts --run",
-    "test:integration:watch": "vitest --config vitest.integration.config.ts",
-    "test:all": "npm run test && npm run test:integration",
-    "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix",
+    "start": "bun dist/index.js",
+    "start:bun": "bun src/index.ts",
+    "test": "bun test",
+    "test:vitest": "bunx vitest --run",
+    "test:watch": "bunx vitest",
+    "test:integration": "bunx vitest --config vitest.integration.config.ts --run",
+    "test:integration:watch": "bunx vitest --config vitest.integration.config.ts",
+    "test:all": "bun run test:vitest && bun run test:integration",
+    "lint": "bunx eslint src --ext .ts",
+    "lint:fix": "bunx eslint src --ext .ts --fix",
     "type-check": "tsc --noEmit",
-    "validate-config": "tsx src/scripts/validate-config.ts",
-    "prestart": "npm run validate-config",
-    "predev": "npm run validate-config"
+    "validate-config": "bun src/scripts/validate-config.ts",
+    "prestart": "bun run validate-config",
+    "predev": "bun run validate-config"
   },
   "keywords": ["trpc", "websocket", "dnd", "real-time", "multiplayer"],
   "author": "",
@@ -64,6 +66,7 @@
     "vitest": "^1.2.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
   }
 }

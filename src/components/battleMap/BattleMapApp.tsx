@@ -5,7 +5,9 @@ import { BattleMapToolbar } from "./BattleMapToolbar";
 import { BattleMapSelector } from "./BattleMapSelector";
 import { MapBoard } from "./MapBoard";
 import { NewBattleMapDialog } from "./NewBattleMapDialog";
+import { MapCreator } from "../maps/MapCreator";
 import { BattleTokenDialog } from "./BattleTokenDialog";
+import { SampleDataPanel } from "../SampleDataPanel";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Info, Sparkles } from "lucide-react";
 import { useState } from "react";
@@ -13,7 +15,7 @@ import { Button } from "../ui/button";
 
 export default function BattleMapApp() {
   const maps = useQuery(api.battleMaps.list) ?? [];
-  const { selectedMapId, setSelectedMapId, showNewMap } = useBattleMapUI();
+  const { selectedMapId, setSelectedMapId, showNewMap, setShowNewMap } = useBattleMapUI();
   const [showWelcome, setShowWelcome] = useState(maps.length === 0);
 
   return (
@@ -52,6 +54,16 @@ export default function BattleMapApp() {
           <BattleMapToolbar />
         </div>
       </div>
+      
+      {/* Sample Data Panel */}
+      <div className="container mx-auto px-4 py-2">
+        <SampleDataPanel 
+          entityType="maps" 
+          onDataLoaded={() => {
+            // Data will automatically refresh via Convex queries
+          }} 
+        />
+      </div>
       <div className="flex-1">
         {selectedMapId ? (
           <MapBoard mapId={selectedMapId} />
@@ -82,7 +94,27 @@ export default function BattleMapApp() {
           </div>
         )}
       </div>
-      {showNewMap && <NewBattleMapDialog />}
+      {showNewMap && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Create New Battle Map</h2>
+              <button
+                onClick={() => setShowNewMap(false)}
+                className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            <MapCreator 
+              onMapCreated={() => {
+                setShowNewMap(false);
+              }} 
+              showHeader={false} 
+            />
+          </div>
+        </div>
+      )}
       <BattleTokenDialog />
     </div>
   );

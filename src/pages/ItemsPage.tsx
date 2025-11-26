@@ -129,12 +129,14 @@ export function ItemsPage() {
   const getItemStats = (itemList: any[]) => {
     if (!itemList) return { total: 0, weapons: 0, armor: 0, magical: 0, totalWeight: 0, totalValue: 0 }
     
+    const rawTotalWeight = itemList.reduce((sum, i) => sum + (i.weight || 0), 0)
+    
     return {
       total: itemList.length,
       weapons: itemList.filter(i => i.type === 'Weapon').length,
       armor: itemList.filter(i => i.type === 'Armor').length,
       magical: itemList.filter(i => ['Uncommon', 'Rare', 'Very Rare', 'Legendary', 'Artifact'].includes(i.rarity)).length,
-      totalWeight: itemList.reduce((sum, i) => sum + (i.weight || 0), 0),
+      totalWeight: Math.round(rawTotalWeight * 100) / 100, // Round to 2 decimal places
       totalValue: itemList.reduce((sum, i) => sum + (i.cost || 0), 0),
     }
   }

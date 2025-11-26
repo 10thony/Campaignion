@@ -1,9 +1,10 @@
 [build]
-  command = "npm run build:skip-check"
+  command = "bun install && bun run build:skip-check"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
+  BUN_VERSION = "1.1.0"
   NODE_OPTIONS = "--max-old-space-size=4096"
   CI = "true"
   # Disable secrets scanning for this frontend build
@@ -14,4 +15,6 @@
 # Note: Add these in Netlify UI: Site settings > Environment variables
 # VITE_CLERK_PUBLISHABLE_KEY = "your_clerk_key"
 # VITE_CONVEX_URL = "your_convex_url"
+
+# Netlify has native Bun support. Enable it in Build & Deploy settings.
 

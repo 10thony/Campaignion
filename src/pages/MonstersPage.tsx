@@ -136,6 +136,45 @@ export function MonstersPage() {
           </div>
         </div>
 
+        {/* Stats Summary */}
+        {filteredMonsters && filteredMonsters.length > 0 && (
+          <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-2xl font-bold">{filteredMonsters.length}</div>
+                <div className="text-sm text-muted-foreground">Total Monsters</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-2xl font-bold">
+                  {Math.min(...filteredMonsters.map(m => parseFloat(m.challengeRating.replace('/', '.'))))}
+                </div>
+                <div className="text-sm text-muted-foreground">Lowest CR</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-2xl font-bold">
+                  {Math.max(...filteredMonsters.map(m => parseFloat(m.challengeRating.replace('/', '.'))))}
+                </div>
+                <div className="text-sm text-muted-foreground">Highest CR</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-2xl font-bold">
+                  {filteredMonsters.filter(m => m.legendaryActions || m.lairActions).length}
+                </div>
+                <div className="text-sm text-muted-foreground">Boss Monsters</div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* Monsters Grid */}
         {monsters === undefined ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -172,45 +211,6 @@ export function MonstersPage() {
                 canClone={true}
               />
             ))}
-          </div>
-        )}
-
-        {/* Stats Summary */}
-        {filteredMonsters && filteredMonsters.length > 0 && (
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold">{filteredMonsters.length}</div>
-                <div className="text-sm text-muted-foreground">Total Monsters</div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold">
-                  {Math.min(...filteredMonsters.map(m => parseFloat(m.challengeRating.replace('/', '.'))))}
-                </div>
-                <div className="text-sm text-muted-foreground">Lowest CR</div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold">
-                  {Math.max(...filteredMonsters.map(m => parseFloat(m.challengeRating.replace('/', '.'))))}
-                </div>
-                <div className="text-sm text-muted-foreground">Highest CR</div>
-              </CardContent>
-            </Card>
-            
-                         <Card>
-               <CardContent className="p-4 text-center">
-                 <div className="text-2xl font-bold">
-                   {filteredMonsters.filter(m => m.legendaryActions || m.lairActions).length}
-                 </div>
-                 <div className="text-sm text-muted-foreground">Boss Monsters</div>
-               </CardContent>
-             </Card>
           </div>
         )}
       </SignedIn>

@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { MapPreview } from './MapPreview';
 import { TacticalMapView } from './TacticalMapView';
+import { NonCombatMapView } from './NonCombatMapView';
 import { Id } from '../../../convex/_generated/dataModel';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -262,13 +263,23 @@ export const MapModal: React.FC<MapModalProps> = ({
               )}
             </div>
           ) : (
-            // Interactive Mode - Full tactical view
+            // Interactive Mode - Full tactical view (battle or non-combat)
             <div className="h-full">
               {mapInstanceId ? (
-                <TacticalMapView
-                  instanceId={mapInstanceId}
-                  className="h-full"
-                />
+                map.mapType === 'nonCombat' ? (
+                  <NonCombatMapView
+                    instanceId={mapInstanceId}
+                    className="h-full"
+                    onMapChange={(newInstanceId) => {
+                      setMapInstanceId(newInstanceId);
+                    }}
+                  />
+                ) : (
+                  <TacticalMapView
+                    instanceId={mapInstanceId}
+                    className="h-full"
+                  />
+                )
               ) : (
                 <div className="flex items-center justify-center h-64">
                   <div className="text-center">

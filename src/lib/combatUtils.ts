@@ -123,10 +123,14 @@ export interface Monster {
     wisdom: number;
     charisma: number;
   };
-  actions?: Array<{
-    name: string;
-    description: string;
-  }>;
+  actions?: Id<"actions">[];
+  reactions?: Id<"actions">[];
+  legendaryActions?: Id<"actions">[];
+  lairActions?: Id<"actions">[];
+  resolvedActions?: Array<Action>;
+  resolvedReactions?: Array<Action>;
+  resolvedLegendaryActions?: Array<Action>;
+  resolvedLairActions?: Array<Action>;
   createdAt: number;
 }
 

@@ -275,9 +275,19 @@ export class SampleDataService {
     };
 
     // Process player characters
-    const playerCharacters = charactersData.playerCharacters.map((character) => {
+    const playerCharacters = charactersData.playerCharacters.map((character: any) => {
       const equipmentData = assignEquipment(character.class, character.level);
       const assignedActions = assignActions(character.class);
+      
+      // Use abilityScores from JSON if available, otherwise calculate from modifiers
+      const abilityScores = character.abilityScores || {
+        strength: 10 + character.abilityModifiers.strength,
+        dexterity: 10 + character.abilityModifiers.dexterity,
+        constitution: 10 + character.abilityModifiers.constitution,
+        intelligence: 10 + character.abilityModifiers.intelligence,
+        wisdom: 10 + character.abilityModifiers.wisdom,
+        charisma: 10 + character.abilityModifiers.charisma,
+      };
       
       return {
         name: character.name,
@@ -287,15 +297,18 @@ export class SampleDataService {
         hitPoints: character.hitPoints,
         armorClass: character.armorClass,
         characterType: character.characterType === "PlayerCharacter" ? "player" : "npc",
-        abilityScores: {
-          strength: 10 + character.abilityModifiers.strength,
-          dexterity: 10 + character.abilityModifiers.dexterity,
-          constitution: 10 + character.abilityModifiers.constitution,
-          intelligence: 10 + character.abilityModifiers.intelligence,
-          wisdom: 10 + character.abilityModifiers.wisdom,
-          charisma: 10 + character.abilityModifiers.charisma,
-        },
+        abilityScores,
         abilityModifiers: character.abilityModifiers,
+        classes: character.classes || [
+          {
+            name: character.class,
+            level: character.level,
+            hitDie: "d8", // Default, will be overridden by actual class data
+            features: character.features?.map((f: any) => typeof f === "string" ? f : f.name) || [],
+          }
+        ],
+        feats: character.feats || [],
+        features: character.features || [],
         skills: [],
         savingThrows: [],
         proficiencies: [],
@@ -309,9 +322,19 @@ export class SampleDataService {
     });
     
     // Process NPCs
-    const npcs = charactersData.npcs.map((npc) => {
+    const npcs = charactersData.npcs.map((npc: any) => {
       const equipmentData = assignEquipment(npc.class, npc.level);
       const assignedActions = assignActions(npc.class);
+      
+      // Use abilityScores from JSON if available, otherwise calculate from modifiers
+      const abilityScores = npc.abilityScores || {
+        strength: 10 + npc.abilityModifiers.strength,
+        dexterity: 10 + npc.abilityModifiers.dexterity,
+        constitution: 10 + npc.abilityModifiers.constitution,
+        intelligence: 10 + npc.abilityModifiers.intelligence,
+        wisdom: 10 + npc.abilityModifiers.wisdom,
+        charisma: 10 + npc.abilityModifiers.charisma,
+      };
       
       return {
         name: npc.name,
@@ -321,15 +344,18 @@ export class SampleDataService {
         hitPoints: npc.hitPoints,
         armorClass: npc.armorClass,
         characterType: npc.characterType === "NonPlayerCharacter" ? "npc" : "player",
-        abilityScores: {
-          strength: 10 + npc.abilityModifiers.strength,
-          dexterity: 10 + npc.abilityModifiers.dexterity,
-          constitution: 10 + npc.abilityModifiers.constitution,
-          intelligence: 10 + npc.abilityModifiers.intelligence,
-          wisdom: 10 + npc.abilityModifiers.wisdom,
-          charisma: 10 + npc.abilityModifiers.charisma,
-        },
+        abilityScores,
         abilityModifiers: npc.abilityModifiers,
+        classes: npc.classes || [
+          {
+            name: npc.class,
+            level: npc.level,
+            hitDie: "d8", // Default, will be overridden by actual class data
+            features: npc.features?.map((f: any) => typeof f === "string" ? f : f.name) || [],
+          }
+        ],
+        feats: npc.feats || [],
+        features: npc.features || [],
         skills: [],
         savingThrows: [],
         proficiencies: [],
@@ -434,77 +460,167 @@ export class SampleDataService {
       return uniqueActions;
     };
 
-    // Helper function to assign basic equipment to monsters
-    const assignMonsterEquipment = () => {
+    // Helper function to assign equipment to monsters based on type and CR
+    const assignMonsterEquipment = (monsterType: string, challengeRating: string, monsterName: string) => {
       // Combine base items and additional items for monster equipment assignment
       const allItems = [...itemsData.items, ...additionalItems];
       
-      // Find basic equipment for monsters
-      let weapon = allItems.find(item => item.type === "Weapon");
-      let potion = allItems.find(item => item.type === "Potion");
-      
-      // Create inventory with basic items
-      const inventoryItems = [
-        ...(weapon ? [{ itemId: weapon.name, quantity: 1 }] : []),
-        ...(potion ? [{ itemId: potion.name, quantity: 2 }] : [])
-      ];
-      
-      // Create equipment slots (monsters typically only use weapons)
-      const equipment = {
-        mainHand: weapon ? weapon.name : undefined,
+      const crValue = parseFloat(challengeRating) || 0;
+      const inventoryItems: Array<{ itemId: string; quantity: number }> = [];
+      const equipment: {
+        headgear?: string;
+        armwear?: string;
+        chestwear?: string;
+        legwear?: string;
+        footwear?: string;
+        mainHand?: string;
+        offHand?: string;
+        accessories: string[];
+      } = {
         accessories: []
+      };
+      
+      // Find items by type
+      const weapons = allItems.filter(item => item.type === "Weapon");
+      const armor = allItems.filter(item => item.type === "Armor");
+      const potions = allItems.filter(item => item.type === "Potion");
+      const rings = allItems.filter(item => item.type === "Ring");
+      const wondrousItems = allItems.filter(item => item.type === "Wondrous Item");
+      
+      // Assign equipment based on monster type
+      if (monsterType.toLowerCase() === "humanoid") {
+        // Humanoids typically wear armor and use weapons
+        const lightArmor = armor.find(a => (a as any).typeOfArmor === "Light");
+        const mediumArmor = armor.find(a => (a as any).typeOfArmor === "Medium");
+        const heavyArmor = armor.find(a => (a as any).typeOfArmor === "Heavy");
+        const shield = armor.find(a => (a as any).typeOfArmor === "Shield");
+        
+        // Assign armor based on monster name/culture
+        const nameLower = monsterName.toLowerCase();
+        if (nameLower.includes("goblin") || nameLower.includes("kobold")) {
+          // Small humanoids use light armor
+          if (lightArmor) equipment.chestwear = lightArmor.name;
+          const shortSword = weapons.find(w => w.name.toLowerCase().includes("shortsword") || w.name.toLowerCase().includes("short sword"));
+          const scimitar = weapons.find(w => w.name.toLowerCase().includes("scimitar"));
+          equipment.mainHand = shortSword?.name || scimitar?.name || weapons[0]?.name;
+        } else if (nameLower.includes("orc") || nameLower.includes("bandit")) {
+          // Orcs and bandits use medium/heavy armor
+          if (mediumArmor) equipment.chestwear = mediumArmor.name;
+          const greataxe = weapons.find(w => w.name.toLowerCase().includes("greataxe") || w.name.toLowerCase().includes("great axe"));
+          const longsword = weapons.find(w => w.name.toLowerCase().includes("longsword") || w.name.toLowerCase().includes("long sword"));
+          equipment.mainHand = greataxe?.name || longsword?.name || weapons[0]?.name;
+          if (shield && crValue >= 1) equipment.offHand = shield.name;
+        } else if (nameLower.includes("knight") || nameLower.includes("guard")) {
+          // Knights and guards use heavy armor
+          if (heavyArmor) equipment.chestwear = heavyArmor.name;
+          if (shield) equipment.offHand = shield.name;
+          const longsword = weapons.find(w => w.name.toLowerCase().includes("longsword") || w.name.toLowerCase().includes("long sword"));
+          equipment.mainHand = longsword?.name || weapons[0]?.name;
+        } else {
+          // Default humanoid: medium armor, weapon, maybe shield
+          if (mediumArmor) equipment.chestwear = mediumArmor.name;
+          equipment.mainHand = weapons[0]?.name;
+          if (shield && crValue >= 2) equipment.offHand = shield.name;
+        }
+        
+        // Add potions and basic supplies to inventory
+        if (potions.length > 0) {
+          inventoryItems.push({ itemId: potions[0].name, quantity: Math.max(1, Math.floor(crValue) + 1) });
+        }
+      } else if (monsterType.toLowerCase() === "undead") {
+        // Undead monsters typically use weapons but might have armor
+        const longsword = weapons.find(w => w.name.toLowerCase().includes("longsword") || w.name.toLowerCase().includes("long sword"));
+        const shortbow = weapons.find(w => w.name.toLowerCase().includes("shortbow") || w.name.toLowerCase().includes("short bow"));
+        
+        if (monsterName.toLowerCase().includes("skeleton")) {
+          // Skeletons use weapons
+          equipment.mainHand = longsword?.name || weapons[0]?.name;
+          if (shortbow && crValue >= 1) {
+            inventoryItems.push({ itemId: shortbow.name, quantity: 1 });
+          }
+        } else {
+          // Other undead might have weapons
+          equipment.mainHand = weapons[0]?.name;
+        }
+      } else if (monsterType.toLowerCase() === "dragon") {
+        // Dragons are powerful and might have magic items
+        if (crValue >= 10 && rings.length > 0) {
+          equipment.accessories.push(rings[0].name);
+        }
+        if (crValue >= 15 && wondrousItems.length > 0) {
+          equipment.accessories.push(wondrousItems[0].name);
+        }
+        // Dragons don't typically use weapons (natural weapons)
+      } else if (monsterType.toLowerCase() === "giant") {
+        // Giants might have simple weapons
+        const club = weapons.find(w => w.name.toLowerCase().includes("club"));
+        const greatclub = weapons.find(w => w.name.toLowerCase().includes("greatclub") || w.name.toLowerCase().includes("great club"));
+        equipment.mainHand = greatclub?.name || club?.name || weapons[0]?.name;
+      } else {
+        // Default: assign a weapon if available
+        equipment.mainHand = weapons[0]?.name;
+      }
+      
+      // Add consumables to inventory based on CR
+      if (potions.length > 0 && crValue >= 1) {
+        inventoryItems.push({ itemId: potions[0].name, quantity: Math.max(1, Math.floor(crValue)) });
+      }
+      
+      // Higher CR monsters get better items
+      if (crValue >= 5 && rings.length > 0) {
+        const availableRings = rings.filter(r => !equipment.accessories.includes(r.name));
+        if (availableRings.length > 0) {
+          equipment.accessories.push(availableRings[0].name);
+        }
+      }
+      
+      // Calculate base capacity (monsters have smaller capacity than characters)
+      const baseCapacity = 50;
+      const capacity = baseCapacity + (Math.floor(crValue) * 10); // +10 per CR
+      
+      // Calculate equipment bonuses (simplified - would need actual item data)
+      // For now, we'll set this to 0 and let the backend calculate it when items are resolved
+      const equipmentBonuses = {
+        armorClass: 0,
+        abilityScores: {
+          strength: 0,
+          dexterity: 0,
+          constitution: 0,
+          intelligence: 0,
+          wisdom: 0,
+          charisma: 0,
+        }
       };
       
       return {
         inventory: {
-          capacity: 50, // Smaller capacity for monsters
+          capacity,
           items: inventoryItems
         },
         equipment,
-        equipmentBonuses: {
-          armorClass: 0,
-          abilityScores: {
-            strength: 0,
-            dexterity: 0,
-            constitution: 0,
-            intelligence: 0,
-            wisdom: 0,
-            charisma: 0,
-          }
-        }
+        equipmentBonuses
       };
     };
 
-    // Helper function to convert action names to action objects with descriptions
-    const convertActionsToObjects = (actionNames: string[]) => {
-      // Combine all available actions to get descriptions
-      const allActions = [
-        ...actionsData.generalActions,
-        ...actionsData.monsterActions,
-        ...Object.values(actionsData.classActions).flat(),
-        ...additionalActions
-      ];
-      
-      return actionNames.map(actionName => {
-        // Find the action in our available actions to get the description
-        const actionData = allActions.find(action => action.name === actionName);
-        
-        return {
-          name: actionName,
-          description: actionData?.description || `${actionName} - A monster action.`
-        };
-      });
-    };
-
-    const monsters = monstersData.monsters.map(monster => {
-      const equipmentData = assignMonsterEquipment();
+    const monsters = monstersData.monsters.map((monster: any) => {
+      const equipmentData = assignMonsterEquipment(monster.type, monster.challengeRating, monster.name);
       const assignedActionNames = assignMonsterActions(monster.type, monster.challengeRating, monster.name);
-      const assignedActions = convertActionsToObjects(assignedActionNames);
       
-      // Use special abilities from JSON data if available, otherwise fall back to assigned actions
-      const finalActions = (monster as any).actions && (monster as any).actions.length > 0 
-        ? (monster as any).actions 
-        : assignedActions;
+      // Helper to convert inline action objects to names
+      const extractActionNames = (actions: any[] | undefined) => {
+        if (!actions || actions.length === 0) return [];
+        return actions.map(action => action.name || action);
+      };
+      
+      // Use abilityScores from JSON if available, otherwise calculate from modifiers
+      const abilityScores = monster.abilityScores || {
+        strength: 10 + (monster.abilityModifiers?.strength || 0),
+        dexterity: 10 + (monster.abilityModifiers?.dexterity || 0),
+        constitution: 10 + (monster.abilityModifiers?.constitution || 0),
+        intelligence: 10 + (monster.abilityModifiers?.intelligence || 0),
+        wisdom: 10 + (monster.abilityModifiers?.wisdom || 0),
+        charisma: 10 + (monster.abilityModifiers?.charisma || 0),
+      };
       
       return {
         name: monster.name,
@@ -521,14 +637,7 @@ export class SampleDataService {
           burrow: (monster.speed as any).burrow,
           climb: (monster.speed as any).climb,
         },
-        abilityScores: {
-          strength: 10 + monster.abilityModifiers.strength,
-          dexterity: 10 + monster.abilityModifiers.dexterity,
-          constitution: 10 + monster.abilityModifiers.constitution,
-          intelligence: 10 + monster.abilityModifiers.intelligence,
-          wisdom: 10 + monster.abilityModifiers.wisdom,
-          charisma: 10 + monster.abilityModifiers.charisma,
-        },
+        abilityScores,
         abilityModifiers: monster.abilityModifiers,
         proficiencyBonus: Math.max(1, Math.floor((parseFloat(monster.challengeRating) || 0) / 4) + 2),
         senses: {
@@ -546,10 +655,10 @@ export class SampleDataService {
           die: "d8" as const,
         },
         traits: (monster as any).traits || [],
-        actions: finalActions,
-        reactions: (monster as any).reactions || [],
-        legendaryActions: (monster as any).legendaryActions || [],
-        lairActions: (monster as any).lairActions || [],
+        actions: assignedActionNames, // Now passing action names instead of objects
+        reactions: extractActionNames((monster as any).reactions),
+        legendaryActions: extractActionNames((monster as any).legendaryActions),
+        lairActions: extractActionNames((monster as any).lairActions),
         ...equipmentData
       };
     });
@@ -757,9 +866,13 @@ export class SampleDataService {
       name: map.name,
       cols: map.width,
       rows: map.height,
-      description: map.description,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      cellSize: map.cellSize,
+      scenario: map.scenario,
+      difficulty: map.difficulty,
+      encounterLevel: map.encounterLevel,
+      terrain: map.terrain,
+      enemies: map.enemies,
+      allies: map.allies,
     }))
     
     return await mutateFn({ maps, clerkId })

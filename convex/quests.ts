@@ -2,6 +2,14 @@ import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { getCurrentUser } from "./clerkService";
 
+// Public function for MAUI native apps - returns all quests without authentication
+export const getAllQuests = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("quests").collect();
+  },
+});
+
 export const getQuests = query({
   args: { campaignId: v.optional(v.id("campaigns")) },
   handler: async (ctx, args) => {
@@ -169,9 +177,9 @@ export const createQuestTask = mutation({
       v.literal("Failed")
     ),
     dependsOn: v.optional(v.array(v.id("questTasks"))),
-    assignedTo: v.optional(v.array(v.id("playerCharacters"))),
+    assignedTo: v.optional(v.array(v.id("characters"))),
     locationId: v.optional(v.id("locations")),
-    targetNpcId: v.optional(v.id("npcs")),
+    targetNpcId: v.optional(v.id("characters")),
     requiredItemIds: v.optional(v.array(v.id("items"))),
   },
   handler: async (ctx, args) => {
@@ -236,7 +244,7 @@ export const updateQuestStatus = mutation({
       v.literal("Failed")
     ),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<void> => {
     const user = await getCurrentUser(ctx);
 
     const quest = await ctx.db.get(args.questId);
@@ -281,7 +289,7 @@ export const updateTaskStatus = mutation({
       v.literal("Failed")
     ),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<void> => {
     const user = await getCurrentUser(ctx);
 
     const task = await ctx.db.get(args.taskId);
@@ -438,7 +446,7 @@ export const updateQuest = mutation({
 
 export const deleteQuest = mutation({
   args: { questId: v.id("quests") },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<void> => {
     const user = await getCurrentUser(ctx);
 
     const quest = await ctx.db.get(args.questId);

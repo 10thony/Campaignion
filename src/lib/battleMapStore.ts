@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { Id } from "../../convex/_generated/dataModel";
 
 type EditingMode = "token" | "terrain" | "measure" | "aoe" | "multiselect" | null;
 type TerrainType = "normal" | "difficult" | "hazardous" | "magical" | "water" | "ice" | "fire" | "acid" | "poison" | "unstable";
@@ -11,6 +12,25 @@ type CombatState = {
   availableActions: any[]; // Will be populated with actions from character/monster
   selectedAction: any | null;
   isCombatMode: boolean;
+};
+
+export interface InitiativeEntry {
+  tokenId: string;
+  label: string;
+  roll: number;
+  modifier: number;
+  total: number;
+  dexterityScore: number;
+  type: "pc" | "npc_friendly" | "npc_foe";
+  characterId?: Id<"characters">;
+  monsterId?: Id<"monsters">;
+}
+
+type InitiativeState = {
+  initiativeOrder: InitiativeEntry[];
+  currentTurnIndex: number | null;
+  isInCombat: boolean;
+  roundNumber: number;
 };
 
 type UIState = {
@@ -49,12 +69,46 @@ type UIState = {
   setSelectedAction: (action: any | null) => void;
   setIsCombatMode: (enabled: boolean) => void;
   clearCombatState: () => void;
+  // Initiative functionality
+  initiativeState: InitiativeState;
+  setInitiativeOrder: (order: InitiativeEntry[]) => void;
+  setCurrentTurnIndex: (index: number | null) => void;
+  nextTurn: () => void;
+  previousTurn: () => void;
+  startCombat: () => void;
+  endCombat: () => void;
+  // Battle map instance management
+  currentInstanceId: string | null;
+  setCurrentInstanceId: (id: string | null) => void;
+  // View control
+  resetView: boolean;
+  triggerResetView: () => void;
 };
 
 export const useBattleMapUI = create<UIState>()(
   immer((set) => ({
     selectedMapId: null,
-    setSelectedMapId: (id) => set((s) => void (s.selectedMapId = id)),
+    setSelectedMapId: (id) => set((s) => {
+      const previousMapId = s.selectedMapId;
+      s.selectedMapId = id;
+      // Clear initiative state when switching to a different map or clearing selection
+      if (previousMapId !== id) {
+        s.initiativeState = {
+          initiativeOrder: [],
+          currentTurnIndex: null,
+          isInCombat: false,
+          roundNumber: 1,
+        };
+        // Also clear combat state
+        s.combatState.attackerTokenId = null;
+        s.combatState.targetTokenId = null;
+        s.combatState.availableActions = [];
+        s.combatState.selectedAction = null;
+        s.combatState.isCombatMode = false;
+        // Clear current instance ID as well since it's map-specific
+        s.currentInstanceId = null;
+      }
+    }),
     showNewMap: false,
     setShowNewMap: (v) => set((s) => void (s.showNewMap = v)),
     editingTokenId: null,
@@ -101,5 +155,57 @@ export const useBattleMapUI = create<UIState>()(
       s.combatState.selectedAction = null;
       s.combatState.isCombatMode = false;
     }),
+    // Initiative functionality
+    initiativeState: {
+      initiativeOrder: [],
+      currentTurnIndex: null,
+      isInCombat: false,
+      roundNumber: 1,
+    },
+    setInitiativeOrder: (order) => set((s) => {
+      s.initiativeState.initiativeOrder = order;
+      if (order.length > 0 && s.initiativeState.currentTurnIndex === null) {
+        s.initiativeState.currentTurnIndex = 0;
+      }
+    }),
+    setCurrentTurnIndex: (index) => set((s) => void (s.initiativeState.currentTurnIndex = index)),
+    nextTurn: () => set((s) => {
+      if (s.initiativeState.initiativeOrder.length === 0) return;
+      const currentIndex = s.initiativeState.currentTurnIndex ?? 0;
+      const nextIndex = (currentIndex + 1) % s.initiativeState.initiativeOrder.length;
+      s.initiativeState.currentTurnIndex = nextIndex;
+      if (nextIndex === 0) {
+        s.initiativeState.roundNumber += 1;
+      }
+    }),
+    previousTurn: () => set((s) => {
+      if (s.initiativeState.initiativeOrder.length === 0) return;
+      const currentIndex = s.initiativeState.currentTurnIndex ?? 0;
+      const prevIndex = currentIndex === 0 
+        ? s.initiativeState.initiativeOrder.length - 1 
+        : currentIndex - 1;
+      s.initiativeState.currentTurnIndex = prevIndex;
+      if (prevIndex === s.initiativeState.initiativeOrder.length - 1) {
+        s.initiativeState.roundNumber = Math.max(1, s.initiativeState.roundNumber - 1);
+      }
+    }),
+    startCombat: () => set((s) => {
+      s.initiativeState.isInCombat = true;
+      s.initiativeState.roundNumber = 1;
+      if (s.initiativeState.initiativeOrder.length > 0) {
+        s.initiativeState.currentTurnIndex = 0;
+      }
+    }),
+    endCombat: () => set((s) => {
+      s.initiativeState.isInCombat = false;
+      s.initiativeState.currentTurnIndex = null;
+      s.initiativeState.roundNumber = 1;
+    }),
+    // Battle map instance management
+    currentInstanceId: null,
+    setCurrentInstanceId: (id) => set((s) => void (s.currentInstanceId = id)),
+    // View control
+    resetView: false,
+    triggerResetView: () => set((s) => void (s.resetView = !s.resetView)),
   }))
 );
